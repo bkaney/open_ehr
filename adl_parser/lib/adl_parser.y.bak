@@ -1,0 +1,301 @@
+
+
+class OpenEHR::ADLParser
+
+#options omit_action_call
+
+prechigh
+
+  nonassoc UMINUS UPLUS
+  left '*' '/'
+  left '+' '-'
+
+#  left DOUBLE_BAR
+
+  nonassoc SYM_EQ
+  nonassoc SYM_NE
+  nonassoc SYM_LT
+  nonassoc SYM_START_DBLOCK
+  nonassoc SYM_GT
+  nonassoc SYM_END_DBLOCK
+  nonassoc SYM_LE
+  nonassoc SYM_GE
+
+preclow
+
+
+rule
+### http://svn.openehr.org/ref_impl_eiffel/TRUNK/components/adl_parser/src/syntax/adl/parser/adl_validator.y
+
+input: archetype
+#  | error
+
+archetype: arch_identification
+  arch_specialisation
+  arch_concept
+  arch_language
+  arch_description
+  arch_definition
+  arch_invariant
+  arch_ontology
+
+
+arch_identification: arch_head V_ARCHETYPE_ID
+#  | SYM_ARCHETYPE error
+
+arch_head: SYM_ARCHETYPE
+  | SYM_ARCHETYPE arch_meta_data
+
+arch_meta_data: Left_parenthesis_code arch_meta_data_items Right_parenthesis_code
+
+arch_meta_data_items: arch_meta_data_item
+  | arch_meta_data_items ';' arch_meta_data_item
+
+arch_meta_data_item: SYM_ADL_VERSION SYM_EQ V_VERSION_STRING
+  | SYM_IS_CONTROLLED
+
+# Define specialization in which its constraints are narrower than those of the parent.
+# Any data created via the use of the specialized archetype shall be conformant both to it and its parent.
+arch_specialisation: #-- empty is ok
+  | SYM_SPECIALIZE V_ARCHETYPE_ID
+#  | SYM_SPECIALIZE error
+
+arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
+#  | SYM_CONCEPT error
+
+arch_language: #-- empty is ok for ADL 1.4 tools
+    | SYM_LANGUAGE V_DADL_TEXT
+#  | SYM_LANGUAGE error
+
+arch_description: #-- no meta-data ok
+    | SYM_DESCRIPTION V_DADL_TEXT
+#  | SYM_DESCRIPTION error
+
+arch_definition: SYM_DEFINITION V_CADL_TEXT
+#  | SYM_DEFINITION error
+
+arch_invariant: #-- no invariant ok
+    | SYM_INVARIANT V_ASSERTION_TEXT
+#  | SYM_INVARIANT error
+
+# define all linguistic entries in this part as dADL.
+arch_ontology: SYM_ONTOLOGY V_DADL_TEXT
+#  | SYM_ONTOLOGY error
+
+
+---- header
+
+$:.unshift File.join(File.dirname(__FILE__))
+$DEBUG = false
+
+
+---- inner
+###----------/* keywords */ --------------------------------------------- 
+@@reserved = {
+    'archetype' => :SYM_ARCHETYPE,
+    'adl_version' => :SYM_ADL_VERSION,
+    'controlled' => :SYM_IS_CONTROLLED,
+    'specialize' => :SYM_SPECIALIZE,
+    'concept' => :SYM_CONCEPT,
+    'language' => :SYM_LANGUAGE,
+    'description' => :SYM_DESCRIPTION,
+    'definition' => :SYM_DEFINITION,
+    'invariant' => :SYM_INVARIANT,
+    'ontology' => :SYM_ONTOLOGY,
+    'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
+    'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
+    'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
+}
+
+###----------/* Scanner */ ----------------------------------------------- 
+
+def scan
+  until @data.nil?  do
+    case @data
+    when /\A\n/ # carriage return
+      @lineno += 1
+      ;
+    when /\A[ \t\r\f]+/ #just drop it
+      ;
+    when /\A--.*\n/ # single line comment
+      @lineno += 1
+      ;
+    ###----------/* symbols */ ------------------------------------------------- 
+    when /\A[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+/   #V_ARCHETYPE_ID
+      yield :V_ARCHETYPE_ID, $&
+    when /\A[a-z][a-zA-Z0-9_]*/
+      word = $&.downcase
+      if @@reserved[word]
+        yield @@reserved[word], @@reserved[word]
+      end
+    when /\A\=/   # =
+      yield :SYM_EQ, :SYM_EQ
+    when /\A\>=/   # >=
+      yield :SYM_GE, :SYM_GE
+    when /\A\<=/   # <=
+      yield :SYM_LE, :SYM_LE
+    when /\A\</   # <
+      if @in_interval
+        @start_block_received = false
+        yield :SYM_LT, :SYM_LT
+      else
+        @start_block_received = true
+        yield :SYM_START_DBLOCK, :SYM_START_DBLOCK
+      end
+    when /\A\>/   # >
+      if @in_interval
+        yield :SYM_GT, :SYM_GT
+      else
+        yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
+      end
+    when /\A\-/   # -
+      yield :Minus_code, :Minus_code
+    when /\A\+/   # +
+      yield :Plus_code, :Plus_code
+    when /\A\*/   # *
+      yield :Star_code, :Star_code
+    when /\A\//   # /
+      yield :Slash_code, :Slash_code
+    when /\A\^/   # ^
+      yield :Caret_code, :Caret_code
+    when /\A\=/   # =
+      yield :Equal_code, :Equal_code
+    when /\A\./   # .
+      yield :Dot_code, :Dot_code
+    when /\A\;/   # ;
+      yield :Semicolon_code, :Semicolon_code
+    when /\A\,/   # ,
+      yield :Comma_code, :Comma_code
+    when /\A\:/   # :
+      yield :Colon_code, :Colon_code
+    when /\A\!/   # !
+      yield :Exclamation_code, :Exclamation_code
+    when /\A\(/   # (
+      yield :Left_parenthesis_code, :Left_parenthesis_code
+    when /\A\)/   # )
+      yield :Right_parenthesis_code, :Right_parenthesis_code
+    when /\A\$/   # $
+      yield :Dollar_code, :Dollar_code
+    when /\A\?\?/   # ??
+      yield :SYM_DT_UNKNOWN, :SYM_DT_UNKNOWN
+    when /\A\?/   # ?
+      yield :Question_mark_code, :Question_mark_code
+    when /\A[0-9]+\.[0-9]+(\.[0-9]+)*/   # ?
+      yield :V_VERSION_STRING, :V_VERSION_STRING
+    when /\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/   #V_LOCAL_TERM_CODE_REF
+      yield :V_LOCAL_TERM_CODE_REF, $&
+    when /\A[a-zA-Z][a-zA-Z0-9_]*/
+      yield :V_IDENTIFIER, $&
+    when /\A\|/   # |
+      if @in_interval
+        @in_interval = false
+      elsif @start_block_received
+        @in_interval = true
+        @start_block_received = false
+      end
+      yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
+    when /\A\[/   # [
+      yield :Left_bracket_code, :Left_bracket_code
+    when /\A\]/   # ]
+      yield :Right_bracket_code, :Right_bracket_code
+    when /\A\../   # ..
+      yield :SYM_ELLIPSIS, :SYM_ELLIPSIS
+    when /\A\.../   # ...
+      yield :SYM_LIST_CONTINUE, :SYM_LIST_CONTINUE
+
+    when /\A\[[a-zA-Z0-9._\-]+::[a-zA-Z0-9._\-]+\]/   #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
+      yield :V_QUALIFIED_TERM_CODE_REF, $&
+    when /\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/   #ERR_V_QUALIFIED_TERM_CODE_REF
+      yield :ERR_V_QUALIFIED_TERM_CODE_REF, $&
+    when /\Aa[ct][0-9.]+/   #V_LOCAL_CODE
+      yield :V_LOCAL_CODE, $&
+    when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/- -n-n-n-n-]-
+      yield :V_ISO8601_EXTENDED_DATE_TIME, $&
+    when /\A[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? /   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
+      yield :V_ISO8601_EXTENDED_TIME, $&
+    when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
+      yield :V_ISO8601_EXTENDED_DATE, $&
+    when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
+      yield :V_ISO8601_DURATION, $&
+    when /\A[A-Z][a-zA-Z0-9_]*/   #V_TYPE_IDENTIFIER
+      yield :V_ISO8601_DURATION, $&
+    when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
+      yield :V_GENERIC_TYPE_IDENTIFIER, $&
+    when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
+      yield :V_INTEGER, $&
+    when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
+      yield :V_REAL, $&
+#    when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
+    when /\A"([^"]*)"/m #V_STRING
+      yield :V_STRING, $1
+# \"[^\\\n"]*\" 
+# \"[^\\\n"]*{ -- beginning of a multi-line string 
+# <IN_STR> { 
+# \\\\ -- match escaped backslash, i.e. \\ -> \ 
+# \\\" -- match escaped double quote, i.e. \” -> “ 
+# {UTF8CHAR}+ -- match UTF8 chars 
+# [^\\\n"]+ -- match any other characters 
+# \\\n[ \t\r]* -- match LF in line 
+# [^\\\n"]*\" -- match final end of string 
+# .|\n | 
+# <<EOF>> -- unclosed String -> ERR_STRING 
+# }
+# ###----------/* V_CHARACTER */ -------------------------------------------- 
+# \'[^\\\n']\' -- normal character in 0-127 
+# \'\\n\ -- \n 
+# \'\\r\ -- \r 
+# \'\\t\ -- \t 
+# \'\\'\ -- \’ 
+# \'\\\\ -- \\ 
+# \'{UTF8CHAR}\' -- UTF8 char 
+# \'.{1,2} | 
+# \'\\[0-9]+(\/)? -- invalid character -> ERR_CHARACTER 
+    when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
+      yield :V_URI, $&
+    when /\A\S/ #UTF8CHAR
+      yield :UTF8CHAR, $&
+    end
+    @data = $' # variable $' receives the string after the match
+  end
+  yield :EOF, nil
+  yield false, '$'
+end # of scan
+
+
+def parse(data, filename, lineno = 1, debug = false)
+  @yydebug = true
+  @parsestring = data
+  @data = data
+  @lineno = lineno
+  @filename = filename
+  @in_interval = false
+  @start_block_received = false
+  @start_block_received = false
+  yyparse self, :scan
+end
+
+def on_error( t, v, values)
+  raise Racc::ParseError, "#{@filename}:#{@lineno}: Inline syntax error on #{v.inspect}"
+end
+
+# ###----------/* CADL Blocks */ -------------------------------------------
+# \{[^{}]* -- beginning of CADL block 
+# <IN_CADL_BLOCK>\{[^{}]* -- got an open brace 
+# <IN_CADL_BLOCK>[^{}]*\} -- got a close brace 
+
+
+
+
+
+
+### Local Variables:
+### mode:ruby
+### mode:font-lock
+### comment-column:0
+### comment-start: "### "
+### comment-end:"" 
+### End:
+
+
+
+

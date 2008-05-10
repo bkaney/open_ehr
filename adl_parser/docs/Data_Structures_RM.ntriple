@@ -1,0 +1,344 @@
+_:AX5fXX3aXX40XX5fXX3aXA649 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA649 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA649 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA613 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA613 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#origin> .
+_:AX5fXX3aXX40XX5fXX3aXA613 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA658 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> .
+_:AX5fXX3aXX40XX5fXX3aXA658 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA659 .
+_:AX5fXX3aXX40XX5fXX3aXA622 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> .
+_:AX5fXX3aXX40XX5fXX3aXA622 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA622 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#math_function> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_CODED_TEXT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#math_function> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#math_function> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#duration> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_DURATION> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#duration> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#duration> <http://www.w3.org/2000/01/rdf-schema#label> "duracion"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#duration> <http://www.w3.org/2000/01/rdf-schema#label> "duration"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#LIST_ITEM> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA612 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#LIST_ITEM> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#LIST_T> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#LIST_ITEM> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA631 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA631 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> .
+_:AX5fXX3aXX40XX5fXX3aXA631 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#row_count> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#row_count> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#row_count> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2001/XMLSchema#integer> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA644 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "the abstract parent of COMPOUND and ELEMENT representation classes"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "n/a"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_HIERARCHICAL_ITEM"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://www.w3.org/2000/01/rdf-schema#label> "item"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://www.w3.org/2000/01/rdf-schema#label> "item"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://www.w3.org/2002/07/owl#equivalentClass> _:AX5fXX3aXX40XX5fXX3aXA645 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://protege.stanford.edu/plugins/owl/protege#abstract> "true"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Synapses> "Item"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Common_RM.owl#LOCATABLE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#OMGHDTF> "COAS::Observation"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA640 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#period> .
+_:AX5fXX3aXX40XX5fXX3aXA640 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA640 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA623 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_HIERARCHICAL_GROUP"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "ClusterOCC"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "The grouping variant of ITEM, which may contain ffurther instances of ITEM, in an ordered list"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Synapses> "Compound class"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA622 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "Act_context"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#OMGHDTF> "COAS::CompositeObservation"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA614 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA615 .
+_:AX5fXX3aXX40XX5fXX3aXA614 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_HIERARCHICAL_VALUE"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA627 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "DataItem"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA628 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA629 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Synapses> "Element"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "The leaf variant of ITEM, to which a DATA_VALUE instance is attached."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "Act"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#OMGHDTF> "COAS::AtomicObservation"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA659 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> .
+_:AX5fXX3aXX40XX5fXX3aXA659 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:AX5fXX3aXX40XX5fXX3aXA623 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA623 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> .
+_:AX5fXX3aXX40XX5fXX3aXA623 <http://www.w3.org/2002/07/owl#minCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_periodic> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2001/XMLSchema#boolean> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_periodic> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_periodic> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> .
+_:AX5fXX3aXX40XX5fXX3aXA632 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> .
+_:AX5fXX3aXX40XX5fXX3aXA632 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA632 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#MisUse> "Not to be used for time-based lists, which should be represented with the proper termporal class"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA621 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA619 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Use> "Used to represent any data which is logically a list of values, \nsuch as blood presure, most protocols, many blood tests etc...\n"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA618 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA620 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#List> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Logical list data structure, where each item has a value and can be referred to by a name and a positional index in the list"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA617 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_LIST_PROPOSITION"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "CDA List Entry"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#column_count> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2001/XMLSchema#integer> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#column_count> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#column_count> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> .
+_:AX5fXX3aXX40XX5fXX3aXA641 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA641 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_T> .
+_:AX5fXX3aXX40XX5fXX3aXA641 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> .
+_:AX5fXX3aXX40XX5fXX3aXA615 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#SINGLE_EVENT_T> .
+_:AX5fXX3aXX40XX5fXX3aXA615 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA616 .
+_:AX5fXX3aXX40XX5fXX3aXA650 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA650 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> .
+_:AX5fXX3aXX40XX5fXX3aXA650 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> .
+_:AX5fXX3aXX40XX5fXX3aXA624 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA624 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> .
+_:AX5fXX3aXX40XX5fXX3aXA624 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://protege.stanford.edu/plugins/owl/protege#abstract> "true"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Abstract parent class of all spatial data types"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "CDA Structure"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA631 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Common_RM.owl#LOCATABLE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#label> "structure"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#label> "estructura"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA630 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_HIERARCHICAL_PROPOSITION"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA633 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA633 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#math_function> .
+_:AX5fXX3aXX40XX5fXX3aXA633 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA642 <http://www.w3.org/2002/07/owl#minCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA642 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA642 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> .
+_:AX5fXX3aXX40XX5fXX3aXA616 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> .
+_:AX5fXX3aXX40XX5fXX3aXA616 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:AX5fXX3aXX40XX5fXX3aXA651 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA651 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> .
+_:AX5fXX3aXX40XX5fXX3aXA651 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA625 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#duration> .
+_:AX5fXX3aXX40XX5fXX3aXA625 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA625 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://protege.stanford.edu/plugins/owl/protege#abstract> "true"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#label> "estructura de historia"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://www.w3.org/2002/07/owl#equivalentClass> _:AX5fXX3aXX40XX5fXX3aXA614 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#label> "history structure"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA613 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "The abstract parent class of various concrete historical structures,\ncurrently including discrete series and series of states, either\nof chich may be periodic."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "Time was encoded as part of the G1_HIERARCHICAL_PROPOSITION structure"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "The data type Histori HIST_T is equivalent in intention"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "Time was encoded as part of the Item structure"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA634 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#width> .
+_:AX5fXX3aXX40XX5fXX3aXA634 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA634 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_instantaneous> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_instantaneous> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_instantaneous> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2001/XMLSchema#boolean> .
+_:AX5fXX3aXX40XX5fXX3aXA643 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA643 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_periodic> .
+_:AX5fXX3aXX40XX5fXX3aXA643 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA617 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA617 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#names> .
+_:AX5fXX3aXX40XX5fXX3aXA617 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_TEXT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#displayed> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#displayed> <http://www.w3.org/2000/01/rdf-schema#comment> "Indicates whether this item should be displayed"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#displayed> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#BOOLEAN> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#displayed> <http://www.w3.org/2000/01/rdf-schema#label> "displayed"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#displayed> <http://www.w3.org/2000/01/rdf-schema#label> "mostrable"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#displayed> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+_:AX5fXX3aXX40XX5fXX3aXA652 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA653 .
+_:AX5fXX3aXX40XX5fXX3aXA652 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA626 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA626 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA626 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA635 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA635 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA635 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#period> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#period> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_DURATION> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#period> <http://www.w3.org/2000/01/rdf-schema#comment> "period between samples in this segment if periodic"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#period> <http://www.w3.org/2000/01/rdf-schema#label> "period"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#period> <http://www.w3.org/2000/01/rdf-schema#label> "periodo"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> <http://www.w3.org/2000/01/rdf-schema#label> "representation"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> <http://www.w3.org/2000/01/rdf-schema#label> "representacion"@es .
+_:AX5fXX3aXX40XX5fXX3aXA644 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#displayed> .
+_:AX5fXX3aXX40XX5fXX3aXA644 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA644 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> <http://www.w3.org/2000/01/rdf-schema#label> "item"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> <http://www.w3.org/2000/01/rdf-schema#label> "item"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> <http://www.w3.org/2000/01/rdf-schema#comment> "The data of this event"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item> <http://www.w3.org/2000/01/rdf-schema#domain> _:AX5fXX3aXX40XX5fXX3aXA652 .
+_:AX5fXX3aXX40XX5fXX3aXA618 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA618 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item_count> .
+_:AX5fXX3aXX40XX5fXX3aXA618 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA653 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA654 .
+_:AX5fXX3aXX40XX5fXX3aXA653 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#SINGLE_EVENT_T> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl> <http://www.w3.org/2002/07/owl#imports> <http://trajano.us.es/~isabel/EHR/Common_RM.owl> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl> <http://www.w3.org/2002/07/owl#imports> <http://protege.stanford.edu/plugins/owl/protege> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl> <http://www.w3.org/2000/01/rdf-schema#comment> "This ontology is based on the openEHR Data Structures Reference Model Revision: 1.4 written in owl by Isabel Roman in July 2004"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
+_:AX5fXX3aXX40XX5fXX3aXA627 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA627 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#null_flavor> .
+_:AX5fXX3aXX40XX5fXX3aXA627 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA636 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> .
+_:AX5fXX3aXX40XX5fXX3aXA636 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> .
+_:AX5fXX3aXX40XX5fXX3aXA636 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#null_flavor> <http://www.w3.org/2000/01/rdf-schema#label> "motivo de valor nulo"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#null_flavor> <http://www.w3.org/2000/01/rdf-schema#label> "null flavor"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#null_flavor> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_CODED_TEXT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#null_flavor> <http://www.w3.org/2000/01/rdf-schema#comment> "Flavour of null value, e.g. indeterminate, not asked etc"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#null_flavor> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#null_flavor> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#origin> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#origin> <http://www.w3.org/2000/01/rdf-schema#label> "origen"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#origin> <http://www.w3.org/2000/01/rdf-schema#label> "origin"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#origin> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_DATE_TIME> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#origin> <http://www.w3.org/2000/01/rdf-schema#comment> "Time origin of this event history. The first event is not necessarily at the origin point."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#origin> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+_:AX5fXX3aXX40XX5fXX3aXA645 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA645 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA646 .
+_:AX5fXX3aXX40XX5fXX3aXA619 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA619 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> .
+_:AX5fXX3aXX40XX5fXX3aXA619 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> <http://www.w3.org/2000/01/rdf-schema#label> "items"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> <http://www.w3.org/2000/01/rdf-schema#label> "items"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> <http://www.w3.org/2000/01/rdf-schema#domain> _:AX5fXX3aXX40XX5fXX3aXA656 .
+_:AX5fXX3aXX40XX5fXX3aXA654 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA655 .
+_:AX5fXX3aXX40XX5fXX3aXA654 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> .
+_:AX5fXX3aXX40XX5fXX3aXA628 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA628 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA628 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#value> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item_count> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item_count> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2001/XMLSchema#integer> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#item_count> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> .
+_:AX5fXX3aXX40XX5fXX3aXA637 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA637 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA637 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#row_count> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA632 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "CDA Structure"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Abstract parent class of all spatial dta types\n"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_HIERARCHICAL_PROPOSITION"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#names> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_LIST> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#names> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#LIST_EVENT_T> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#LIST_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#LIST_T> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#LIST_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA624 .
+_:AX5fXX3aXX40XX5fXX3aXA646 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> .
+_:AX5fXX3aXX40XX5fXX3aXA646 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA647 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#row_names> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_TEXT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#row_names> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#row_names> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_null> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_null> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_null> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2001/XMLSchema#boolean> .
+_:AX5fXX3aXX40XX5fXX3aXA655 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> .
+_:AX5fXX3aXX40XX5fXX3aXA655 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#offset> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_DURATION> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#offset> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#offset> <http://www.w3.org/2000/01/rdf-schema#label> "offset"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#offset> <http://www.w3.org/2000/01/rdf-schema#label> "offset"@en .
+_:AX5fXX3aXX40XX5fXX3aXA629 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA629 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA629 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#is_null> .
+_:AX5fXX3aXX40XX5fXX3aXA638 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA638 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA638 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#column_count> .
+_:AX5fXX3aXX40XX5fXX3aXA647 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:AX5fXX3aXX40XX5fXX3aXA647 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#value> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ELEMENT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#value> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DATA_VALUE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#value> <http://www.w3.org/2000/01/rdf-schema#label> "valor"@es .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#value> <http://www.w3.org/2000/01/rdf-schema#label> "value"@en .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#value> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#value> <http://www.w3.org/2000/01/rdf-schema#comment> "Data value of this leaf"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA656 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA656 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA657 .
+_:AX5fXX3aXX40XX5fXX3aXA620 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#items> .
+_:AX5fXX3aXX40XX5fXX3aXA620 <http://www.w3.org/2002/07/owl#minCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA620 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#column_names> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#column_names> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#column_names> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_TEXT> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA648 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_T> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA651 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA650 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA649 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Use> "Used to represent any data which is logically a single value, suc as a person\u00B4s height or weight"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "CDA Item"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Logical single value data structure"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_SIMPLE_PROPOSITION"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_SINGLE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA639 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> .
+_:AX5fXX3aXX40XX5fXX3aXA639 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> .
+_:AX5fXX3aXX40XX5fXX3aXA639 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TREE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA636 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TREE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TREE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TREE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Logicla tree data structure"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TREE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "List"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TREE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_TREE_PROPOSITION"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TREE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "cluster"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TREE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Use> "Used to represent data which are logically a tree such as audiotology results, microbilogy results, biochemistry results..."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA643 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA642 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA641 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA640 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#EVENT_SERIES_T> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Defines the semantics of a time segment which consists of events\nwhich occur at known instants of time, and which may be\nperiodically spaced. This class is generic, allowing types to be\ngenerated which are locked to particular structure types, such as\nEVENT_SERIES_LIST_S"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA648 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#offset> .
+_:AX5fXX3aXX40XX5fXX3aXA648 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA648 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA612 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA612 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM> .
+_:AX5fXX3aXX40XX5fXX3aXA612 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Defines the time point corrsponding to a single event in a series.\nThis class is generic, allowing types to be generated which are locked to\nparticular spatial types, such as EVENT_LIST_S. In cases where samples\nare missing, ther will corerespondingly be missing EVENT instances.\nEvery EVENT instance that is supplied must have an item."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA635 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA634 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA633 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "The data type HistoryItem HXIT_T is close to EVENT_T"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA657 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA658 .
+_:AX5fXX3aXX40XX5fXX3aXA657 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> .
+_:AX5fXX3aXX40XX5fXX3aXA621 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#CLUSTER> .
+_:AX5fXX3aXX40XX5fXX3aXA621 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> .
+_:AX5fXX3aXX40XX5fXX3aXA621 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#width> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_DURATION> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#width> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#width> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#SINGLE_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA626 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#SINGLE_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_EVENT_T> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#SINGLE_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA625 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#SINGLE_EVENT_T> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#HISTORY_T_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#SINGLE_EVENT_T> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#SINGLE_EVENT_T> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "a subtype of HISTORY_T catering for the very common case of single events. \nThe motivation for this class is to reduce the number of temporal\nobjects associtaed with a datum to one"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA630 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#representation> .
+_:AX5fXX3aXX40XX5fXX3aXA630 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA630 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA639 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "RIM Table_structure, Table_cell, Table..."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA637 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA638 .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Use> "Used to representa nay data which is logically a table of values, such as blood pressure, most protocols, many blood tests etc."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#MisUse> "Not used for time-based data, which should be represented with te temporal class JISTORY"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_TABLE_PROPOSITON, G1_MATRIX_PROPOSITION"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#ITEM_TABLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Logical table data structure, in which columns are named and ordered. Some columns may be designated 'key' columns, containing key data for each row, in the manner of relational tables. This allows row-naming, where each row represents a body site, ablood antige etc... all values in a column have the same data type"^^<http://www.w3.org/2001/XMLSchema#string> .

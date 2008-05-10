@@ -1,0 +1,413 @@
+
+
+class OpenEHR::DADLParser
+
+#options omit_action_call
+
+prechigh
+
+  nonassoc UMINUS UPLUS
+  left '*' '/'
+  left '+' '-'
+
+#  left DOUBLE_BAR
+
+  nonassoc SYM_EQ
+  nonassoc SYM_NE
+  nonassoc SYM_LT
+  nonassoc SYM_START_DBLOCK
+  nonassoc SYM_GT
+  nonassoc SYM_END_DBLOCK
+  nonassoc SYM_LE
+  nonassoc SYM_GE
+
+preclow
+
+
+rule
+### http://svn.openehr.org/ref_impl_eiffel/TRUNK/libraries/common_libs/src/structures/syntax/dadl/parser/dadl2_validator.html
+
+dadl: input EOF
+input: attr_vals
+  | complex_object_block
+#  | error
+attr_vals: attr_val
+  | attr_vals attr_val
+  | attr_vals ';' attr_val
+attr_val: attr_id SYM_EQ object_block
+attr_id: V_ATTRIBUTE_IDENTIFIER
+#  | V_ATTRIBUTE_IDENTIFIER error
+object_block: complex_object_block
+  | primitive_object_block
+complex_object_block: single_attr_object_block
+  | multiple_attr_object_block
+multiple_attr_object_block: untyped_multiple_attr_object_block
+  | type_identifier untyped_multiple_attr_object_block
+untyped_multiple_attr_object_block: multiple_attr_object_block_head keyed_objects SYM_END_DBLOCK
+multiple_attr_object_block_head: SYM_START_DBLOCK
+keyed_objects: keyed_object
+  | keyed_objects keyed_object
+keyed_object: object_key SYM_EQ object_block
+object_key: Left_bracket_code simple_value Right_bracket_code
+
+single_attr_object_block: untyped_single_attr_object_block
+  | type_identifier untyped_single_attr_object_block
+untyped_single_attr_object_block: single_attr_object_complex_head SYM_END_DBLOCK
+  | single_attr_object_complex_head attr_vals SYM_END_DBLOCK
+single_attr_object_complex_head: SYM_START_DBLOCK
+primitive_object_block: untyped_primitive_object_block
+  | type_identifier untyped_primitive_object_block
+untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_DBLOCK
+primitive_object_value: simple_value
+  | simple_list_value
+  | simple_interval_value
+  | term_code
+  | term_code_list_value
+simple_value: string_value
+  | integer_value
+  | real_value
+  | boolean_value
+  | character_value
+  | date_value
+  | time_value
+  | date_time_value
+  | duration_value
+  | uri_value
+simple_list_value: string_list_value
+  | integer_list_value
+  | real_list_value
+  | boolean_list_value
+  | character_list_value
+  | date_list_value
+  | time_list_value
+  | date_time_list_value
+  | duration_list_value
+
+simple_interval_value: integer_interval_value
+  | real_interval_value
+  | date_interval_value
+  | time_interval_value
+  | date_time_interval_value
+  | duration_interval_value
+
+type_identifier: V_TYPE_IDENTIFIER
+  | V_GENERIC_TYPE_IDENTIFIER
+
+string_value: V_STRING
+
+string_list_value: V_STRING Comma_code V_STRING
+  | string_list_value Comma_code V_STRING
+  | V_STRING Comma_code SYM_LIST_CONTINUE
+integer_value: V_INTEGER
+  | '+' V_INTEGER
+  | '-' V_INTEGER 
+integer_list_value: integer_value Comma_code integer_value
+  | integer_list_value Comma_code integer_value
+  | integer_value Comma_code SYM_LIST_CONTINUE
+
+integer_interval_value: SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS integer_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT integer_value SYM_ELLIPSIS SYM_LT integer_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LT integer_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LE integer_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT integer_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GE integer_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM integer_value SYM_INTERVAL_DELIM
+
+real_value: V_REAL
+  | '+' V_REAL
+  | '-' V_REAL
+
+real_list_value: real_value Comma_code real_value
+  | real_list_value Comma_code real_value
+  | real_value Comma_code SYM_LIST_CONTINUE
+
+real_interval_value: SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS real_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT real_value SYM_ELLIPSIS SYM_LT real_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LT real_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LE real_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT real_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GE real_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM real_value SYM_INTERVAL_DELIM
+
+
+boolean_value: SYM_TRUE
+  | SYM_FALSE
+
+boolean_list_value: boolean_value Comma_code boolean_value
+  | boolean_list_value Comma_code boolean_value
+  | boolean_value Comma_code SYM_LIST_CONTINUE
+
+character_value: V_CHARACTER
+
+character_list_value: character_value Comma_code character_value
+  | character_list_value Comma_code character_value
+  | character_value Comma_code SYM_LIST_CONTINUE
+
+date_value: V_ISO8601_EXTENDED_DATE
+
+date_list_value: date_value Comma_code date_value
+  | date_list_value Comma_code date_value
+  | date_value Comma_code SYM_LIST_CONTINUE
+
+date_interval_value: SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS date_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT date_value SYM_ELLIPSIS SYM_LT date_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LT date_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LE date_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT date_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GE date_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM date_value SYM_INTERVAL_DELIM
+
+time_value: V_ISO8601_EXTENDED_TIME
+time_list_value: time_value Comma_code time_value
+  | time_list_value Comma_code time_value
+  | time_value Comma_code SYM_LIST_CONTINUE
+
+time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT time_value SYM_ELLIPSIS SYM_LT time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LT time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LE time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GE time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM time_value SYM_INTERVAL_DELIM
+
+date_time_value: V_ISO8601_EXTENDED_DATE_TIME
+
+date_time_list_value: date_time_value Comma_code date_time_value
+  | date_time_list_value Comma_code date_time_value
+  | date_time_value Comma_code SYM_LIST_CONTINUE
+
+date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_time_value  SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS date_time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_ELLIPSIS SYM_LT date_time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LT date_time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LE date_time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT date_time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GE date_time_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM date_time_value SYM_INTERVAL_DELIM
+
+duration_value: V_ISO8601_DURATION
+
+duration_list_value: duration_value Comma_code duration_value
+  | duration_list_value Comma_code duration_value
+  | duration_value Comma_code SYM_LIST_CONTINUE
+
+duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS duration_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT duration_value SYM_ELLIPSIS SYM_LT duration_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LT duration_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_LE duration_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GT duration_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM SYM_GE duration_value SYM_INTERVAL_DELIM
+  | SYM_INTERVAL_DELIM duration_value SYM_INTERVAL_DELIM
+
+term_code: V_QUALIFIED_TERM_CODE_REF
+
+term_code_list_value: term_code Comma_code term_code
+  | term_code_list_value Comma_code term_code
+  | term_code Comma_code SYM_LIST_CONTINUE
+
+uri_value: V_URI
+
+---- header
+
+$:.unshift File.join(File.dirname(__FILE__))
+$DEBUG = false
+
+
+---- inner
+###----------/* keywords */ --------------------------------------------- 
+@@reserved = {
+  'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
+  'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
+  'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
+}
+
+###----------/* Scanner */ ----------------------------------------------- 
+
+def scan
+  until @data.nil?  do
+    case @data
+    when /\A\n/ # carriage return
+      @lineno += 1
+      ;
+    when /\A[ \t\r\f]+/ #just drop it
+      ;
+    when /\A--.*\n/ # single line comment
+      @lineno += 1
+      ;
+    ###----------/* symbols */ ------------------------------------------------- 
+    when /\A\=/   # =
+      yield :SYM_EQ, :SYM_EQ
+    when /\A\>\=/   # >=
+      yield :SYM_GE, :SYM_GE
+    when /\A\<\=/   # <=
+      yield :SYM_LE, :SYM_LE
+    when /\A\</   # <
+      if @in_interval
+        @start_block_received = false
+        yield :SYM_LT, :SYM_LT
+      else
+        @start_block_received = true
+        yield :SYM_START_DBLOCK, :SYM_START_DBLOCK
+      end
+    when /\A\>/   # >
+      if @in_interval
+        yield :SYM_GT, :SYM_GT
+      else
+        yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
+      end
+    when /\A\-/   # -
+      yield :Minus_code, :Minus_code
+    when /\A\+/   # +
+      yield :Plus_code, :Plus_code
+    when /\A\*/   # *
+      yield :Star_code, :Star_code
+    when /\A\//   # /
+      yield :Slash_code, :Slash_code
+    when /\A\^/   # ^
+      yield :Caret_code, :Caret_code
+    when /\A\./   # .
+      yield :Dot_code, :Dot_code
+    when /\A\;/   # ;
+      yield :Semicolon_code, :Semicolon_code
+    when /\A\,/   # ,
+      yield :Comma_code, :Comma_code
+    when /\A\:/   # :
+      yield :Colon_code, :Colon_code
+    when /\A\!/   # !
+      yield :Exclamation_code, :Exclamation_code
+    when /\A\(/   # (
+      yield :Left_parenthesis_code, :Left_parenthesis_code
+    when /\A\)/   # )
+      yield :Right_parenthesis_code, :Right_parenthesis_code
+    when /\A\$/   # $
+      yield :Dollar_code, :Dollar_code
+    when /\A\?\?/   # ??
+      yield :SYM_DT_UNKNOWN, :SYM_DT_UNKNOWN
+    when /\A\?/   # ?
+      yield :Question_mark_code, :Question_mark_code
+    when /\A\|/   # |
+      if @in_interval
+        @in_interval = false
+      elsif @start_block_received
+        @in_interval = true
+        @start_block_received = false
+      end
+      yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
+    when /\A\[/   # [
+      yield :Left_bracket_code, :Left_bracket_code
+    when /\A\]/   # ]
+      yield :Right_bracket_code, :Right_bracket_code
+    when /\A\../   # ..
+      yield :SYM_ELLIPSIS, :SYM_ELLIPSIS
+    when /\A\.../   # ...
+      yield :SYM_LIST_CONTINUE, :SYM_LIST_CONTINUE
+    when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
+      yield :V_GENERIC_TYPE_IDENTIFIER, $&
+    when /\A[a-z][a-zA-Z0-9_]*/
+      word = $&.downcase
+      if @@reserved[word]
+        yield @@reserved[word], @@reserved[word]
+      else
+        yield :V_ATTRIBUTE_IDENTIFIER, $&
+      end
+    when /\A\[[a-zA-Z0-9._\-]+::[a-zA-Z0-9._\-]+\]/   #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
+      yield :V_QUALIFIED_TERM_CODE_REF, $&
+    when /\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/   #ERR_V_QUALIFIED_TERM_CODE_REF
+      yield :ERR_V_QUALIFIED_TERM_CODE_REF, $&
+    when /\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/   #V_LOCAL_TERM_CODE_REF
+      yield :V_LOCAL_TERM_CODE_REF, $&
+    when /\Aa[ct][0-9.]+/   #V_LOCAL_CODE
+      yield :V_LOCAL_CODE, $&
+    when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/- -n-n-n-n-]-
+      yield :V_ISO8601_EXTENDED_DATE_TIME, $&
+    when /\A[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? /   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
+      yield :V_ISO8601_EXTENDED_TIME, $&
+    when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
+      yield :V_ISO8601_EXTENDED_DATE, $&
+    when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
+      yield :V_ISO8601_DURATION, $&
+    when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
+      yield :V_GENERIC_TYPE_IDENTIFIER, $&
+    when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
+      yield :V_INTEGER, $&
+    when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
+      yield :V_REAL, $&
+#    when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
+    when /\A"([^"]*)"/m #V_STRING
+      yield :V_STRING, $1
+# \"[^\\\n"]*\" 
+# \"[^\\\n"]*{ -- beginning of a multi-line string 
+# <IN_STR> { 
+# \\\\ -- match escaped backslash, i.e. \\ -> \ 
+# \\\" -- match escaped double quote, i.e. \” -> “ 
+# {UTF8CHAR}+ -- match UTF8 chars 
+# [^\\\n"]+ -- match any other characters 
+# \\\n[ \t\r]* -- match LF in line 
+# [^\\\n"]*\" -- match final end of string 
+# .|\n | 
+# <<EOF>> -- unclosed String -> ERR_STRING 
+# }
+# ###----------/* V_CHARACTER */ -------------------------------------------- 
+# \'{UTF8CHAR}\' -- UTF8 char 
+# \'.{1,2} | 
+# \'\\[0-9]+(\/)? -- invalid character -> ERR_CHARACTER 
+    when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
+      yield :V_URI, $&
+    when /\A\S/ #UTF8CHAR
+      yield :UTF8CHAR, $&
+    end
+    @data = $' # variable $' receives the string after the match
+  end
+  yield :EOF, nil
+  yield false, '$'
+end # of scan
+
+
+def parse(data, filename, lineno = 1, debug = false)
+  @yydebug = true
+  @parsestring = data
+  @data = data
+  @lineno = lineno
+  @filename = filename
+  @in_interval = false
+  @start_block_received = false
+  @start_block_received = false
+  yyparse self, :scan
+end
+
+def on_error( t, v, values)
+  raise Racc::ParseError, "#{@filename}:#{@lineno}: Inline syntax error on #{v.inspect}"
+end
+
+# ###----------/* CADL Blocks */ -------------------------------------------
+# \{[^{}]* -- beginning of CADL block 
+# <IN_CADL_BLOCK>\{[^{}]* -- got an open brace 
+# <IN_CADL_BLOCK>[^{}]*\} -- got a close brace 
+
+
+
+
+
+
+### Local Variables:
+### mode:ruby
+### mode:font-lock
+### comment-column:0
+### comment-start: "### "
+### comment-end:"" 
+### End:
+
+
+
+

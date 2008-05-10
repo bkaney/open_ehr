@@ -1,0 +1,343 @@
+_:AX5fXX3aXX40XX5fXX3aXA1595 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1595 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA1596 .
+_:AX5fXX3aXX40XX5fXX3aXA1569 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1569 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> .
+_:AX5fXX3aXX40XX5fXX3aXA1569 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#reverse_relationships> <http://www.w3.org/2002/07/owl#inverseOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#reverse_relationships> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#reverse_relationships> <http://www.w3.org/2000/01/rdf-schema#comment> "Relationships in which this role takes part as target"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#reverse_relationships> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#reverse_relationships> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#reverse_relationships> <http://www.w3.org/2000/01/rdf-schema#label> "target relationship"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#reverse_relationships> <http://www.w3.org/2000/01/rdf-schema#label> "relacion como destino"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> <http://www.w3.org/2000/01/rdf-schema#label> "DIRECCION"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> <http://www.w3.org/2000/01/rdf-schema#label> "ADDRESS"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "Address (AD) (data type)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Address of contact, which may be electronic or geographic"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Common_RM.owl#LOCATABLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1562 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "Address (data type)"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA1578 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#AGENT> .
+_:AX5fXX3aXX40XX5fXX3aXA1578 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1579 .
+_:AX5fXX3aXX40XX5fXX3aXA1607 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1608 .
+_:AX5fXX3aXX40XX5fXX3aXA1607 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> .
+_:AX5fXX3aXX40XX5fXX3aXA1587 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#addresses> .
+_:AX5fXX3aXX40XX5fXX3aXA1587 <http://www.w3.org/2002/07/owl#minCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1587 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY_IDENTITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1589 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY_IDENTITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#SET_T> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY_IDENTITY> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1583 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Generic description of  a role performed by an actor. The role \ncorresponds to a competency of the party. Roles are used to define \nthe responsibalities undertaken by a party for a purpose. \nRoles should have credential qualifying the performer to perform \nthe role."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1584 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://www.w3.org/2000/01/rdf-schema#label> "ROL"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "Healthcare agent in context"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://www.w3.org/2000/01/rdf-schema#label> "ROLE"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Use> "Roles correspond to concepts like \"general parctitioner\", \"nurse\" and so on"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "ROLE"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA1596 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1597 .
+_:AX5fXX3aXX40XX5fXX3aXA1596 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://protege.stanford.edu/plugins/owl/protege#abstract> "true"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1567 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://www.w3.org/2000/01/rdf-schema#label> "ENTIDAD"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "healthcare agent"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1568 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://www.w3.org/2002/07/owl#equivalentClass> _:AX5fXX3aXX40XX5fXX3aXA1564 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "Entity"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://www.w3.org/2000/01/rdf-schema#label> "PARTY"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Ancestor of all party types, including real world entities and their roles.\nA party is any entity which can participate in an activity. The meaning \nattribute inherited from LOCATABLE is used to indicate the actual type \nof party"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Common_RM.owl#LOCATABLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#roles> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#roles> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#roles> <http://www.w3.org/2000/01/rdf-schema#label> "roles"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#roles> <http://www.w3.org/2000/01/rdf-schema#label> "roles"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#roles> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#roles> <http://www.w3.org/2000/01/rdf-schema#comment> "roles played by this party"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#AGENT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#AGENT> <http://www.w3.org/2000/01/rdf-schema#label> "AGENTE"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#AGENT> <http://www.w3.org/2000/01/rdf-schema#label> "AGENT"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#AGENT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#AGENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "Healthcare software, healthcare device"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#AGENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "DEVICE"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#AGENT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Generic concepto of any kind of agent including devices, software \nsystems, but not humas or organisations."^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA1579 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> .
+_:AX5fXX3aXX40XX5fXX3aXA1579 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1580 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1588 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#SET_T> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY_RELATIONSHIP> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1588 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1588 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA1588 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> .
+_:AX5fXX3aXX40XX5fXX3aXA1608 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> .
+_:AX5fXX3aXX40XX5fXX3aXA1608 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1609 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#capabilities> <http://www.w3.org/2000/01/rdf-schema#label> "capabilities"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#capabilities> <http://www.w3.org/2000/01/rdf-schema#label> "capacidades"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#capabilities> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#capabilities> <http://www.w3.org/2000/01/rdf-schema#comment> "The capabilities of this role"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#capabilities> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#capabilities> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#addresses> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#addresses> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#addresses> <http://www.w3.org/2000/01/rdf-schema#comment> "A set of address alternatives for this purpose and time validity"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#addresses> <http://www.w3.org/2000/01/rdf-schema#label> "addresses"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#addresses> <http://www.w3.org/2000/01/rdf-schema#label> "direcciones"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#addresses> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> .
+_:AX5fXX3aXX40XX5fXX3aXA1597 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> .
+_:AX5fXX3aXX40XX5fXX3aXA1597 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:AX5fXX3aXX40XX5fXX3aXA1570 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#type> .
+_:AX5fXX3aXX40XX5fXX3aXA1570 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1570 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#relationships> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#relationships> <http://www.w3.org/2002/07/owl#inverseOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#source> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#relationships> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#relationships> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#relationships> <http://www.w3.org/2000/01/rdf-schema#label> "relacion como origen"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#relationships> <http://www.w3.org/2000/01/rdf-schema#label> "source relationship"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#relationships> <http://www.w3.org/2000/01/rdf-schema#comment> "Relationships in hich this role takes part as source"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA1609 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> .
+_:AX5fXX3aXX40XX5fXX3aXA1609 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1610 .
+_:AX5fXX3aXX40XX5fXX3aXA1589 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA1589 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> .
+_:AX5fXX3aXX40XX5fXX3aXA1589 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#languages> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_TEXT> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#languages> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#languages> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#languages> <http://www.w3.org/2000/01/rdf-schema#comment> "Languages which can be used to communicate with this actor"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#source> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#source> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#source> <http://www.w3.org/2002/07/owl#inverseOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#relationships> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#source> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#source> <http://www.w3.org/2000/01/rdf-schema#comment> "Source of relationship"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#source> <http://www.w3.org/2000/01/rdf-schema#label> "origen"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#source> <http://www.w3.org/2000/01/rdf-schema#label> "source"@en .
+_:AX5fXX3aXX40XX5fXX3aXA1598 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA1599 .
+_:AX5fXX3aXX40XX5fXX3aXA1598 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1562 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#details> .
+_:AX5fXX3aXX40XX5fXX3aXA1562 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1562 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1571 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#details> .
+_:AX5fXX3aXX40XX5fXX3aXA1571 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1571 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#credentials> <http://www.w3.org/2000/01/rdf-schema#label> "credentials"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#credentials> <http://www.w3.org/2000/01/rdf-schema#label> "credenciales"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#credentials> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#credentials> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#credentials> <http://www.w3.org/2000/01/rdf-schema#comment> "the qualifications of the performer of the role for this capability. This might include professional qualifications and official identifications such as provider numbers etc..."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#credentials> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Common_RM.owl#LOCATABLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#label> "RELACION ENTRE ENTIDADES"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1569 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1570 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1572 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#label> "PARTY RELATIONSHIP"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1571 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "RELATIONSHIP_LINK"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "generic description of a relationship between parties"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA1600 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> .
+_:AX5fXX3aXX40XX5fXX3aXA1600 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1601 .
+_:AX5fXX3aXX40XX5fXX3aXA1580 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:AX5fXX3aXX40XX5fXX3aXA1580 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#GROUP> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#identities> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#identities> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#identities> <http://www.w3.org/2000/01/rdf-schema#label> "identities"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#identities> <http://www.w3.org/2000/01/rdf-schema#label> "identidades"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#identities> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#identities> <http://www.w3.org/2000/01/rdf-schema#comment> "Identities used by the party to identify itself, such as legal name, stage names, aliases, nicknames and so on"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA1599 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+_:AX5fXX3aXX40XX5fXX3aXA1599 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1600 .
+_:AX5fXX3aXX40XX5fXX3aXA1563 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA1563 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+_:AX5fXX3aXX40XX5fXX3aXA1563 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1572 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> .
+_:AX5fXX3aXX40XX5fXX3aXA1572 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1572 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1601 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> .
+_:AX5fXX3aXX40XX5fXX3aXA1601 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1602 .
+_:AX5fXX3aXX40XX5fXX3aXA1581 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#credentials> .
+_:AX5fXX3aXX40XX5fXX3aXA1581 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1581 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1590 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> .
+_:AX5fXX3aXX40XX5fXX3aXA1590 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1590 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA1610 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> .
+_:AX5fXX3aXX40XX5fXX3aXA1610 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> <http://www.w3.org/2000/01/rdf-schema#label> "CAPACIDADES"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> <http://www.w3.org/2000/01/rdf-schema#label> "CAPABILITY"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Capability of a role, such as \"ehr modifier\", \"health care provider\". \nCapability should be backed up by credentials."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1582 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Common_RM.owl#LOCATABLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1581 .
+_:AX5fXX3aXX40XX5fXX3aXA1564 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1564 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA1565 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> <http://www.w3.org/2000/01/rdf-schema#label> "time validity"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> <http://www.w3.org/2000/01/rdf-schema#label> "intervalo de validez"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_INTERVAL_DV_DATE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> <http://www.w3.org/2000/01/rdf-schema#comment> "Valid time interval fot this relationship"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> <http://www.w3.org/2000/01/rdf-schema#domain> _:AX5fXX3aXX40XX5fXX3aXA1606 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#LIST_CAPABILITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1573 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#LIST_CAPABILITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#LIST_T> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#LIST_CAPABILITY> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1573 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1573 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA1573 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CAPABILITY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1563 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_PARTY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#SET_T> .
+_:AX5fXX3aXX40XX5fXX3aXA1602 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:AX5fXX3aXX40XX5fXX3aXA1602 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ADDRESS> .
+_:AX5fXX3aXX40XX5fXX3aXA1582 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1582 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1582 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_ROLE> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_ROLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#SET_T> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_ROLE> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1574 .
+_:AX5fXX3aXX40XX5fXX3aXA1591 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1591 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#as_string> .
+_:AX5fXX3aXX40XX5fXX3aXA1591 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1565 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> .
+_:AX5fXX3aXX40XX5fXX3aXA1565 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1566 .
+_:AX5fXX3aXX40XX5fXX3aXA1574 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA1574 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1574 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#perfomer> <http://www.w3.org/2000/01/rdf-schema#comment> "Actor playing the role"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#perfomer> <http://www.w3.org/2000/01/rdf-schema#label> "interprete"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#perfomer> <http://www.w3.org/2000/01/rdf-schema#label> "performer"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#perfomer> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#perfomer> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#perfomer> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl> <http://www.w3.org/2000/01/rdf-schema#comment> "Ontology based in the openEHR Demographic Reference Model\nRevision:1.4.1\nWritten in owl by Isabel Rom\u00E1n"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl> <http://www.w3.org/2002/07/owl#imports> <http://protege.stanford.edu/plugins/owl/protege> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl> <http://www.w3.org/2002/07/owl#imports> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#purpose> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#purpose> <http://www.w3.org/2000/01/rdf-schema#domain> _:AX5fXX3aXX40XX5fXX3aXA1603 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#purpose> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_TEXT> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#purpose> <http://www.w3.org/2000/01/rdf-schema#comment> "Purpose of identity, e.g. \"legal\", \"stagename\", \"nickname\", \"tibal name\"... taken from value of inherited name attribute."^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA1603 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1603 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA1604 .
+_:AX5fXX3aXX40XX5fXX3aXA1583 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1583 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#perfomer> .
+_:AX5fXX3aXX40XX5fXX3aXA1583 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_CONTACT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1594 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_CONTACT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#SET_T> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#SET_CONTACT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#details> <http://www.w3.org/2000/01/rdf-schema#domain> _:AX5fXX3aXX40XX5fXX3aXA1598 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#details> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#details> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Structures_RM.owl#DATA_STRUCTURE> .
+_:AX5fXX3aXX40XX5fXX3aXA1592 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#details> .
+_:AX5fXX3aXX40XX5fXX3aXA1592 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1592 <http://www.w3.org/2002/07/owl#cardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1566 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:AX5fXX3aXX40XX5fXX3aXA1566 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ROLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#GROUP> <http://www.w3.org/2000/01/rdf-schema#label> "GROUP"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#GROUP> <http://www.w3.org/2000/01/rdf-schema#label> "GRUPO"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#GROUP> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#GROUP> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "A group is a real world group of parties which is created by another \nparty, usually an organisation, for some specific purpose. A typical \nclinical example is that of the specialist care tea, e.g. \"cardilogy team\". \nThe members of the group usually work together."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#GROUP> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1575 <http://www.w3.org/2002/07/owl#minCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1575 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1575 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#languages> .
+_:AX5fXX3aXX40XX5fXX3aXA1604 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1605 .
+_:AX5fXX3aXX40XX5fXX3aXA1604 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> .
+_:AX5fXX3aXX40XX5fXX3aXA1584 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> .
+_:AX5fXX3aXX40XX5fXX3aXA1584 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+_:AX5fXX3aXX40XX5fXX3aXA1584 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://www.w3.org/2000/01/rdf-schema#label> "ACTOR"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://www.w3.org/2000/01/rdf-schema#label> "ACTOR"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "Entity"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://www.w3.org/2002/07/owl#equivalentClass> _:AX5fXX3aXX40XX5fXX3aXA1576 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://protege.stanford.edu/plugins/owl/protege#abstract> "true"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Ancestor of all real-world types, including people and organisations. \nAn actor is any real-world entity capable of taking on a role"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "Healthcare party"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1575 .
+_:AX5fXX3aXX40XX5fXX3aXA1593 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#as_string> .
+_:AX5fXX3aXX40XX5fXX3aXA1593 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#STRING> .
+_:AX5fXX3aXX40XX5fXX3aXA1593 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> <http://www.w3.org/2000/01/rdf-schema#label> "PERSON"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> <http://www.w3.org/2000/01/rdf-schema#label> "PERSONA"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_PERSON"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "healthcare person"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Generic description of persons. Provides a dedicated type to which\nPerson archetypes can be targeted"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "Person"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> .
+_:AX5fXX3aXX40XX5fXX3aXA1567 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1567 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#details> .
+_:AX5fXX3aXX40XX5fXX3aXA1567 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#LIST_ADDRESS> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#LIST_ADDRESS> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1590 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#LIST_ADDRESS> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#LIST_T> .
+_:AX5fXX3aXX40XX5fXX3aXA1576 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA1577 .
+_:AX5fXX3aXX40XX5fXX3aXA1576 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_RELATIONSHIP> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> <http://www.w3.org/2000/01/rdf-schema#comment> "Target of relationship"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> <http://www.w3.org/2000/01/rdf-schema#label> "destino"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> <http://www.w3.org/2000/01/rdf-schema#label> "target"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#target> <http://www.w3.org/2002/07/owl#inverseOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#reverse_relationships> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#type> <http://www.w3.org/2000/01/rdf-schema#domain> _:AX5fXX3aXX40XX5fXX3aXA1595 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#type> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Data_Types_RM.owl#DV_TEXT> .
+_:AX5fXX3aXX40XX5fXX3aXA1605 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> .
+_:AX5fXX3aXX40XX5fXX3aXA1605 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:AX5fXX3aXX40XX5fXX3aXA1585 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1585 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#purpose> .
+_:AX5fXX3aXX40XX5fXX3aXA1585 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#as_string> <http://www.w3.org/2000/01/rdf-schema#comment> "Identity in the form of a single string"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#as_string> <http://www.w3.org/2000/01/rdf-schema#label> "como cadena"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#as_string> <http://www.w3.org/2000/01/rdf-schema#label> "as string"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#as_string> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#as_string> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> .
+_:AX5fXX3aXX40XX5fXX3aXA1594 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#item> .
+_:AX5fXX3aXX40XX5fXX3aXA1594 <http://www.w3.org/2002/07/owl#allValuesFrom> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> .
+_:AX5fXX3aXX40XX5fXX3aXA1594 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Description of a means of contact of a party. \nActual structure is archetyped."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1587 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1586 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1585 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Common_RM.owl#LOCATABLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1568 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1568 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#identities> .
+_:AX5fXX3aXX40XX5fXX3aXA1568 <http://www.w3.org/2002/07/owl#minCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#contacts> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#contacts> <http://www.w3.org/2000/01/rdf-schema#range> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#CONTACT> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#contacts> <http://www.w3.org/2000/01/rdf-schema#domain> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#contacts> <http://www.w3.org/2000/01/rdf-schema#label> "contacts"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#contacts> <http://www.w3.org/2000/01/rdf-schema#label> "contactos"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#contacts> <http://www.w3.org/2000/01/rdf-schema#comment> "Contacts for this party"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:AX5fXX3aXX40XX5fXX3aXA1577 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:AX5fXX3aXX40XX5fXX3aXA1578 .
+_:AX5fXX3aXX40XX5fXX3aXA1577 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PERSON> .
+_:AX5fXX3aXX40XX5fXX3aXA1606 <http://www.w3.org/2002/07/owl#unionOf> _:AX5fXX3aXX40XX5fXX3aXA1607 .
+_:AX5fXX3aXX40XX5fXX3aXA1606 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+_:AX5fXX3aXX40XX5fXX3aXA1586 <http://www.w3.org/2002/07/owl#onProperty> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#time_validity> .
+_:AX5fXX3aXX40XX5fXX3aXA1586 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:AX5fXX3aXX40XX5fXX3aXA1586 <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#int> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "Person Name (PN) (data type)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1593 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://www.w3.org/2000/01/rdf-schema#label> "IDENTIDAD DE LA ENTIDAD"@es .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1592 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Common_RM.owl#LOCATABLE> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:AX5fXX3aXX40XX5fXX3aXA1591 .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "An identity \"owned\" by a PARTY, such as a person name or company \nname, and which is used by the party to identify itself. Actual structure \nis archetyped."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "Person Name (data type)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#PARTY_IDENTITY> <http://www.w3.org/2000/01/rdf-schema#label> "PARTY IDENTITY"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#HL7> "ORGANIZATION"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#GEHR> "G1_HCF"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#CEN> "healthcare organisation"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> <http://trajano.us.es/~isabel/EHR/Support_RM.owl#Purpose> "Generic description of organisations. \nAn organisation is a legally constituted body whose existence \n(in general) outlives the existence of parties considered to be part of it."^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ACTOR> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> <http://www.w3.org/2000/01/rdf-schema#label> "ORGANISATION"@en .
+<http://trajano.us.es/~isabel/EHR/Demographic_RM.owl#ORGANISATION> <http://www.w3.org/2000/01/rdf-schema#label> "ORGANISMO"@es .

@@ -1,0 +1,116 @@
+require 'rubygems'
+Gem::manage_gems
+require 'rake'
+require 'rake/testtask'
+require 'rake/rdoctask'
+require 'rake/clean'
+require 'rake/gempackagetask'
+require 'yaml'
+
+$DEBUG = false
+
+RACC_SRC = FileList["lib/*.y"]
+RACC_PARSER = FileList['lib/parser.rb']
+
+task :default => [:racc]
+
+desc "Generate parser by racc."
+task :racc => RACC_PARSER
+rule '.rb' => '.y' do |target|
+  if $DEBUG == true
+    sh "racc -v -g #{target.source} -o #{target.name}"
+  else
+    sh "racc #{target.source} -o #{target.name}"
+  end
+end
+
+
+RB_SRC = FileList["lib/*.rb"]
+TAGS = FileList['TAGS']
+desc "Generate TAGS by rtags."
+task :tags => TAGS
+rule 'TAGS' => RB_SRC do |target|
+  sh "rtags #{target.prerequisites.join(' ')}"
+end
+
+
+desc "Whole Unit tests"
+task 'test' => ['test:shell', 'test:validator', 'test:parser', 'test:scanner']
+
+
+Rake::TestTask.new('test:shell') do |t|
+  t.libs = ["lib"]
+  t.pattern = ['tests/shell_test.rb']
+  t.warning = true
+  t.verbose = true
+end
+
+Rake::TestTask.new('test:validator') do |t|
+  t.libs = ["lib"]
+  t.pattern = ['tests/validator_test.rb']
+  t.warning = true
+  t.verbose = true
+end
+
+Rake::TestTask.new('test:parser') do |t|
+  t.libs = ["lib"]
+  t.pattern = ['tests/parser_test.rb']
+  t.warning = true
+  t.verbose = true
+end
+
+Rake::TestTask.new('test:scanner') do |t|
+  t.libs = ["lib"]
+  t.pattern = ['tests/scanner_test.rb']
+  t.warning = true
+  t.verbose = true
+end
+
+
+Rake::RDocTask.new('rdoc') do |t|
+  t.rdoc_dir = 'rdoc'
+  t.rdoc_files.include('README', 'lib/*.rb', 'bin/*.rb')
+  t.main = 'README'
+  t.title = "ADL parser API documentation"
+end
+
+gem_spec = Gem::Specification.new do |s|
+  s.name = 'adl_parser'
+  s.author = 'Akimichi Tatsukawa'
+  s.version = '0.0.2'
+  s.summary = 'ADL parser'
+  s.email = 'akimichi_tatsukawa@nifty.com'
+  s.test_files = FileList['tests/*_test.rb', '*.adl']
+  candidates = Dir.glob("{bin,docs,lib,tests,ext}/**/*")
+  s.files = candidates.delete_if do |item|
+    item.include?(".svn") || item.include?("rdoc")
+  end
+  s.files = FileList['README', 'COPYING', 'Rakefile']
+  s.require_path = "lib"
+  s.has_rdoc = true
+  s.extra_rdoc_files = ["README"]
+  s.add_dependency("yaparc", ">= 0.2.2")
+  s.add_dependency("openehr_models", ">= 0.0.1")
+end
+
+Rake::GemPackageTask.new(gem_spec) do |pkg|
+  pkg.need_zip = false
+  pkg.need_tar = false
+end
+
+
+CLOBBER.include('rdoc')
+CLEAN.include('lib/*.output', 'log/*.log')
+
+
+
+
+### Local Variables:
+### mode:ruby
+### mode:font-lock
+### comment-column:0
+### comment-start: "### "
+### comment-end:"" 
+### End:
+
+
