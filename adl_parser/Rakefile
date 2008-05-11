@@ -9,8 +9,8 @@ require 'yaml'
 
 $DEBUG = false
 
-RACC_SRC = FileList["lib/*.y"]
-RACC_PARSER = FileList['lib/parser.rb']
+RACC_SRC = FileList["*.y"]
+RACC_PARSER = FileList['parser.rb']
 
 task :default => [:racc]
 
@@ -25,7 +25,7 @@ rule '.rb' => '.y' do |target|
 end
 
 
-RB_SRC = FileList["lib/*.rb"]
+RB_SRC = FileList["*.rb"]
 TAGS = FileList['TAGS']
 desc "Generate TAGS by rtags."
 task :tags => TAGS
@@ -39,7 +39,7 @@ task 'test' => ['test:shell', 'test:validator', 'test:parser', 'test:scanner']
 
 
 Rake::TestTask.new('test:shell') do |t|
-  t.libs = ["lib"]
+#  t.libs = ["lib"]
   t.pattern = ['tests/shell_test.rb']
   t.warning = true
   t.verbose = true

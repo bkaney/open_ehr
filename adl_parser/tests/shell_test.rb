@@ -1,4 +1,4 @@
-require 'lib/shell.rb'
+require 'shell.rb'
 require 'test/unit'
 
 class ShellADLValidatorTest < Test::Unit::TestCase

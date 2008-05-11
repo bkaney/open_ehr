@@ -15,6 +15,63 @@ module OpenEHR
             @upper = upper
           end
         end
+
+        class List
+          attr_reader :content
+
+          def initialize(arg)
+            @content = arg
+          end
+
+          def first
+            @content.first
+          end
+
+          def last
+            @content.last
+          end
+        end
+
+        class TIME_DEFINITIONS
+        end
+
+
+        class ISO8601_DATE < TIME_DEFINITIONS
+        end
+
+        class ISO8601_TIME < TIME_DEFINITIONS
+        end
+
+        class ISO8601_DURATION < TIME_DEFINITIONS
+        end
+
+        class ISO8601_DATE_TIME < TIME_DEFINITIONS
+        end
+
+        class ISO8601_TIMEZONE < TIME_DEFINITIONS
+        end
+
+        class String
+          attr_reader :content
+          def initialize(arg)
+            @content = arg
+          end
+
+          def as_integer
+            is_integer if is_integer
+          end
+
+          def is_empty
+          end
+
+          def is_integer
+            begin
+              Integer(@content)
+            rescue
+              false
+            end
+          end
+        end
       end
     end
   end
