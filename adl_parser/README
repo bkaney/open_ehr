@@ -5,7 +5,7 @@ A ruby library for ADL parser which includes cADL and dADL parser.
 = Requirements
 
 * Ruby 1.8 or later.
-* Yaparc Library 0.2.0 or later.
+* Yaparc Library 0.2.2 or later.
 * Tested in Ruby 1.8.6.
 * if you use Ruby 1.6, you should prepare racc runtime environment and some adjustment.
 

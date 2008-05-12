@@ -39,7 +39,7 @@ task 'test' => ['test:shell', 'test:validator', 'test:parser', 'test:scanner']
 
 
 Rake::TestTask.new('test:shell') do |t|
-#  t.libs = ["lib"]
+  t.libs = ["."]
   t.pattern = ['tests/shell_test.rb']
   t.warning = true
   t.verbose = true

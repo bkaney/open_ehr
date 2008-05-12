@@ -1,4 +1,4 @@
-require 'lib/parser.rb'
+require 'adl_parser.rb'
 require 'test/unit'
 
 class ADLParserTest < Test::Unit::TestCase

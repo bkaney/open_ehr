@@ -1,4 +1,4 @@
-require 'lib/scanner.rb'
+require 'adl_parser.rb'
 require 'test/unit'
 
 class YaparcParserTest < Test::Unit::TestCase

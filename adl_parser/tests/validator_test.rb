@@ -1,4 +1,4 @@
-require 'lib/validator.rb'
+require 'adl_parser.rb'
 require 'test/unit'
 
 class ADLValidatorTest < Test::Unit::TestCase
