@@ -1167,13 +1167,14 @@ duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 
 ---- header
 
+
 $:.unshift File.join(File.dirname(__FILE__))
 require 'logger'
-require 'lib/util.rb'
-require 'lib/scanner.rb'
+#require 'lib/util.rb'
+#require 'lib/scanner.rb'
 require 'rubygems'
 require 'am.rb'
-$DEBUG = true
+$DEBUG = false
 
 
 
@@ -1185,7 +1186,14 @@ def assert_at(file,line, message = "")
   end
 end
 
-@@log = Logger.new('log/parser.log','daily')
+if $DEBUG
+  @@log = Logger.new('log/parser.log','daily')
+  @@log.level = Logger::INFO
+else
+  @@log = Logger.new(STDOUT)
+  @@log.level = Logger::WARN
+end
+
 @@dadl_scanner = OpenEHR::ADL::Scanner::DADL::RootScanner.new
 @@cadl_scanner = OpenEHR::ADL::Scanner::CADL::RootScanner.new
 

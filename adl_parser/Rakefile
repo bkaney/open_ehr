@@ -9,8 +9,8 @@ require 'yaml'
 
 $DEBUG = false
 
-RACC_SRC = FileList["*.y"]
-RACC_PARSER = FileList['parser.rb']
+RACC_SRC = FileList["lib/parser.y"]
+RACC_PARSER = FileList['lib/parser.rb']
 
 task :default => [:racc]
 
@@ -39,7 +39,7 @@ task 'test' => ['test:shell', 'test:validator', 'test:parser', 'test:scanner']
 
 
 Rake::TestTask.new('test:shell') do |t|
-  t.libs = ["."]
+  t.libs = ["lib"]
   t.pattern = ['tests/shell_test.rb']
   t.warning = true
   t.verbose = true
@@ -69,7 +69,7 @@ end
 
 Rake::RDocTask.new('rdoc') do |t|
   t.rdoc_dir = 'rdoc'
-  t.rdoc_files.include('README', 'lib/*.rb', 'bin/*.rb')
+  t.rdoc_files.include('README', 'lib/*.rb')
   t.main = 'README'
   t.title = "ADL parser API documentation"
 end
@@ -77,16 +77,15 @@ end
 gem_spec = Gem::Specification.new do |s|
   s.name = 'adl_parser'
   s.author = 'Akimichi Tatsukawa'
-  s.version = '0.0.2'
+  s.version = '0.0.3'
   s.summary = 'ADL parser'
   s.email = 'akimichi_tatsukawa@nifty.com'
   s.test_files = FileList['tests/*_test.rb', '*.adl']
-  candidates = Dir.glob("{bin,docs,lib,tests,ext}/**/*")
+  candidates = Dir.glob("{docs,lib,tests}/**/*") + FileList['README', 'Rakefile']
   s.files = candidates.delete_if do |item|
     item.include?(".svn") || item.include?("rdoc")
   end
-  s.files = FileList['README', 'COPYING', 'Rakefile']
-  s.require_path = "lib"
+#  s.require_path = "lib"
   s.has_rdoc = true
   s.extra_rdoc_files = ["README"]
   s.add_dependency("yaparc", ">= 0.2.2")
