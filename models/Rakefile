@@ -36,7 +36,7 @@ end
 gem_spec = Gem::Specification.new do |s|
   s.name = 'openehr_models'
   s.author = 'Shinji KOBAYASHI, Akimichi TATSUKAWA'
-  s.version = '0.0.1'
+  s.version = '0.0.3'
   s.summary = 'OpenEHR models'
   s.email = 'openehr-jp@openehr.jp'
   s.test_files = FileList['tests/test_*.rb', '*.adl']
@@ -69,5 +69,3 @@ end
 ### comment-start: "### "
 ### comment-end:"" 
 ### End:
-
-

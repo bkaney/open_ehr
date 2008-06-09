@@ -1,4 +1,3 @@
-$:.unshift File.join(File.dirname(__FILE__))
 #! /usr/bin/env ruby
 # component: openEHR Ruby reference implementation
 # description: This file includes Archetype 
@@ -11,6 +10,7 @@ $:.unshift File.join(File.dirname(__FILE__))
 # license: openEHR open source license
 #
 
+$:.unshift File.join(File.dirname(__FILE__))
 require 'rm/common/resource.rb'
 #require 'rm/support/terminology/openehr_code_set_identifier.rb'
 module OpenEHR
