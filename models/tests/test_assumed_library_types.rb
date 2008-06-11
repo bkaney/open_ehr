@@ -4,9 +4,11 @@ require 'assumed_library_types.rb'
 class Assumed_Library_Test < Test::Unit::TestCase
   def setup
     @interval = OpenEHR::Assumed_Library_Types::Interval.new(1,2)
+    @time_definition = OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.new
   end
   def test_initialize
     assert_instance_of OpenEHR::Assumed_Library_Types::Interval, @interval
+    assert_instance_of OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS, @time_definition
   end
   def test_limits_comparable
     assert @interval.lower < @interval.upper
@@ -37,5 +39,18 @@ class Assumed_Library_Test < Test::Unit::TestCase
     @interval.set_upper(nil)
     assert @interval.upper_unbounded
     assert !@interval.upper_included
+  end
+  def test_definitions
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::DAYS_IN_LEAP_YEAR, 366
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::DAYS_IN_WEEK, 7
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::DAYS_IN_YEAR, 365
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::HOURS_IN_DAY, 24
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::MAX_DAYS_IN_MONTH, 31
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::MAX_DAYS_IN_YEAR, 366
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::MINUTES_IN_HOUR, 60
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::MONTH_IN_YEAR, 12
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::NOMINAL_DAYS_IN_MONTH, 30.42
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::NOMINAL_DAYS_IN_YEAR, 365.24
+    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::SECONDS_IN_MINUTE, 60
   end
 end

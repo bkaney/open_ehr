@@ -1,6 +1,9 @@
 module OpenEHR
   module Assumed_Library_Types
-    class Interval
+    class Any < Object
+      
+    end # of Any
+    class Interval < Any
       attr_reader :lower, :lower_included, :lower_unbounded
       attr_reader :upper, :upper_included, :upper_unbounded
       def initialize(lower, upper, 
@@ -57,7 +60,25 @@ module OpenEHR
         end
         @lower = lower
         @upper = upper
-      end
-    end
-  end
-end
+      end      
+    end # end of Interval
+
+    class TIME_DEFINITIONS < Any
+      DAYS_IN_LEAP_YEAR = 366
+      DAYS_IN_WEEK = 7
+      DAYS_IN_YEAR = 365
+      HOURS_IN_DAY = 24
+      MAX_DAYS_IN_MONTH = 31
+      MAX_DAYS_IN_YEAR = 366
+      MINUTES_IN_HOUR = 60
+      MONTH_IN_YEAR = 12
+      NOMINAL_DAYS_IN_MONTH = 30.42
+      NOMINAL_DAYS_IN_YEAR = 365.24
+      SECONDS_IN_MINUTE = 60
+    end # end of TIME_DEFINITIONS
+
+    class ISO_8601_DATE < TIME_DEFINITIONS
+      
+    end # end of ISO_8601_DATE
+  end # end of Assumed_Types
+end # end of OpenEHR
