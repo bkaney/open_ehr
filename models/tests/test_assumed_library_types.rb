@@ -7,12 +7,14 @@ class Assumed_Library_Test < Test::Unit::TestCase
     @time_definition = OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.new
     @iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new
     @iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new
+    @iso8601_timezone = OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE.new
   end
   def test_initialize
     assert_instance_of OpenEHR::Assumed_Library_Types::Interval, @interval
     assert_instance_of OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS, @time_definition
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE, @iso8601_date
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIME, @iso8601_time
+    assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE, @iso8601_timezone
   end
   def test_limits_comparable
     assert @interval.lower < @interval.upper
@@ -184,6 +186,8 @@ class Assumed_Library_Test < Test::Unit::TestCase
   end
 
   def test_iso8601_time
-    assert @iso8601_time.
+
+  end
+  def test_iso8601_timezone
   end
 end

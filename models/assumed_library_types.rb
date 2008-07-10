@@ -155,6 +155,20 @@ module OpenEHR
         end
         true
       end
-    end # end of ISO_8601_DATE
+    end # end of ISO8601_DATE
+
+    class ISO8601_TIME < TIME_DEFINITIONS
+
+    end # end of ISO8601_TIME
+
+    class ISO8601_TIMEZONE
+      attr_accessor :sign, :hour, :minute
+      def is_gmt?
+        hour == 0
+      end
+      def as_string
+        sprintf("Z%s%2d%2d", @sign, @hour, @minute)
+      end
+    end # end of ISO8601_TIMEZONE
   end # end of Assumed_Types
 end # end of OpenEHR
