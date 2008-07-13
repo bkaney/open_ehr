@@ -189,5 +189,16 @@ class Assumed_Library_Test < Test::Unit::TestCase
 
   end
   def test_iso8601_timezone
+    @iso8601_timezone.sign = "+1"
+    @iso8601_timezone.hour = 0
+    @iso8601_timezone.minute = 0
+    assert @iso8601_timezone.is_gmt?
+    assert_equal "Z+0000", @iso8601_timezone.as_string
+    @iso8601_timezone.hour = 9
+    assert_equal "Z+0900", @iso8601_timezone.as_string
+    @iso8601_timezone.sign = "-1"
+    @iso8601_timezone.hour = 4
+    @iso8601_timezone.minute = 30
+    assert_equal "Z-0430", @iso8601_timezone.as_string
   end
 end

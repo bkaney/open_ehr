@@ -155,6 +155,7 @@ module OpenEHR
         end
         true
       end
+
     end # end of ISO8601_DATE
 
     class ISO8601_TIME < TIME_DEFINITIONS
@@ -164,10 +165,15 @@ module OpenEHR
     class ISO8601_TIMEZONE
       attr_accessor :sign, :hour, :minute
       def is_gmt?
-        hour == 0
+        @sign == "+1" and @hour == 0 and @minute == 0
       end
       def as_string
-        sprintf("Z%s%2d%2d", @sign, @hour, @minute)
+        if @sign == "+1"
+          s = "+"
+        elsif @sign == "-1"
+          s = "-"
+        end
+        sprintf("Z%s%02d%02d", s, @hour, @minute)
       end
     end # end of ISO8601_TIMEZONE
   end # end of Assumed_Types
