@@ -1,4 +1,5 @@
 require 'date'
+require 'time'
 
 module OpenEHR
   module Assumed_Library_Types
@@ -89,14 +90,14 @@ module OpenEHR
       def self.valid_hour?(h,m,s)
         valid_minute?(m) and valid_second?(s) and ((h >= 0 and h < HOURS_IN_DAY) or (h == HOURS_IN_DAY and m == 0 and s == 0))
       end
-      def self.valid_minute?(m)
-        m >= 0 and m < MINUTES_IN_HOUR
+      def self.valid_minute?(mi)
+        mi >= 0 and mi < MINUTES_IN_HOUR
       end
       def self.valid_second?(s)
         s >= 0 and s < SECONDS_IN_MINUTE
       end
-      def self.valid_month?(m)
-        m >= 1 and m <= MONTH_IN_YEAR
+      def self.valid_month?(mo)
+        mo >= 1 and mo <= MONTH_IN_YEAR
       end
     end # end of TIME_DEFINITIONS
 
@@ -147,9 +148,9 @@ module OpenEHR
       def is_partial?
         month_unknown? or day_unknown?
       end
-      def valid_iso8601_date(string)
+      def self.valid_iso8601_date?(string)
         begin
-          date = Date.parse(string)
+          Date.parse(string)
         rescue
           return false
         end
@@ -159,7 +160,66 @@ module OpenEHR
     end # end of ISO8601_DATE
 
     class ISO8601_TIME < TIME_DEFINITIONS
-
+      attr_reader :hh, :mm, :ss, :msec, :tz
+      def initialize(hh = nil, mm = nil, ss = nil, msec = nil, tz = nil)
+        
+      end
+      def as_string
+        s = @hh
+        if !@mm.nil?
+          s += ":" + @mm
+          if !@ss.nil?
+            s += ":" + @ss
+            if !@msec.nil?
+              s += "," + @msec
+              if !@tz.nil?
+                s += @tz
+              end
+            end
+          end
+        end
+        s
+      end
+      def self.valid_iso8601_time?(s)
+        if /(\d{2}):?(\d{2})?(:?)(\d{2})?((\.|,)(\d+))?(Z|([+-](\d{2}):?(\d{2})))?/ =~ s
+# ISO 8601 regular expression by H. Yuki
+#  http://digit.que.ne.jp/work/wiki.cgi?Perl%E3%83%A1%E3%83%A2%2FW3C%E5%BD%A2%E5%BC%8F%E3%81%AE%E6%97%A5%E6%99%82%E3%81%AE%E8%A7%A3%E6%9E%90
+# (\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d))?)?(Z|([+-]\d{2}):(\d{2}))?)?)?)?
+          hh = $1; mm = $2; ss = $4; msec = $7; tz = $8
+          if hh.to_i == HOURS_IN_DAY and (mm.nil? or mm.to_i == "00") and (ss.nil? or ss.to_i == "00")
+            return true
+          end
+          if hh.nil? or (hh.to_i < 0 or hh.to_i >= HOURS_IN_DAY)
+            return false
+          end
+          if !mm.nil? 
+            if !self.valid_minute?(mm.to_i)
+              return false
+            end
+          end
+          if !ss.nil? 
+            if !self.valid_second?(ss.to_i)
+              return false
+            end
+          end
+          if !tz.nil? and tz != "Z"
+            if /[+-](\d{2}):?(\d{2})/ =~ tz
+              h = $1; m = $2
+              if h.to_i < 0 or h.to_i >= HOURS_IN_DAY
+                return false
+              end
+              if m.to_i < 0 or m.to_i >= MINUTES_IN_HOUR
+                return false
+              end
+            else
+              return false
+            end
+          end
+          return true
+        else
+          return false
+        end
+      end
     end # end of ISO8601_TIME
 
     class ISO8601_TIMEZONE

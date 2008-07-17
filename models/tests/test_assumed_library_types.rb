@@ -181,12 +181,13 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert !@iso8601_date.day_unknown?
     assert !@iso8601_date.is_partial?
     assert_equal "2008-06-14", @iso8601_date.as_string
-    assert @iso8601_date.valid_iso8601_date("2006-06-14")
-    assert !@iso8601_date.valid_iso8601_date("ABCDEFG")
+    assert OpenEHR::Assumed_Library_Types::ISO8601_DATE.valid_iso8601_date?("2006-06-14")
+    assert !OpenEHR::Assumed_Library_Types::ISO8601_DATE.valid_iso8601_date?("ABCDEFG")
   end
 
   def test_iso8601_time
-
+    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("01:01:01")
+    assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("ABCDEFG")
   end
   def test_iso8601_timezone
     @iso8601_timezone.sign = "+1"
@@ -196,6 +197,7 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_equal "Z+0000", @iso8601_timezone.as_string
     @iso8601_timezone.hour = 9
     assert_equal "Z+0900", @iso8601_timezone.as_string
+    assert !@iso8601_timezone.is_gmt?
     @iso8601_timezone.sign = "-1"
     @iso8601_timezone.hour = 4
     @iso8601_timezone.minute = 30
