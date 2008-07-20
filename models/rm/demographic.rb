@@ -4,6 +4,23 @@
 module OpenEHR
   module RM
     module Demogrphic
+      class Address < OpenEHR::RM::Common::Archetyped::Locatable
+        attr_reader :details
+
+        def as_string
+
+        end
+
+        def type
+
+        end
+      end
+
+      class Capability < OpenEHR::RM::Common::Archetyped::Locatable
+        attr_reader :credentials, :time_validity
+
+      end
+
       class Party < OpenEHR::RM::Common::Archetyped::Locatable
         attr_reader :details, :reverse_relationships, :uid
         attr_reader :idetities, :contacts, :relationships
@@ -56,6 +73,24 @@ module OpenEHR
           end          
         end
       end
+
+      class Party_Identity < OpenEHR::RM::Common::Archetyped::Locatable
+        attr_reader :details
+
+      end
+
+      class Party_Relationship < OpenEHR::RM::Common::Archetyped::Locatable
+
+      end
+
+      class Versioned_Party < OpenEHR::RM::Common::Archetyped::Locatable
+
+      end
+
+      class Role < Party
+
+      end
+
       class Actor < Party
         LEAGAL_IDENTITY = 'leagal identity'
         attr_reader :languages, :rules
