@@ -1,3 +1,4 @@
+# This module is related to the ticket #36
 require 'date'
 require 'time'
 
@@ -87,8 +88,14 @@ module OpenEHR
         Date.valid_date?(y,m,d) and valid_year? y
       end
 
-      def self.valid_hour?(h,m,s)
-        valid_minute?(m) and valid_second?(s) and ((h >= 0 and h < HOURS_IN_DAY) or (h == HOURS_IN_DAY and m == 0 and s == 0))
+      def self.valid_hour?(h,m = nil, s = nil)
+        if !m.nil? and !valid_minute?(m)
+          return false
+        end
+        if !s.nil? and (!m.nil? and !valid_second?(s))
+          return false
+        end
+        (h >= 0 and h < HOURS_IN_DAY) or (h == HOURS_IN_DAY and m == 0 and s == 0)
       end
       def self.valid_minute?(mi)
         mi >= 0 and mi < MINUTES_IN_HOUR
@@ -160,20 +167,63 @@ module OpenEHR
     end # end of ISO8601_DATE
 
     class ISO8601_TIME < TIME_DEFINITIONS
-      attr_reader :hh, :mm, :ss, :msec, :tz
-      def initialize(hh = nil, mm = nil, ss = nil, msec = nil, tz = nil)
-        
+      attr_reader :hour, :minute, :second, :fractional_second, :timezone
+      def initialize(hh, mm = nil, ss = nil, msec = nil, tz = nil)
+        raise ArgumentError, "Not valid hour format" if !ISO8601_TIME.valid_hour?(hh,mm,ss)
+        @hour = hh; @minute = mm; @second = ss
+        @fractional_second = msec; @timezone = tz
+      end
+      def hour=(hour)
+        raise ArgumentError, "hour is not valid" if !ISO8601_TIME.valid_hour?(hour, @minute, @second)
+        @hour = hour
+      end
+      def minute_unknown?
+        @minute.nil?
+      end
+      def minute=(minute)
+        raise ArgumentError, "minute is not valid" if !minute.nil? and !ISO8601_TIME.valid_minute?(minute)
+        @minute = minute
+      end
+      def second_unknown?
+        @second.nil?
+      end
+      def second=(second)
+        raise ArgumentError, "minute not defined" if @minute.nil?
+        raise ArgumentError, "second is not valid" if !second.nil? and !ISO8601_TIME.valid_second?(second)
+        @second = second
+      end
+      def fractional_second=(fractional_second)
+        raise ArgumentError, "minute not defined" if minute_unknown?
+        raise ArgumentError, "second not defined" if second_unknown?
+        raise ArgumentError, "fractional second should be lower than 1.0" if fractional_second >= 1.0
+        @fractional_second = fractional_second
+      end
+      def has_fractional_second?
+        if @fractional_second.nil?
+          return false
+        else
+          return true
+        end
+      end
+      def is_decimal_sign_comma?
+        true
+      end
+      def is_extended?
+        true
+      end
+      def is_partial?
+        second_unknown? or minute_unknown?
       end
       def as_string
-        s = @hh
-        if !@mm.nil?
-          s += ":" + @mm
-          if !@ss.nil?
-            s += ":" + @ss
-            if !@msec.nil?
-              s += "," + @msec
-              if !@tz.nil?
-                s += @tz
+        s = sprintf("%02d", @hour)
+        if !@minute.nil?
+          s += ":" + sprintf("%02d",@minute)
+          if !@second.nil?
+            s += ":" + sprintf("%02d", @second)
+            if !@fractional_second.nil?
+              s += "," + @fractional_second.to_s[2..-1]
+              if !@timezone.nil?
+                s += @timezone
               end
             end
           end
@@ -186,7 +236,7 @@ module OpenEHR
 #  http://digit.que.ne.jp/work/wiki.cgi?Perl%E3%83%A1%E3%83%A2%2FW3C%E5%BD%A2%E5%BC%8F%E3%81%AE%E6%97%A5%E6%99%82%E3%81%AE%E8%A7%A3%E6%9E%90
 # (\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d))?)?(Z|([+-]\d{2}):(\d{2}))?)?)?)?
           hh = $1; mm = $2; ss = $4; msec = $7; tz = $8
-          if hh.to_i == HOURS_IN_DAY and (mm.nil? or mm.to_i == "00") and (ss.nil? or ss.to_i == "00")
+          if hh.to_i == HOURS_IN_DAY and (mm.nil? or mm.to_i == 0) and (ss.nil? or ss.to_i == 0) and (msec.nil? or msec.to_i==0)
             return true
           end
           if hh.nil? or (hh.to_i < 0 or hh.to_i >= HOURS_IN_DAY)
