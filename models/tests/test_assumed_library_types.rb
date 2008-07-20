@@ -3,11 +3,11 @@ require 'assumed_library_types.rb'
 
 class Assumed_Library_Test < Test::Unit::TestCase
   def setup
-    @interval = OpenEHR::Assumed_Library_Types::Interval.new(1,2)
-    @time_definition = OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.new
-    @iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new
-    @iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new
-    @iso8601_timezone = OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE.new
+    assert_nothing_raised(Exception){@interval = OpenEHR::Assumed_Library_Types::Interval.new(1,2)}
+    assert_nothing_raised(Exception){@time_definition = OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.new}
+    assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new}
+    assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new(1)}
+    assert_nothing_raised(Exception){@iso8601_timezone = OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE.new}
   end
   def test_initialize
     assert_instance_of OpenEHR::Assumed_Library_Types::Interval, @interval
@@ -18,31 +18,31 @@ class Assumed_Library_Test < Test::Unit::TestCase
   end
   def test_limits_comparable
     assert @interval.lower < @interval.upper
-    @interval.set_lower(1.0)
-    @interval.set_upper(2.0)
+    assert_nothing_raised(Exception){@interval.set_lower(1.0)}
+    assert_nothing_raised(Exception){@interval.set_upper(2.0)}
     assert @interval.lower < @interval.upper
   end
   def test_limits_consistent
     assert @interval.has?(1.5)
     assert !@interval.has?(3.0)
     assert !@interval.has?(0.5)
-    @interval.set_lower_included(true)
+    assert_nothing_raised(Exception){@interval.set_lower_included(true)}
     assert @interval.has?(1.0)
-    @interval.set_lower_included(false)
+    assert_nothing_raised(Exception){@interval.set_lower_included(false)}
     assert !@interval.has?(1.0)
-    @interval.set_upper_included(true)
+    assert_nothing_raised(Exception){@interval.set_upper_included(true)}
     assert @interval.has?(2.0)
-    @interval.set_upper_included(false)
+    assert_nothing_raised(Exception){@interval.set_upper_included(false)}
     assert !@interval.has?(2.0)
   end
   def test_lower_included_valid
-    @interval.set_lower(nil)
+    assert_nothing_raised(Exception){@interval.set_lower(nil)}
     assert @interval.lower_unbounded
     assert !@interval.lower_included
-    @interval.set_lower(1.0)
+    assert_nothing_raised(Exception){@interval.set_lower(1.0)}
   end
   def test_upper_included_valid
-    @interval.set_upper(nil)
+    assert_nothing_raised(Exception){@interval.set_upper(nil)}
     assert @interval.upper_unbounded
     assert !@interval.upper_included
   end
@@ -164,17 +164,17 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert @iso8601_date.month_unknown?
     assert @iso8601_date.is_partial?
     assert @iso8601_date.is_extended?
-    @iso8601_date.year = 2008
+    assert_nothing_raised(Exception){@iso8601_date.year = 2008}
     assert_equal 2008, @iso8601_date.year 
     assert_raise(ArgumentError){@iso8601_date.year = -1}
     assert_equal "2008", @iso8601_date.as_string
-    @iso8601_date.month = 6
+    assert_nothing_raised(Exception){@iso8601_date.month = 6}
     assert_equal 6, @iso8601_date.month
     assert_raise(ArgumentError){@iso8601_date.month = 13}
     assert_raise(ArgumentError){@iso8601_date.month = 0}
     assert !@iso8601_date.month_unknown?
     assert_equal "2008-06", @iso8601_date.as_string
-    @iso8601_date.day = 14
+    assert_nothing_raised(Exception){@iso8601_date.day = 14}
     assert_equal 14, @iso8601_date.day
     assert_raise(ArgumentError){@iso8601_date.day = 0}
     assert_raise(ArgumentError){@iso8601_date.day = 31}
@@ -186,8 +186,60 @@ class Assumed_Library_Test < Test::Unit::TestCase
   end
 
   def test_iso8601_time
+    assert_equal 1, @iso8601_time.hour
+    assert @iso8601_time.is_partial?
+    assert_equal "01", @iso8601_time.as_string
+    assert_raise(ArgumentError){@iso8601_time.hour = -1}
+    assert_raise(ArgumentError){@iso8601_time.hour = 24}
+    assert_nothing_raised(Exception){@iso8601_time.hour = 0}
+    assert_equal 0, @iso8601_time.hour
+    assert_equal "00", @iso8601_time.as_string
+    assert_nothing_raised(Exception){@iso8601_time.hour = 23}
+    assert_equal 23, @iso8601_time.hour
+    assert_equal "23", @iso8601_time.as_string
+    assert @iso8601_time.minute_unknown?
+    assert @iso8601_time.second_unknown?
+    assert !@iso8601_time.has_fractional_second?
+    assert_raise(ArgumentError){@iso8601_time.fractional_second = 0.012}
+    assert_raise(ArgumentError){@iso8601_time.second = 10}
+    assert_raise(ArgumentError){@iso8601_time.minute = -1}
+    assert_raise(ArgumentError){@iso8601_time.minute = 60}
+    assert_nothing_raised(Exception){@iso8601_time.minute = 0}
+    assert_equal 0, @iso8601_time.minute
+    assert_equal "23:00", @iso8601_time.as_string
+    assert_nothing_raised(Exception){@iso8601_time.minute = 59}
+    assert_equal 59, @iso8601_time.minute
+    assert_equal "23:59", @iso8601_time.as_string
+    assert !@iso8601_time.minute_unknown?
+    assert @iso8601_time.second_unknown?
+    assert @iso8601_time.is_partial?
+    assert_raise(ArgumentError){@iso8601_time.fractional_second = 0.012}
+    assert_raise(ArgumentError){@iso8601_time.second = -1}
+    assert_raise(ArgumentError){@iso8601_time.second = 60}
+    assert_nothing_raised(Exception){@iso8601_time.second = 0}
+    assert !@iso8601_time.second_unknown?
+    assert_equal 0, @iso8601_time.second
+    assert_equal "23:59:00", @iso8601_time.as_string
+    assert_nothing_raised(Exception){@iso8601_time.second = 59}
+    assert_equal 59, @iso8601_time.second
+    assert_equal "23:59:59", @iso8601_time.as_string
+    assert !@iso8601_time.is_partial?
+    assert_raise(ArgumentError){@iso8601_time.fractional_second = 1.23}
+    assert_nothing_raised(Exception){@iso8601_time.fractional_second = 0.23}
+    assert @iso8601_time.has_fractional_second?
+    assert_equal 0.23, @iso8601_time.fractional_second
+    assert_equal "23:59:59,23", @iso8601_time.as_string
+    assert @iso8601_time.is_extended?
+    assert @iso8601_time.is_decimal_sign_comma?
     assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("01:01:01")
     assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("ABCDEFG")
+    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345Z")
+    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345.67+0900")
+    assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("242345.67+0900")
+    assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("242345.67+0900")
+    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("240000")
+    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("240000Z")
+    assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("240000.011Z")
   end
   def test_iso8601_timezone
     @iso8601_timezone.sign = "+1"
