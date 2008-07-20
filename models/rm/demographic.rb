@@ -1,9 +1,10 @@
+# This module is based on the UML,
+# http://www.openehr.org/uml/release-1.0.1/Browsable/_9_5_76d0249_1118674798473_6021_0Report.html
+# Ticket refs #45
 module OpenEHR
   module RM
     module Demogrphic
-      # this class is based on the UML,
-      # http://www.openehr.org/svn/specification/TAGS/Release-1.0.1/publishing/architecture/computable/UML/uml_start_view.html
-      class PARTY < OpenEHR::RM::Common::Archetyped::Locatable
+      class Party < OpenEHR::RM::Common::Archetyped::Locatable
         attr_reader :details, :reverse_relationships, :uid
         attr_reader :idetities, :contacts, :relationships
         def initialize(uid, archetype_node_id, name, archetype_details,
@@ -55,7 +56,7 @@ module OpenEHR
           end          
         end
       end
-      class ACTOR < PARTY
+      class Actor < Party
         LEAGAL_IDENTITY = 'leagal identity'
         attr_reader :languages, :rules
         def initialize(uid, archetype_node_id, name, archetype_details,
@@ -100,7 +101,7 @@ module OpenEHR
           end
           @values = values
       end
-      class CONTACT < OpenEHR::RM::Common::Archetyped::Locatable
+      class Contact < OpenEHR::RM::Common::Archetyped::Locatable
         attr_accessor :time_validity
         attr_reader :addresses
         def initialize(uid, archetype_node_id, name, archetype_details,
@@ -129,6 +130,22 @@ module OpenEHR
             raise ArgumentError, "address must not be empty"
           end
         end
+      end
+
+      class Agent < Actor
+
+      end
+
+      class Organisation < Actor
+
+      end
+
+      class Person < Actor
+
+      end
+
+      class Group < Actor
+
       end
     end # of Demographic
   end # of RM

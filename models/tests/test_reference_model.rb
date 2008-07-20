@@ -17,6 +17,10 @@ class ReferenceModelTest < Test::Unit::TestCase
     @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")
     @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("valid value", "AT1000")
     @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
+    @agent = OpenEHR::RM::Demogrphic::Agent.new
+    @organisation = OpenEHR::RM::Demogrphic::Organisation.new
+    @person = OpenEHR::RM::Demogrphic::Person.new
+    @group = OpenEHR::RM::Demogrphic::Group.new
   end
   
   def test_init
@@ -29,6 +33,10 @@ class ReferenceModelTest < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Data_Types::URI::DV_EHR_URI, @dv_ehr_uri
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Text, @dv_text
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Coded_Text, @dv_coded_text
+    assert_instance_of OpenEHR::RM::Demogrphic::Agent, @agent
+    assert_instance_of OpenEHR::RM::Demogrphic::Organisation, @organisation
+    assert_instance_of OpenEHR::RM::Demogrphic::Person, @person
+    assert_instance_of OpenEHR::RM::Demogrphic::Group, @group
   end
 
   def test_constant
