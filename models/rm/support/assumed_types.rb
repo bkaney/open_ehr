@@ -1,3 +1,6 @@
+# Because his module utilise common methods in both rm
+# and am, I will integrated to /lib/models/assumed_types.rb.
+# By Shinji KOBAYASHI, 2008-07-20
 module OpenEHR
   module RM
     module Support
