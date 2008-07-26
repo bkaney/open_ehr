@@ -231,8 +231,6 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_equal "23:59:59,23", @iso8601_time.as_string
     assert @iso8601_time.is_extended?
     assert @iso8601_time.is_decimal_sign_comma?
-    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("01:01:01")
-    assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("ABCDEFG")
     assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345Z")
     assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345.67+0900")
     assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("242345.67+0900")

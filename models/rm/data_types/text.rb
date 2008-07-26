@@ -1,3 +1,6 @@
+# This module implemented from this UML
+# http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109067605961_209522_3179Report.html
+# Ticket refs #48
 module OpenEHR
   module RM
     module Data_Types
@@ -43,10 +46,10 @@ module OpenEHR
         class Code_Phrase
           attr_reader :terminology_id, :code_string
           def initialize(terminology_id, code_string)
-            if terminlogyID == nil
+            if terminlogyID.nil?
               raise Exception.new("nil terminology")
             end
-            if code_string == nil
+            if code_string.nil?
               raise Exception.new("empty codeString")
             end
             if terminology_id.instance_of?(Terminology_ID)

@@ -17,10 +17,10 @@ class ReferenceModelTest < Test::Unit::TestCase
     @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")
     @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("valid value", "AT1000")
     @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
-    @agent = OpenEHR::RM::Demogrphic::Agent.new
-    @organisation = OpenEHR::RM::Demogrphic::Organisation.new
-    @person = OpenEHR::RM::Demogrphic::Person.new
-    @group = OpenEHR::RM::Demogrphic::Group.new
+#    @agent = OpenEHR::RM::Demogrphic::Agent.new
+#    @organisation = OpenEHR::RM::Demogrphic::Organisation.new
+#    @person = OpenEHR::RM::Demogrphic::Person.new
+#    @group = OpenEHR::RM::Demogrphic::Group.new
   end
   
   def test_init
@@ -33,10 +33,10 @@ class ReferenceModelTest < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Data_Types::URI::DV_EHR_URI, @dv_ehr_uri
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Text, @dv_text
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Coded_Text, @dv_coded_text
-    assert_instance_of OpenEHR::RM::Demogrphic::Agent, @agent
-    assert_instance_of OpenEHR::RM::Demogrphic::Organisation, @organisation
-    assert_instance_of OpenEHR::RM::Demogrphic::Person, @person
-    assert_instance_of OpenEHR::RM::Demogrphic::Group, @group
+#    assert_instance_of OpenEHR::RM::Demogrphic::Agent, @agent
+#    assert_instance_of OpenEHR::RM::Demogrphic::Organisation, @organisation
+#    assert_instance_of OpenEHR::RM::Demogrphic::Person, @person
+#    assert_instance_of OpenEHR::RM::Demogrphic::Group, @group
   end
 
   def test_constant
@@ -57,12 +57,14 @@ class ReferenceModelTest < Test::Unit::TestCase
 
   def test_dv_state
     assert_equal("code1", @dv_state.value)
-    @dv_state.value = "code2"
+    assert_nothing_raised(Exception){@dv_state.value = "code2"}
     assert_equal("code2", @dv_state.value)
     assert @dv_state.is_terminal?
-    @dv_state.terminal = false
+    assert_nothing_raised(Exception){@dv_state.is_terminal = false}
     assert !@dv_state.is_terminal?
     assert_raise(ArgumentError) {OpenEHR::RM::Data_Types::Basic::DV_State.new(nil,nil)}
+    assert_raise(ArgumentError) {@dv_state.value=nil}
+    assert_raise(ArgumentError) {@dv_state.is_terminal=nil}
   end
 
   def test_dv_identifier
