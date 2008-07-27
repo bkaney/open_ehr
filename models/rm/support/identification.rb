@@ -63,40 +63,39 @@ module OpenEHR
         end
 
         class Terminology_ID < Object_ID
-          attr_reader :name
+          attr_reader :name, :version_id
 
-          def initialize(name , version_id)
-            @name , @version_id = name , version_id
+          def initialize(value, name , version_id="")
+            super(value)
+            self.name = name
+            self.version_id = version_id
           end
 
-          def setValue(value)
-            loadValue(value)
-            super.value = value
+          def name=(name)
+            raise ArgumentError, "name not valid" if name.nil? or name.empty?
+            @name = name
           end
 
-          def version_id
-            @version
-          end
-
-          private
-
-          def loadValue(value)
-            if /\(.*\)$/ =~ value
-#              @name, @version = value.split(\())
-              @version.chop!
-            else
-              @name = value
-              @version = nil
-            end
-          end
-
-          def toValue(name, version)
-            if name == ""
-              raise Exception.new("empty name")
-            end
-            name + (version == nil ? "" : "(" + version + ")")
+          def version_id=(version_id)
+            raise ArgumentError, "version_id not valid" if version_id.nil?
+            @version_id = version_id
           end
         end # of Terminology_ID
+
+        class Generic_ID < Object_ID
+          attr_reader :scheme
+
+          def initialize(value, scheme)
+            super(value)
+            self.scheme = scheme
+          end
+
+          def scheme=(scheme)
+            raise ArgumentError, "scheme not valid" if scheme.nil? or scheme.empty?
+            @scheme = scheme
+          end
+        end # of Generic_ID
+
       end # of Definition
     end # of Support
   end # of RM

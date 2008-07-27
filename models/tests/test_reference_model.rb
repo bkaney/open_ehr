@@ -143,17 +143,21 @@ class ReferenceModelTest < Test::Unit::TestCase
   end
 end
 
-class ReferenceModelSupportIdentificationTest < Test::Unit::TestCase
+class RM_Support_Identification_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new("0.0.3")}
-    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('terminology','version')
-    @archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
+    assert_nothing_raised(Exception){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")}
+    assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", 'terminology','0.0.3')}
+    assert_nothing_raised(Exception){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", "openehr")}
+    assert_nothing_raised(Exception){@uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.3')
   end
   
   def test_init
     assert_instance_of OpenEHR::RM::Support::Identification::Object_ID, @object_id
     assert_instance_of OpenEHR::RM::Support::Identification::Archetype_ID, @archetype_id
     assert_instance_of OpenEHR::RM::Support::Identification::Terminology_ID, @terminology_id
+    assert_instance_of OpenEHR::RM::Support::Identification::Object_ID, @object_id
+    assert_instance_of OpenEHR::RM::Support::Identification::UID
   end
 
   def test_object_id
@@ -174,20 +178,104 @@ class ReferenceModelSupportIdentificationTest < Test::Unit::TestCase
     assert_raise(ArgumentError){@archetype_id.value=nil}
     assert_raise(ArgumentError){@archetype_id.value=""}
     assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new}
-    assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Archetype_ID.new(nil)}
-    assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new(nil, "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", nil, "entry", "ehr_rm", "openehr","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", nil, "ehr_rm", "openehr","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "", "ehr_rm", "openehr","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", nil, "openehr","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "", "openehr","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", nil,"cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "","cholesterol","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr",nil ,"0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","","0.0.3")}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol", nil)}
+    assert_raise(ArgumentError){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","")}
 
     assert_equal "biochemistry result_cholesterol", @archetype_id.domain_concept
+    assert_nothing_raised(Exception){(@archetype_id.domain_concept = "biochemistry result_triglyceride")}
+    assert_equal "biochemistry result_triglyceride", @archetype_id.domain_concept
+    assert_raise(ArgumentError){@archetype_id.domain_concept = nil}
+    assert_raise(ArgumentError){@archetype_id.domain_concept = ""}
 
     assert_equal "entry", @archetype_id.rm_name
+    assert_nothing_raised(Exception){@archetype_id.rm_name = "section"}
+    assert_equal "section", @archetype_id.rm_name
+    assert_raise(ArgumentError){@archetype_id.rm_name = nil}
+    assert_raise(ArgumentError){@archetype_id.rm_name = ""}
 
     assert_equal "ehr_rm", @archetype_id.rm_entity
+    assert_nothing_raised(Exception){@archetype_id.rm_entity = "13606"}
+    assert_equal "13606", @archetype_id.rm_entity
+    assert_raise(ArgumentError){@archetype_id.rm_entity = nil}
+    assert_raise(ArgumentError){@archetype_id.rm_entity = ""}
 
     assert_equal "openehr", @archetype_id.rm_originator
+    assert_nothing_raised(Exception){@archetype_id.rm_originator = "cen"}
+    assert_equal "cen", @archetype_id.rm_originator
+    assert_raise(ArgumentError){@archetype_id.rm_originator = nil}
+    assert_raise(ArgumentError){@archetype_id.rm_originator = ""}
 
     assert_equal "cholesterol", @archetype_id.specialisation
+    assert_nothing_raised(Exception){@archetype_id.specialisation = "triglyceride"}
+    assert_equal "triglyceride", @archetype_id.specialisation
+    assert_raise(ArgumentError){@archetype_id.specialisation = nil}
+    assert_raise(ArgumentError){@archetype_id.specialisation = ""}
 
     assert_equal "0.0.3", @archetype_id.version_id
+    assert_nothing_raised(Exception){@archetype_id.version_id = "0.0.7"}
+    assert_equal "0.0.7", @archetype_id.version_id
+    assert_raise(ArgumentError){@archetype_id.version_id = nil}
+    assert_raise(ArgumentError){@archetype_id.version_id = ""}
+  end
 
+  def test_terminology_id
+    assert_equal "0.0.7", @terminology_id.value
+    assert_nothing_raised(Exception){@terminology_id.value = "0.0.8"}
+    assert_equal "0.0.8", @terminology_id.value
+    assert_raise(ArgumentError){@terminology_id.value = nil}
+    assert_raise(ArgumentError){@terminology_id.value = ""}
+
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new(nil, 'terminology','0.0.3')}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("", 'terminology','0.0.3')}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("", 'terminology','0.0.3')}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", nil,'0.0.3')}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", '','0.0.3')}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", "terminology", nil)}
+    assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", "terminology",'')}
+
+    assert_equal "terminology", @terminology_id.name
+    assert_nothing_raised(Exception){@terminology_id.name = "snomed"}
+    assert_equal "snomed", @terminology_id.name
+    assert_raise(ArgumentError){@terminology_id.name = nil}
+    assert_raise(ArgumentError){@terminology_id.name = ""}
+
+    assert_equal "", @terminology_id.version_id
+    assert_nothing_raised(Exception){@terminology_id.version_id = "0.0.8"}
+    assert_equal "0.0.8", @terminology_id.version_id
+    assert_raise(ArgumentError){@terminology_id.version_id = nil}
+    assert_nothing_raised(Exception){@terminology_id.version_id = ''}
+  end
+
+  def test_generic_id
+    assert_equal "0.0.3", @generic_id.value
+    assert_equal "openehr", @generic_id.scheme
+
+    assert_raise(ArgumentError){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new(nil, "openehr")}
+    assert_raise(ArgumentError){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("", "openehr")}
+    assert_raise(ArgumentError){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", nil)}
+    assert_raise(ArgumentError){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", "")}
+
+    assert_raise(ArgumentError){@generic_id.value = nil}
+    assert_raise(ArgumentError){@generic_id.value = ""}
+    assert_nothing_raised(Exception){@generic_id.value = "0.0.5"}
+    assert_equal "0.0.5", @generic_id.value
+
+    assert_raise(ArgumentError){@generic_id.scheme = nil}
+    assert_raise(ArgumentError){@generic_id.scheme = ""}
+    assert_nothing_raised(Exception){@generic_id.scheme = "cen"}
+    assert_equal "cen", @generic_id.scheme
   end
 end
