@@ -14,12 +14,52 @@ module OpenEHR
           end
 
           def value=(value)
-            raise "empty value" if value.nil? or value.empty?
+            raise ArgumentError, "empty value" if value.nil? or value.empty?
             @value = value            
           end
         end # of ObjectID
         
         class Archetype_ID < Object_ID
+          attr_reader :domain_concept, :rm_name, :rm_entity, :rm_originator, :specialisation, :version_id
+
+          def initialize(value, domain_concept, rm_name, rm_entity, rm_originator, specialisation, version_id)
+            super(value)
+            self.domain_concept = domain_concept
+            self.rm_name = rm_name
+            self.rm_entity = rm_entity
+            self.rm_originator = rm_originator
+            self.specialisation = specialisation
+            self.version_id = version_id
+          end
+
+          def domain_concept=(domain_concept)
+            raise ArgumentError, "domain concept not valid" if domain_concept.nil? or domain_concept.empty?
+            @domain_concept = domain_concept
+          end
+
+          def rm_name=(rm_name)
+            raise ArgumentError, "rm_name not valid" if rm_name.nil? or rm_name.empty?
+            @rm_name = rm_name
+          end
+
+          def rm_entity=(rm_entity)
+            raise ArgumentError, "rm_entity not valid" if rm_entity.nil? or rm_entity.empty?
+            @rm_entity = rm_entity
+          end
+
+          def rm_originator=(rm_originator)
+            raise ArgumentError, "rm_originator not valid" if rm_originator.nil? or rm_originator.empty?
+            @rm_originator = rm_originator
+          end
+
+          def specialisation=(specialisation)
+            raise ArgumentError, "rm_specialisation not valid" if specialisation.nil? or specialisation.empty?
+            @specialisation = specialisation
+          end
+          def version_id=(version_id)
+            raise ArgumentError, "version_id not valid" if version_id.nil? or version_id.empty?
+            @version_id = version_id
+          end
         end
 
         class Terminology_ID < Object_ID
