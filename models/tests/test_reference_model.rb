@@ -17,6 +17,8 @@ class ReferenceModelTest < Test::Unit::TestCase
     @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")
     @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("valid value", "AT1000")
     @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
+    @term_mapping = OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text,"TEST")
+#    @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new
 #    @agent = OpenEHR::RM::Demogrphic::Agent.new
 #    @organisation = OpenEHR::RM::Demogrphic::Organisation.new
 #    @person = OpenEHR::RM::Demogrphic::Person.new
@@ -33,6 +35,7 @@ class ReferenceModelTest < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Data_Types::URI::DV_EHR_URI, @dv_ehr_uri
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Text, @dv_text
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Coded_Text, @dv_coded_text
+    assert_instance_of OpenEHR::RM::Data_Types::Text::Term_Mapping, @term_mapping
 #    assert_instance_of OpenEHR::RM::Demogrphic::Agent, @agent
 #    assert_instance_of OpenEHR::RM::Demogrphic::Organisation, @organisation
 #    assert_instance_of OpenEHR::RM::Demogrphic::Person, @person
@@ -124,23 +127,33 @@ class ReferenceModelTest < Test::Unit::TestCase
     assert_raise(ArgumentError){@dv_paragraph.items=Set.new}
   end
 
-  def test_terminology_mapping
-    
+  def test_term_mapping
+    assert_equal '=', @term_mapping.match
+    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('>')
+    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('=')
+    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('<')
+    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('?')
+    assert !OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('!')
+    assert_equal @dv_coded_text, @term_mapping.purpose
+    assert_equal "TEST", @term_mapping.target
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new}
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('!',@dv_coded_text, "invalid case")}
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',nil , "invalid case")}
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text, nil)}
   end
 end
 
-
 class ReferenceModelSupportIdentificationTest < Test::Unit::TestCase
   def setup
-    @object_id = OpenEHR::RM::Support::Identification::OBJECT_ID.new
-    @terminology_id = OpenEHR::RM::Support::Identification::TERMINOLOGY_ID.new('terminology','version')
-    @archetype_id = OpenEHR::RM::Support::Identification::ARCHETYPE_ID.new
+    assert_nothing_raised(Exception){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new("0.0.3")}
+    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('terminology','version')
+    @archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.3")
   end
   
   def test_init
-    assert_instance_of OpenEHR::RM::Support::Identification::OBJECT_ID, @object_id
-    assert_instance_of OpenEHR::RM::Support::Identification::TERMINOLOGY_ID, @terminology_id
-    assert_instance_of OpenEHR::RM::Support::Identification::ARCHETYPE_ID, @archetype_id
-
+    assert_instance_of OpenEHR::RM::Support::Identification::Object_ID, @object_id
+    assert_instance_of OpenEHR::RM::Support::Identification::Terminology_ID, @terminology_id
+    assert_instance_of OpenEHR::RM::Support::Identification::Archetype_ID, @archetype_id
   end
+
 end

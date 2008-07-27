@@ -29,11 +29,11 @@ module OpenEHR
             c == '>' or c == '=' or c == '<' or c == '?'
           end
           private
-          def match_valid(mach)
-            raise ArgumentError, "match is not valid" if self.is_valid_mach_code? match
+          def match_valid(match)
+            raise ArgumentError, "match is not valid" if !Term_Mapping.is_valid_mach_code? match
           end
           def purpose_valid(purpose)
-            if !purpose.nil? and !purpose.instance_of? DV_Coded_Text
+            if purpose.nil? or !purpose.instance_of? DV_Coded_Text
               raise ArgumentError, "purpose is not valid"
             end
             # should be settled after terminology service implemented

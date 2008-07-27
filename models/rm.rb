@@ -19,14 +19,8 @@ module OpenEHR
 
     module Support
       autoload :Definition, "rm/support/definition.rb"
-
-      module Identification
-        autoload :OBJECT_ID, "rm/support/identification.rb"
-      end
-
-      module Terminology
-        autoload :Terminology, "rm/support/terminology.rb"
-      end
+      autoload :Identification, "rm/support/identification.rb"
+      autoload :Terminology, "rm/support/terminology.rb"
     end
 
     module Data_Types
