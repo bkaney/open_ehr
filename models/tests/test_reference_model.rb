@@ -146,6 +146,7 @@ end
 class RM_Support_Identification_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new("0.0.3")}
+    assert_nothing_raised(Exception){@object_ref = OpenEHR::RM::Support::Identification::Object_Ref.new('local', 'ANY', @object_id)}
     assert_nothing_raised(Exception){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")}
     assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", 'terminology','0.0.3')}
     assert_nothing_raised(Exception){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", "openehr")}
@@ -154,6 +155,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
   
   def test_init
     assert_instance_of OpenEHR::RM::Support::Identification::Object_ID, @object_id
+    assert_instance_of OpenEHR::RM::Support::Identification::Object_Ref, @object_ref
     assert_instance_of OpenEHR::RM::Support::Identification::Archetype_ID, @archetype_id
     assert_instance_of OpenEHR::RM::Support::Identification::Terminology_ID, @terminology_id
     assert_instance_of OpenEHR::RM::Support::Identification::Object_ID, @object_id
@@ -169,6 +171,35 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new}
     assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new(nil)}
     assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new("")}
+  end
+
+  def test_object_refs
+    assert_equal 'local', @object_ref.namespace
+    assert_equal 'ANY', @object_ref.type
+    assert_equal @object_id, @object_ref.id
+
+    assert_raise(ArgumentError){@object_ref = OpenEHR::RM::Support::Identification::Archetype_ID.new}
+    assert_raise(ArgumentError){@object_ref = OpenEHR::RM::Support::Identification::Archetype_ID.new(nil, 'ANY', @object_id)}
+    assert_raise(ArgumentError){@object_ref = OpenEHR::RM::Support::Identification::Archetype_ID.new('', 'ANY', @object_id)}
+    assert_raise(ArgumentError){@object_ref = OpenEHR::RM::Support::Identification::Archetype_ID.new('local', nil, @object_id)}
+    assert_raise(ArgumentError){@object_ref = OpenEHR::RM::Support::Identification::Archetype_ID.new('local', '', @object_id)}
+    assert_raise(ArgumentError){@object_ref = OpenEHR::RM::Support::Identification::Archetype_ID.new('local', 'ANY', nil)}
+
+    assert_nothing_raised(Exception){@object_ref.namespace = 'terminology'}
+    assert_equal 'terminology', @object_ref.namespace
+    assert_raise(ArgumentError){@object_ref.namespace = nil}
+    assert_raise(ArgumentError){@object_ref.namespace = ''}
+    assert_raise(ArgumentError){@object_ref.namespace = '?&&'}
+    assert_raise(ArgumentError){@object_ref.namespace = '843'}
+
+    assert_nothing_raised(Exception){@object_ref.type = 'GUIDELINE'}
+    assert_equal 'GUIDELINE', @object_ref.type
+    assert_raise(ArgumentError){@object_ref.type = nil}
+    assert_raise(ArgumentError){@object_ref.type = ''}
+
+    assert_nothing_raised(Exception){@object_ref.id = OpenEHR::RM::Support::Identification::Object_ID.new("0.0.5")}
+    assert_equal OpenEHR::RM::Support::Identification::Object_ID.new("0.0.5"), @object_ref.id
+    assert_raise(ArgumentError){@object_ref.id = nil}
   end
 
   def test_archetype_id

@@ -17,7 +17,35 @@ module OpenEHR
             raise ArgumentError, "empty value" if value.nil? or value.empty?
             @value = value            
           end
+          def ==(object_id)
+            @value == object_id.value
+          end
         end # of ObjectID
+
+        class Object_Ref
+          attr_reader :namespace, :type, :id
+
+          def initialize(namespace, type, id)
+            self.namespace = namespace
+            self.type = type
+            self.id = id
+          end
+
+          def namespace=(namespace)
+            raise ArgumentError if namespace.nil? or namespace.empty? or !(/([a-z]|[A-Z]).*/ =~ namespace) # error original is =~ #([a-z][A-Z])([a-z]|[A-Z]|\s|[0-9]|[_-\:\/\&\+\?])*/
+            @namespace = namespace
+          end
+
+          def type=(type)
+            raise ArgumentError if type.nil? or type.empty?
+            @type = type
+          end
+
+          def id=(id)
+            raise ArgumentError if id.nil?
+            @id = id
+          end
+        end
         
         class Archetype_ID < Object_ID
           attr_reader :domain_concept, :rm_name, :rm_entity, :rm_originator, :specialisation, :version_id
@@ -95,6 +123,7 @@ module OpenEHR
             @scheme = scheme
           end
         end # of Generic_ID
+
         class UID_Based_ID < Object_ID
           def initialize(value)
             super(value)
