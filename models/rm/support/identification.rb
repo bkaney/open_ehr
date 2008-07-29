@@ -95,8 +95,29 @@ module OpenEHR
             @scheme = scheme
           end
         end # of Generic_ID
-
-      end # of Definition
+        class UID_Based_ID < Object_ID
+          def initialize(value)
+            super(value)
+          end
+          def extension
+            if self.has_extension?
+              @value[/::.*/][2..-1]
+            else
+              ''
+            end
+          end
+          def has_extension?
+            @value.include? '::'
+          end
+          def root
+            if self.has_extension?
+              @value[/.*::/][0..-3]
+            else
+              @value
+            end
+          end
+        end
+      end # of Identification
     end # of Support
   end # of RM
 end # of OpenEHR
