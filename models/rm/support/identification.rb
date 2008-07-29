@@ -146,6 +146,11 @@ module OpenEHR
             end
           end
         end
+
+        class Hier_Object_ID < UID_Based_ID
+
+        end
+
       end # of Identification
     end # of Support
   end # of RM

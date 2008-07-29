@@ -151,6 +151,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", 'terminology','0.0.3')}
     assert_nothing_raised(Exception){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", "openehr")}
     assert_nothing_raised(Exception){@uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.3')}
+    assert_nothing_raised(Exception){@hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')}
   end
   
   def test_init
@@ -160,6 +161,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Support::Identification::Terminology_ID, @terminology_id
     assert_instance_of OpenEHR::RM::Support::Identification::Object_ID, @object_id
     assert_instance_of OpenEHR::RM::Support::Identification::UID_Based_ID, @uid_based_id
+    assert_instance_of OpenEHR::RM::Support::Identification::Hier_Object_ID, @hier_object_id
   end
 
   def test_object_id
@@ -309,6 +311,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@generic_id.scheme = "cen"}
     assert_equal "cen", @generic_id.scheme
   end
+
   def test_uid_based_id
     assert_equal "rrip::0.0.3", @uid_based_id.value
     assert_equal "rrip", @uid_based_id.root
@@ -324,5 +327,17 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_equal 'rrip', @uid_based_id.value
     assert_equal 'rrip', @uid_based_id.root
     assert_equal '', @uid_based_id.extension
+  end
+
+  def test_hier_object_id
+    assert_equal '0.0.4', @hier_object_id.value
+    assert !@hier_object_id.root.nil?
+    assert !@hier_object_id.has_extension?
+# in the specification 1.0.1 has_extension? xor extention != Void void is not nil?
+    assert @hier_object_id.extension.empty?
+    assert_nothing_raised(Exception){@hier_object_id.value = "ehr::test"}
+    assert !@hier_object_id.root.nil?
+    assert @hier_object_id.has_extension?
+    assert !@hier_object_id.extension.empty?
   end
 end
