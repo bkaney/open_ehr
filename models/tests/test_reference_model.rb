@@ -152,6 +152,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", "openehr")}
     assert_nothing_raised(Exception){@uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.3')}
     assert_nothing_raised(Exception){@hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')}
+    assert_nothing_raised(Exception){@locatable_ref = OpenEHR::RM::Support::Identification::Locatable_Ref.new('unknown', 'PERSON', @uid_based_id, '/data/event[at0001, standing]')}
   end
   
   def test_init
@@ -160,8 +161,10 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Support::Identification::Archetype_ID, @archetype_id
     assert_instance_of OpenEHR::RM::Support::Identification::Terminology_ID, @terminology_id
     assert_instance_of OpenEHR::RM::Support::Identification::Object_ID, @object_id
+    assert_instance_of OpenEHR::RM::Support::Identification::Generic_ID, @generic_id
     assert_instance_of OpenEHR::RM::Support::Identification::UID_Based_ID, @uid_based_id
     assert_instance_of OpenEHR::RM::Support::Identification::Hier_Object_ID, @hier_object_id
+    assert_instance_of OpenEHR::RM::Support::Identification::Locatable_Ref, @locatable_ref
   end
 
   def test_object_id
@@ -173,6 +176,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new}
     assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new(nil)}
     assert_raise(ArgumentError){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new("")}
+    assert_equal @object_id, OpenEHR::RM::Support::Identification::Object_ID.new("0.0.4")
   end
 
   def test_object_refs
@@ -339,5 +343,16 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert !@hier_object_id.root.nil?
     assert @hier_object_id.has_extension?
     assert !@hier_object_id.extension.empty?
+  end
+
+  def test_locatable_ref
+# test constructor function
+    assert_equal 'unknown', @locatable_ref.namespace
+    assert_equal 'PARTY', @locatable_ref.type
+    assert_equal @uid_based_id, @locatable_ref.id
+    assert_equal '/data/event[at0001, standing]', @locatable_ref.path
+    assert_equal 'ehr://rrip/data/event[at0001, standing]', @locatable_ref.as_uri
+
+
   end
 end
