@@ -152,7 +152,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", "openehr")}
     assert_nothing_raised(Exception){@uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.3')}
     assert_nothing_raised(Exception){@hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')}
-    assert_nothing_raised(Exception){@locatable_ref = OpenEHR::RM::Support::Identification::Locatable_Ref.new('unknown', 'PERSON', @uid_based_id, '/data/event[at0001, standing]')}
+    assert_nothing_raised(Exception){@locatable_ref = OpenEHR::RM::Support::Identification::Locatable_Ref.new('unknown', 'PERSON', @uid_based_id, 'data/event[at0001, standing]')}
   end
   
   def test_init
@@ -348,11 +348,13 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
   def test_locatable_ref
 # test constructor function
     assert_equal 'unknown', @locatable_ref.namespace
-    assert_equal 'PARTY', @locatable_ref.type
+    assert_equal 'PERSON', @locatable_ref.type
     assert_equal @uid_based_id, @locatable_ref.id
-    assert_equal '/data/event[at0001, standing]', @locatable_ref.path
-    assert_equal 'ehr://rrip/data/event[at0001, standing]', @locatable_ref.as_uri
-
-
+    assert_equal 'data/event[at0001, standing]', @locatable_ref.path
+    assert_equal 'ehr://rrip::0.0.3/data/event[at0001, standing]', @locatable_ref.as_uri
+#test path
+    assert_nothing_raised(Exception){@locatable_ref.path = 'data/event[at0002, tilting]'}
+    assert_equal 'data/event[at0002, tilting]', @locatable_ref.path
+    assert_equal 'ehr://rrip::0.0.3/data/event[at0002, tilting]', @locatable_ref.as_uri
   end
 end

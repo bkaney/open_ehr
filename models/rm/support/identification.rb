@@ -46,7 +46,7 @@ module OpenEHR
             @id = id
           end
         end
-        
+
         class Archetype_ID < Object_ID
           attr_reader :domain_concept, :rm_name, :rm_entity, :rm_originator, :specialisation, :version_id
 
@@ -128,6 +128,7 @@ module OpenEHR
           def initialize(value)
             super(value)
           end
+
           def extension
             if self.has_extension?
               @value[/::.*/][2..-1]
@@ -135,15 +136,35 @@ module OpenEHR
               ''
             end
           end
+
           def has_extension?
             @value.include? '::'
           end
+
           def root
             if self.has_extension?
               @value[/.*::/][0..-3]
             else
               @value
             end
+          end
+        end
+
+        class Locatable_Ref < Object_Ref
+          attr_reader :namespace, :type, :id, :path
+
+          def initialize(namespace, type, id, path)
+            super(namespace, type, id)
+            self.path = path
+          end
+
+          def path=(path)
+            raise ArgumentError if path.nil? or path.empty?
+            @path = path
+          end
+
+          def as_uri
+            'ehr://' + @id.value + '/' + @path
           end
         end
 
