@@ -153,6 +153,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.3')}
     assert_nothing_raised(Exception){@hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')}
     assert_nothing_raised(Exception){@locatable_ref = OpenEHR::RM::Support::Identification::Locatable_Ref.new('unknown', 'PERSON', @uid_based_id, 'data/event[at0001, standing]')}
+    assert_nothing_raised(Exception){@party_ref = OpenEHR::RM::Support::Identification::Party_Ref.new('unknown', 'ORGANISATION', @object_id)}
   end
   
   def test_init
@@ -165,6 +166,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Support::Identification::UID_Based_ID, @uid_based_id
     assert_instance_of OpenEHR::RM::Support::Identification::Hier_Object_ID, @hier_object_id
     assert_instance_of OpenEHR::RM::Support::Identification::Locatable_Ref, @locatable_ref
+    assert_instance_of OpenEHR::RM::Support::Identification::Party_Ref, @party_ref
   end
 
   def test_object_id
@@ -346,7 +348,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
   end
 
   def test_locatable_ref
-# test constructor function
+# test constructorpp
     assert_equal 'unknown', @locatable_ref.namespace
     assert_equal 'PERSON', @locatable_ref.type
     assert_equal @uid_based_id, @locatable_ref.id
@@ -356,5 +358,21 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@locatable_ref.path = 'data/event[at0002, tilting]'}
     assert_equal 'data/event[at0002, tilting]', @locatable_ref.path
     assert_equal 'ehr://rrip::0.0.3/data/event[at0002, tilting]', @locatable_ref.as_uri
+  end
+
+  def test_party_ref
+# test constructor
+    assert_equal 'unknown', @party_ref.namespace
+    assert_equal 'ORGANISATION', @party_ref.type
+    assert_equal @object_id, @party_ref.id
+# test type validation
+    assert_raise(ArgumentError){@party_ref.type = 'GUIDELINE'}
+    assert_nothing_raised(Exception){@party_ref.type = 'PERSON'}
+    assert_equal 'PERSON', @party_ref.type
+    assert_nothing_raised(Exception){@party_ref.type = 'GROUP'}
+    assert_nothing_raised(Exception){@party_ref.type = 'AGENT'}
+    assert_nothing_raised(Exception){@party_ref.type = 'ROLE'}
+    assert_nothing_raised(Exception){@party_ref.type = 'PARTY'}
+    assert_nothing_raised(Exception){@party_ref.type = 'ACTOR'}
   end
 end

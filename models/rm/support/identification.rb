@@ -168,10 +168,77 @@ module OpenEHR
           end
         end
 
+        class Party_Ref < Object_Ref
+          TYPE = ['PERSON', 'ORGANISATION', 'GROUP', 'AGENT', 'ROLE',' PARTY', 'ACTOR']
+          def initialize(namespace, type, id)
+            super(namespace, type, id)
+          end
+
+          def type=(type)
+            raise ArgumentError, 'type mismatch' if !TYPE.include? type
+            @type = type
+          end
+        end
         class Hier_Object_ID < UID_Based_ID
 
         end
 
+        class Version_Tree_ID
+          attr_reader :value, :trunk_version, :branch_number, :branch_version
+
+          def initialize(value)
+            self.value = value
+          end
+
+          def value=(value)
+            raise ArgumentError, 'value invalid' if value.nil? or value.empty?
+            @value = value
+            (trunk_version, branch_number, branch_version) = value.split '.'
+            self.trunk_version =trunk_version
+          end
+
+          def trunk_version=(trunk_version)
+            Raise ArgumentError, 'trunk_version invalid' if trunk_version.nil? and trunk_version.to_i >= 0
+            @trunk_version = trunk_version
+          end
+
+          def branch_number=(branch_number)
+            Raise ArgumentError, 'branch number invalid' if branch_nmuber.nil?
+          end
+
+          def is_branch?
+            !@branch_version.nil?
+          end
+          private
+          def value_valid
+            
+          end
+        end
+
+        class UID
+          attr_reader :value
+
+          def initialize(value)
+            self.value = value
+          end
+
+          def value=(value)
+            raise ArgumentError if value.nil? or value.empty?
+            @value = value
+          end
+        end
+
+        class UUID < UID
+
+        end
+
+        class Internet_ID <UID
+          
+        end
+
+        class ISO_OID <UID
+
+        end
       end # of Identification
     end # of Support
   end # of RM
