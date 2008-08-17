@@ -124,6 +124,10 @@ module OpenEHR
           end
         end # of Generic_ID
 
+        class Template_ID < Object_ID
+
+        end
+
         class UID_Based_ID < Object_ID
           def initialize(value)
             super(value)
@@ -169,13 +173,10 @@ module OpenEHR
         end
 
         class Party_Ref < Object_Ref
-          TYPE = ['PERSON', 'ORGANISATION', 'GROUP', 'AGENT', 'ROLE','PARTY', 'ACTOR']
-          def initialize(namespace, type, id)
-            super(namespace, type, id)
-          end
 
           def type=(type)
-            raise ArgumentError, 'type invalid' if !TYPE.include? type
+            parties = ['PERSON', 'ORGANISATION', 'GROUP', 'AGENT', 'ROLE','PARTY', 'ACTOR']
+            raise ArgumentError, 'type invalid' if !parties.include? type
             @type = type
           end
         end
@@ -202,18 +203,25 @@ module OpenEHR
             raise ArgumentError, 'value invalid' if value.nil? or value.empty?
             @value = value
             (trunk_version, branch_number, branch_version) = value.split '.'
-            self.trunk_version =trunk_version
+            self.trunk_version = trunk_version
+            self.branch_number = branch_number
+            self.branch_version = branch_version
           end
 
           def trunk_version=(trunk_version)
-            Raise ArgumentError, 'trunk_version invalid' if trunk_version.nil? and trunk_version.to_i >= 0
+            raise ArgumentError, 'trunk_version invalid' if trunk_version.nil? and trunk_version.to_i >= 0
             @trunk_version = trunk_version
           end
 
           def branch_number=(branch_number)
-            Raise ArgumentError, 'branch number invalid' if branch_nmuber.nil?
+            raise ArgumentError, 'branch number invalid' if branch_number.nil?
+            @branch_number = branch_number
           end
 
+          def branch_version=(branch_version)
+            raise ArgumentError, 'branch version invalid' if branch_version.nil?
+            @branch_version = branch_version
+          end
           def is_branch?
             !@branch_version.nil?
           end

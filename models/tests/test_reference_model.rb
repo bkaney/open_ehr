@@ -155,6 +155,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@locatable_ref = OpenEHR::RM::Support::Identification::Locatable_Ref.new('unknown', 'PERSON', @uid_based_id, 'data/event[at0001, standing]')}
     assert_nothing_raised(Exception){@party_ref = OpenEHR::RM::Support::Identification::Party_Ref.new('unknown', 'ORGANISATION', @object_id)}
     assert_nothing_raised(Exception){@access_group_ref = OpenEHR::RM::Support::Identification::Access_Group_Ref.new('unknown', 'ACCESS_GROUP', @object_id)}
+    assert_nothing_raised(Exception){@version_tree_id = OpenEHR::RM::Support::Identification::Version_Tree_ID.new('1.2.3')}
   end
   
   def test_init
@@ -169,6 +170,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Support::Identification::Locatable_Ref, @locatable_ref
     assert_instance_of OpenEHR::RM::Support::Identification::Party_Ref, @party_ref
     assert_instance_of OpenEHR::RM::Support::Identification::Access_Group_Ref, @access_group_ref
+    assert_instance_of OpenEHR::RM::Support::Identification::Version_Tree_ID, @version_tree_id
   end
 
   def test_object_id
@@ -386,5 +388,12 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
 # test type validation
     assert_raise(ArgumentError){@access_group_ref.type = 'PERSON'}
     assert_nothing_raised(Exception){@access_group_ref.type = 'ACCESS_GROUP'}
+  end
+
+  def test_version_tree_id
+    assert_equal '1.2.3', @version_tree_id.value
+    assert_equal '1', @version_tree_id.trunk_version
+    assert_equal '2', @version_tree_id.branch_number
+    assert_equal '3', @version_tree_id.branch_version
   end
 end
