@@ -169,16 +169,24 @@ module OpenEHR
         end
 
         class Party_Ref < Object_Ref
-          TYPE = ['PERSON', 'ORGANISATION', 'GROUP', 'AGENT', 'ROLE',' PARTY', 'ACTOR']
+          TYPE = ['PERSON', 'ORGANISATION', 'GROUP', 'AGENT', 'ROLE','PARTY', 'ACTOR']
           def initialize(namespace, type, id)
             super(namespace, type, id)
           end
 
           def type=(type)
-            raise ArgumentError, 'type mismatch' if !TYPE.include? type
+            raise ArgumentError, 'type invalid' if !TYPE.include? type
             @type = type
           end
         end
+
+        class Access_Group_Ref < Object_Ref
+          def type=(type)
+            raise ArgumentError, 'type invalid' if !(type == 'ACCESS_GROUP')
+            @type = type
+          end
+        end
+
         class Hier_Object_ID < UID_Based_ID
 
         end

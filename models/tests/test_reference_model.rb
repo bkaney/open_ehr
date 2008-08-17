@@ -154,6 +154,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')}
     assert_nothing_raised(Exception){@locatable_ref = OpenEHR::RM::Support::Identification::Locatable_Ref.new('unknown', 'PERSON', @uid_based_id, 'data/event[at0001, standing]')}
     assert_nothing_raised(Exception){@party_ref = OpenEHR::RM::Support::Identification::Party_Ref.new('unknown', 'ORGANISATION', @object_id)}
+    assert_nothing_raised(Exception){@access_group_ref = OpenEHR::RM::Support::Identification::Access_Group_Ref.new('unknown', 'ACCESS_GROUP', @object_id)}
   end
   
   def test_init
@@ -167,6 +168,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Support::Identification::Hier_Object_ID, @hier_object_id
     assert_instance_of OpenEHR::RM::Support::Identification::Locatable_Ref, @locatable_ref
     assert_instance_of OpenEHR::RM::Support::Identification::Party_Ref, @party_ref
+    assert_instance_of OpenEHR::RM::Support::Identification::Access_Group_Ref, @access_group_ref
   end
 
   def test_object_id
@@ -374,5 +376,15 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@party_ref.type = 'ROLE'}
     assert_nothing_raised(Exception){@party_ref.type = 'PARTY'}
     assert_nothing_raised(Exception){@party_ref.type = 'ACTOR'}
+  end
+
+  def test_access_group_ref
+# test constructor
+    assert_equal 'unknown', @access_group_ref.namespace
+    assert_equal 'ACCESS_GROUP', @access_group_ref.type
+    assert_equal @object_id, @access_group_ref.id
+# test type validation
+    assert_raise(ArgumentError){@access_group_ref.type = 'PERSON'}
+    assert_nothing_raised(Exception){@access_group_ref.type = 'ACCESS_GROUP'}
   end
 end
