@@ -395,5 +395,14 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_equal '1', @version_tree_id.trunk_version
     assert_equal '2', @version_tree_id.branch_number
     assert_equal '3', @version_tree_id.branch_version
+    assert @version_tree_id.is_first?
+    assert @version_tree_id.is_branch?
+    assert_nothing_raised(Exception){@version_tree_id.value = '2'}
+    assert_equal '2', @version_tree_id.trunk_version
+    assert !@version_tree_id.is_first?
+    assert !@version_tree_id.is_branch?
+    assert_nil @version_tree_id.branch_number
+    assert_nil @version_tree_id.branch_version
+    assert_raise(ArgumentError){@version_tree_id.branch_version = '5'}
   end
 end

@@ -176,14 +176,14 @@ module OpenEHR
 
           def type=(type)
             parties = ['PERSON', 'ORGANISATION', 'GROUP', 'AGENT', 'ROLE','PARTY', 'ACTOR']
-            raise ArgumentError, 'type invalid' if !parties.include? type
+            raise ArgumentError, 'type invalid' unless parties.include? type
             @type = type
           end
         end
 
         class Access_Group_Ref < Object_Ref
           def type=(type)
-            raise ArgumentError, 'type invalid' if !(type == 'ACCESS_GROUP')
+            raise ArgumentError, 'type invalid' unless type == 'ACCESS_GROUP'
             @type = type
           end
         end
@@ -202,6 +202,7 @@ module OpenEHR
           def value=(value)
             raise ArgumentError, 'value invalid' if value.nil? or value.empty?
             @value = value
+            @trunk_version = @branch_number = @branch_version = nil
             (trunk_version, branch_number, branch_version) = value.split '.'
             self.trunk_version = trunk_version
             self.branch_number = branch_number
@@ -209,25 +210,35 @@ module OpenEHR
           end
 
           def trunk_version=(trunk_version)
-            raise ArgumentError, 'trunk_version invalid' if trunk_version.nil? and trunk_version.to_i >= 0
+            raise ArgumentError, 'trunk_version invalid' if trunk_version.nil? and !trunk_version.to_i >= 1
             @trunk_version = trunk_version
+            set_value
           end
 
           def branch_number=(branch_number)
-            raise ArgumentError, 'branch number invalid' if branch_number.nil?
+            raise ArgumentError, 'branch number invalid' unless branch_number.nil? or branch_number.to_i >= 1
             @branch_number = branch_number
+            set_value
           end
 
           def branch_version=(branch_version)
-            raise ArgumentError, 'branch version invalid' if branch_version.nil?
+            raise ArgumentError, 'branch version invalid' if (!branch_version.nil? and !( branch_version.to_i >= 1)) or (!branch_version.nil? and @branch_number.nil?)
             @branch_version = branch_version
+            set_value
           end
           def is_branch?
-            !@branch_version.nil?
+            !@branch_version.nil? and !@branch_number.nil?
           end
+
+          def is_first?
+            trunk_version == '1'
+          end
+
           private
-          def value_valid
-            
+          def set_value
+            @value = trunk_version
+            @value = @value + '.' + @branch_number unless @branch_number.nil?
+            @value = @value + '.' + @branch_version unless @branch_version.nil?
           end
         end
 
