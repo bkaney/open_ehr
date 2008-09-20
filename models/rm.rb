@@ -15,6 +15,7 @@ module OpenEHR
 
     module Common
       autoload :Resource, "rm/common/resource.rb"
+      autoload :Archetyped, "rm/common/archetyped"
     end
 
     module Support

@@ -1,3 +1,6 @@
+# This module is based on the UML,
+# http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109318114715_211173_0Report.html
+# Ticket refs #65
 module OpenEHR
   module RM
     module Common
@@ -9,9 +12,10 @@ module OpenEHR
           ORGANIZER_PATH_SEPARATOR = "/"
           MULTIPART_ID_DELIMITER = "::"
         end
+
         class Pathable
-          attr_reader :parent
-          def initialize(parent)
+          attr_accessor :parent
+          def initialize(parent = nil)
             @parent = parent
           end
           def item_at_path(path)
@@ -30,6 +34,7 @@ module OpenEHR
             raise NotImplementError, "path_unique must be implemented"
           end
         end
+
         class Locatable < Pathable
           include Locater_Constants
           attr_accessor :uid, :archetype_node_id, :archetype_details
@@ -73,6 +78,23 @@ module OpenEHR
           end
           def is_archetype_root?
             !archetype_details.nil?
+          end
+        end
+        class Archetyped
+          attr_reader :archetype_id, :rm_version
+          attr_accessor :template_id
+          def initialize(archetype_id, rm_version, template_id = nil)            
+            self.archetype_id = archetype_id
+            self.rm_version = rm_version
+            @template_id = template_id
+          end
+          def archetype_id=(archetype_id)
+            raise ArgumentError, "invalid archetype_id" if archetype_id.nil?
+            @archetype_id = archetype_id
+          end
+          def rm_version=(rm_version)
+            raise ArgumentError, "invalid rm_version" if rm_version.nil? or rm_version.empty?
+            @rm_version = rm_version
           end
         end
       end # end of Archetyped

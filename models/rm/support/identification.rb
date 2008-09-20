@@ -201,7 +201,6 @@ module OpenEHR
 
           def value=(value)
             raise ArgumentError, 'value invalid' if value.nil? or value.empty?
-            @value = value
             @trunk_version = @branch_number = @branch_version = nil
             (trunk_version, branch_number, branch_version) = value.split '.'
             self.trunk_version = trunk_version

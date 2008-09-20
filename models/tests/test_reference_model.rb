@@ -406,3 +406,31 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_raise(ArgumentError){@version_tree_id.branch_version = '5'}
   end
 end
+
+class RM_Common_Archetyped_Test < Test::Unit::TestCase
+  def setup
+    @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new('Test')
+    @uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.5')
+    @archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
+    @template_id = OpenEHR::RM::Support::Identification::Template_ID.new('1.0.1')
+    assert_nothing_raised(Exception){@archetyped = OpenEHR::RM::Common::Archetyped::Archetyped.new(@archetype_id, '1.0.1')}
+    
+  end
+  def test_init
+    assert_instance_of OpenEHR::RM::Common::Archetyped::Archetyped, @archetyped
+  end
+  def test_archetyped
+    assert_equal @archetype_id, @archetyped.archetype_id
+    assert_equal '1.0.1', @archetyped.rm_version
+    assert_raise(ArgumentError){@archetyped.archetype_id = nil}
+    assert_raise(ArgumentError){@archetyped.rm_version = nil}
+    assert_raise(ArgumentError){@archetyped.rm_version = ''}
+    assert_nothing_raised(Exception){@archetyped.template_id = @template_id}
+    assert_equal @template_id, @archetyped.template_id
+    archetype_id2 = OpenEHR::RM::Support::Identification::Archetype_ID.new("1.0.2", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
+    assert_nothing_raised(ArgumentError){@archetyped.archetype_id = archetype_id2}
+    assert_equal archetype_id2, @archetyped.archetype_id
+    assert_nothing_raised(ArgumentError){@archetyped.rm_version = '1.0.2'}
+    assert_equal '1.0.2', @archetyped.rm_version
+  end
+end
