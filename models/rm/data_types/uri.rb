@@ -24,8 +24,7 @@ module OpenEHR
       module URI
         class DV_URI < OpenEHR::RM::Data_Types::Basic::Data_Value
           def initialize(value)
-            raise ArgumentError, "value is empty" if value.nil?
-            parse(value)
+            self.value = value
           end
           def fragment_id
             @value.fragment
@@ -40,6 +39,7 @@ module OpenEHR
             @value.scheme
           end
           def value=(value)
+            raise ArgumentError, "value is empty" if value.nil?
             parse(value)
           end
           def value
@@ -52,18 +52,11 @@ module OpenEHR
         end
         class DV_EHR_URI < DV_URI
           def initialize(value)
-            check_value(value)
             super(value)
           end
           def value=(value)
-            check_value(value)
+            raise ArgumentError, "scheme must be ehr" if !(value =~ /^ehr/i)
             parse(value)
-          end
-          private
-          def check_value(value)
-            if !(value =~ /^ehr/i)
-              raise ArgumentError, "scheme must be ehr"
-            end
           end
         end # of DV_EHR_URI
       end # of URI

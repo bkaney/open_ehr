@@ -414,10 +414,12 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     @archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
     @template_id = OpenEHR::RM::Support::Identification::Template_ID.new('1.0.1')
     assert_nothing_raised(Exception){@archetyped = OpenEHR::RM::Common::Archetyped::Archetyped.new(@archetype_id, '1.0.1')}
+    assert_nothing_raised(Exception){@link = OpenEHR::RM::Common::Archetyped::Link.new(OpenEHR::RM::Data_Types::Text::DV_Text.new("generic"), OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://test/"),OpenEHR::RM::Data_Types::Text::DV_Text.new("problem"))}
     
   end
   def test_init
     assert_instance_of OpenEHR::RM::Common::Archetyped::Archetyped, @archetyped
+    assert_instance_of OpenEHR::RM::Common::Archetyped::Link, @link
   end
   def test_archetyped
     assert_equal @archetype_id, @archetyped.archetype_id
@@ -432,5 +434,23 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_equal archetype_id2, @archetyped.archetype_id
     assert_nothing_raised(ArgumentError){@archetyped.rm_version = '1.0.2'}
     assert_equal '1.0.2', @archetyped.rm_version
+  end
+  def test_link
+    # test constructor
+    assert_equal 'generic', @link.meaning.value
+    assert_equal 'ehr://test/', @link.target.value
+    assert_equal 'problem', @link.type.value
+    # test meaning
+    assert_nothing_raised(Exception){@link.meaning = OpenEHR::RM::Data_Types::Text::DV_Text.new('clinical')}
+    assert_equal 'clinical', @link.meaning.value
+    assert_raise(ArgumentError){@link.meaning = nil}
+    # test target
+    assert_nothing_raised(Exception){@link.target = OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://try/")}
+    assert_equal 'ehr://try/', @link.target.value
+    assert_raise(ArgumentError){@link.target = nil}
+    # test type
+    assert_nothing_raised(Exception){@link.type = OpenEHR::RM::Data_Types::Text::DV_Text.new("issue")}
+    assert_equal 'issue', @link.type.value
+    assert_raise(ArgumentError){@link.type = nil}
   end
 end

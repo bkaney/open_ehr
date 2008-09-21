@@ -80,6 +80,7 @@ module OpenEHR
             !archetype_details.nil?
           end
         end
+
         class Archetyped
           attr_reader :archetype_id, :rm_version
           attr_accessor :template_id
@@ -95,6 +96,27 @@ module OpenEHR
           def rm_version=(rm_version)
             raise ArgumentError, "invalid rm_version" if rm_version.nil? or rm_version.empty?
             @rm_version = rm_version
+          end
+        end
+        class Link
+          attr_reader :meaning, :target, :type
+          def initialize(meaning, target, type)
+            self.meaning = meaning
+            self.target = target
+            self.type = type
+          end
+          def meaning=(meaning)
+            raise ArgumentError, "meaning should not be nil" if meaning.nil?
+            @meaning = meaning
+          end
+          def target=(target)
+            raise ArgumentError, "target should not be nil" if target.nil?
+            @target = target
+          end
+          def type=(type)
+            raise ArgumentError, "type should not be nil" if type.nil?
+            @type = type
+
           end
         end
       end # end of Archetyped
