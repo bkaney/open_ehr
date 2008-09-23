@@ -1,3 +1,7 @@
+# This module is implemented from this UML:
+#http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109701308832_384250_6986Report.html
+# Ticket refs #46
+
 require 'uri'
 #require 'uri/generic'
 module URI
@@ -18,6 +22,7 @@ module URI
   end
   @@schemes['EHR'] = EHR
 end
+
 module OpenEHR
   module RM
     module Data_Types
@@ -50,6 +55,7 @@ module OpenEHR
             @value = ::URI.parse(value)
           end
         end
+
         class DV_EHR_URI < DV_URI
           def initialize(value)
             super(value)

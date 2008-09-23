@@ -98,6 +98,7 @@ module OpenEHR
             @rm_version = rm_version
           end
         end
+
         class Link
           attr_reader :meaning, :target, :type
           def initialize(meaning, target, type)
@@ -116,7 +117,6 @@ module OpenEHR
           def type=(type)
             raise ArgumentError, "type should not be nil" if type.nil?
             @type = type
-
           end
         end
       end # end of Archetyped

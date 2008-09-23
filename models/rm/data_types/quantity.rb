@@ -5,7 +5,7 @@ module OpenEHR
   module RM
     module Data_Types
       module Quantity
-        module DV_Ordered < OpenEHR::RM::Data_Types::Basic::Data_Value
+        class DV_Ordered < OpenEHR::RM::Data_Types::Basic::Data_Value
           include Comparable
           attr_accessor :other_refference_ranges, :normal_range
           attr_accessor :normal_status
@@ -30,16 +30,14 @@ module OpenEHR
           end
         end
 
-        module DV_Quantified
-          include DV_Ordered
+        class DV_Quantified < DV_Ordered
           def magnitude
           end
           def valid_magnitude_status(s)
           end
         end
 
-        class DV_Ordinal
-          include DV_Ordered
+        class DV_Ordinal < DV_Ordered
           attr_reader :symbol, :value
           def is_strictly_comparable_to?
           end
@@ -47,8 +45,7 @@ module OpenEHR
           end
         end
 
-        module DV_Absolute_Quantity
-          include DV_Quantified
+        class DV_Absolute_Quantity < DV_Quantified
           attr_reader :accuracy
 
           def add(a_diff)

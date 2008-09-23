@@ -1,5 +1,4 @@
 $:.unshift File.join(File.dirname(__FILE__))
-
 # component: openEHR Ruby reference implementation
 # description: This file contains rm.packages.domain classes
 # keywords: archetype
@@ -15,7 +14,8 @@ module OpenEHR
 
     module Common
       autoload :Resource, "rm/common/resource.rb"
-      autoload :Archetyped, "rm/common/archetyped"
+      autoload :Archetyped, "rm/common/archetyped.rb"
+      autoload :Generic, "rm/common/generic.rb"
     end
 
     module Support

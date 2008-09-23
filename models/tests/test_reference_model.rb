@@ -9,11 +9,6 @@ class ReferenceModelTest < Test::Unit::TestCase
                                                                               :description => "test")
     @translation_details = OpenEHR::RM::Common::Resource::TRANSLATION_DETAILS.new(nil,nil,nil,nil,nil)
 #    @openehr_definitions = OpenEHR::RM::Support::Definition::OpenEHR_Definitions.new
-    @dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")
-    @dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new("code1",true)
-    @dv_identifier = OpenEHR::RM::Data_Types::Basic::DV_Identifier.new("Ruby Hospital","0123456-0", "Information office", "personal id")
-    @dv_uri = OpenEHR::RM::Data_Types::URI::DV_URI.new("http://www.openehr.jp/changeset/test?cmd=93#file0")
-    @dv_ehr_uri = OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://1234567/87284370-2D4B-4e3d-A3F3-F303D2F4F34B@2005-08-02T04:30:00")
     @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")
     @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("valid value", "AT1000")
     @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
@@ -28,11 +23,6 @@ class ReferenceModelTest < Test::Unit::TestCase
   def test_init
     assert_instance_of OpenEHR::RM::Common::Resource::AUTHORED_RESOURCE, @authored_resource
     assert_instance_of OpenEHR::RM::Common::Resource::TRANSLATION_DETAILS, @translation_details
-    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_Boolean, @dv_boolean
-    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_State, @dv_state
-    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_Identifier, @dv_identifier
-    assert_instance_of OpenEHR::RM::Data_Types::URI::DV_URI, @dv_uri
-    assert_instance_of OpenEHR::RM::Data_Types::URI::DV_EHR_URI, @dv_ehr_uri
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Text, @dv_text
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Coded_Text, @dv_coded_text
     assert_instance_of OpenEHR::RM::Data_Types::Text::Term_Mapping, @term_mapping
@@ -47,60 +37,6 @@ class ReferenceModelTest < Test::Unit::TestCase
     assert_equal("\n", OpenEHR::RM::Support::Definition::OpenEHR_Definitions::LF)
     assert_equal("\r", OpenEHR::RM::Data_Types::Basic::Data_Value::CR)
     assert_equal("\n", OpenEHR::RM::Data_Types::Basic::Data_Value::LF)
-  end
-
-  def test_dv_boolean
-    assert @dv_boolean.value?
-    @dv_boolean.value = false
-    assert !@dv_boolean.value?
-    # Constraints Value_exists
-    assert_raise(ArgumentError){@dv_boolean.value=nil}
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Basic::DV_Boolean.new(nil)}
-  end
-
-  def test_dv_state
-    assert_equal("code1", @dv_state.value)
-    assert_nothing_raised(Exception){@dv_state.value = "code2"}
-    assert_equal("code2", @dv_state.value)
-    assert @dv_state.is_terminal?
-    assert_nothing_raised(Exception){@dv_state.is_terminal = false}
-    assert !@dv_state.is_terminal?
-    assert_raise(ArgumentError) {OpenEHR::RM::Data_Types::Basic::DV_State.new(nil,nil)}
-    assert_raise(ArgumentError) {@dv_state.value=nil}
-    assert_raise(ArgumentError) {@dv_state.is_terminal=nil}
-  end
-
-  def test_dv_identifier
-    assert_equal("Ruby Hospital", @dv_identifier.assigner)
-    assert_equal("0123456-0", @dv_identifier.id)
-    assert_equal("Information office", @dv_identifier.issuer)
-    assert_equal("personal id", @dv_identifier.type)
-    @dv_identifier.assigner = "Test Hospital"
-    assert_equal("Test Hospital", @dv_identifier.assigner)
-    @dv_identifier.id = "TEST-0987"
-    assert_equal("TEST-0987", @dv_identifier.id)
-    @dv_identifier.issuer = "Security office"
-    assert_equal("Security office", @dv_identifier.issuer)
-    @dv_identifier.type = "test id"
-    assert_equal("test id", @dv_identifier.type)
-    assert_raise(ArgumentError) {OpenEHR::RM::Data_Types::Basic::DV_Identifier.new(nil, nil, nil, nil)}
-  end
-
-  def test_dv_uri
-    assert_equal("file0", @dv_uri.fragment_id)
-    assert_equal("/changeset/test", @dv_uri.path)
-    assert_equal("cmd=93", @dv_uri.query)
-    assert_equal("http", @dv_uri.scheme)
-    assert_equal("http://www.openehr.jp/changeset/test?cmd=93#file0", @dv_uri.value)
-    @dv_uri.value="svn://www.openehr.jp/openehr-jp/"
-    assert_equal("svn://www.openehr.jp/openehr-jp/", @dv_uri.value)
-    assert_equal("/openehr-jp/", @dv_uri.path)
-  end
-
-  def test_dv_ehr_uri
-    assert_equal("ehr", @dv_ehr_uri.scheme)
-    assert_raise(ArgumentError){
-      @dv_ehr_uri.value="svn://www.openehr.jp/openehr-jp/" }
   end
 
   def test_dv_text
@@ -415,12 +351,14 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     @template_id = OpenEHR::RM::Support::Identification::Template_ID.new('1.0.1')
     assert_nothing_raised(Exception){@archetyped = OpenEHR::RM::Common::Archetyped::Archetyped.new(@archetype_id, '1.0.1')}
     assert_nothing_raised(Exception){@link = OpenEHR::RM::Common::Archetyped::Link.new(OpenEHR::RM::Data_Types::Text::DV_Text.new("generic"), OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://test/"),OpenEHR::RM::Data_Types::Text::DV_Text.new("problem"))}
-    
+#    assert_nothing_raised(Exception){@
   end
+
   def test_init
     assert_instance_of OpenEHR::RM::Common::Archetyped::Archetyped, @archetyped
     assert_instance_of OpenEHR::RM::Common::Archetyped::Link, @link
   end
+
   def test_archetyped
     assert_equal @archetype_id, @archetyped.archetype_id
     assert_equal '1.0.1', @archetyped.rm_version
@@ -435,6 +373,7 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_nothing_raised(ArgumentError){@archetyped.rm_version = '1.0.2'}
     assert_equal '1.0.2', @archetyped.rm_version
   end
+
   def test_link
     # test constructor
     assert_equal 'generic', @link.meaning.value
@@ -452,5 +391,95 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@link.type = OpenEHR::RM::Data_Types::Text::DV_Text.new("issue")}
     assert_equal 'issue', @link.type.value
     assert_raise(ArgumentError){@link.type = nil}
+  end
+end
+
+class RM_Data_Types_Basic_Test < Test::Unit::TestCase
+  def setup
+    @dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")
+    @dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new("code1",true)
+    @dv_identifier = OpenEHR::RM::Data_Types::Basic::DV_Identifier.new("Ruby Hospital","0123456-0", "Information office", "personal id")
+  end
+
+  def test_init
+    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_Boolean, @dv_boolean
+    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_State, @dv_state
+    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_Identifier, @dv_identifier
+  end
+
+  def test_dv_boolean
+    assert @dv_boolean.value?
+    @dv_boolean.value = false
+    assert !@dv_boolean.value?
+    # inv: Value_exists
+    assert_raise(ArgumentError){@dv_boolean.value=nil}
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Basic::DV_Boolean.new(nil)}
+  end
+
+  def test_dv_state
+    assert_equal("code1", @dv_state.value)
+    assert_nothing_raised(Exception){@dv_state.value = "code2"}
+    assert_equal("code2", @dv_state.value)
+    assert @dv_state.is_terminal?
+    assert_nothing_raised(Exception){@dv_state.is_terminal = false}
+    assert !@dv_state.is_terminal?
+    assert_raise(ArgumentError) {OpenEHR::RM::Data_Types::Basic::DV_State.new(nil,nil)}
+    assert_raise(ArgumentError) {@dv_state.value=nil}
+    assert_raise(ArgumentError) {@dv_state.is_terminal=nil}
+  end
+
+  def test_dv_identifier
+    assert_equal("Ruby Hospital", @dv_identifier.assigner)
+    assert_equal("0123456-0", @dv_identifier.id)
+    assert_equal("Information office", @dv_identifier.issuer)
+    assert_equal("personal id", @dv_identifier.type)
+    @dv_identifier.assigner = "Test Hospital"
+    assert_equal("Test Hospital", @dv_identifier.assigner)
+    @dv_identifier.id = "TEST-0987"
+    assert_equal("TEST-0987", @dv_identifier.id)
+    @dv_identifier.issuer = "Security office"
+    assert_equal("Security office", @dv_identifier.issuer)
+    @dv_identifier.type = "test id"
+    assert_equal("test id", @dv_identifier.type)
+    assert_raise(ArgumentError) {OpenEHR::RM::Data_Types::Basic::DV_Identifier.new(nil, nil, nil, nil)}
+  end
+end
+
+class RM_Data_Types_URI_Test < Test::Unit::TestCase
+  def setup
+    @dv_uri = OpenEHR::RM::Data_Types::URI::DV_URI.new("http://www.openehr.jp/changeset/test?cmd=93#file0")
+    @dv_ehr_uri = OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://1234567/87284370-2D4B-4e3d-A3F3-F303D2F4F34B@2005-08-02T04:30:00")
+  end
+
+  def test_init
+    assert_instance_of OpenEHR::RM::Data_Types::URI::DV_URI, @dv_uri
+    assert_instance_of OpenEHR::RM::Data_Types::URI::DV_EHR_URI, @dv_ehr_uri    
+  end
+
+  def test_dv_uri
+    assert_equal("file0", @dv_uri.fragment_id)
+    assert_equal("/changeset/test", @dv_uri.path)
+    assert_equal("cmd=93", @dv_uri.query)
+    assert_equal("http", @dv_uri.scheme)
+    assert_equal("http://www.openehr.jp/changeset/test?cmd=93#file0", @dv_uri.value)
+    @dv_uri.value="svn://www.openehr.jp/openehr-jp/"
+    assert_equal("svn://www.openehr.jp/openehr-jp/", @dv_uri.value)
+    assert_equal("/openehr-jp/", @dv_uri.path)
+  end
+
+  def test_dv_ehr_uri
+    assert_equal("ehr", @dv_ehr_uri.scheme)
+    assert_raise(ArgumentError){
+      @dv_ehr_uri.value="svn://www.openehr.jp/openehr-jp/" }
+  end
+
+end
+
+class RM_Common_Generic_Test < Test::Unit::TestCase
+  def setup
+    assert_nothing_raised(Exception){@party_proxy = OpenEHR::RM::Common::Generic::Party_Proxy.new}
+#    assert_nothing_raised(Exception){@audit_details = OpenEHR::RM::Common::Generic::Audit_Details.new('pikachu', @party_proxy, OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_DATE_TIME.new(2008))}
+  end
+  def test_init
   end
 end
