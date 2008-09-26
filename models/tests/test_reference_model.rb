@@ -9,10 +9,6 @@ class ReferenceModelTest < Test::Unit::TestCase
                                                                               :description => "test")
     @translation_details = OpenEHR::RM::Common::Resource::TRANSLATION_DETAILS.new(nil,nil,nil,nil,nil)
 #    @openehr_definitions = OpenEHR::RM::Support::Definition::OpenEHR_Definitions.new
-    @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")
-    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("valid value", "AT1000")
-    @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
-    @term_mapping = OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text,"TEST")
 #    @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new
 #    @agent = OpenEHR::RM::Demogrphic::Agent.new
 #    @organisation = OpenEHR::RM::Demogrphic::Organisation.new
@@ -23,9 +19,6 @@ class ReferenceModelTest < Test::Unit::TestCase
   def test_init
     assert_instance_of OpenEHR::RM::Common::Resource::AUTHORED_RESOURCE, @authored_resource
     assert_instance_of OpenEHR::RM::Common::Resource::TRANSLATION_DETAILS, @translation_details
-    assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Text, @dv_text
-    assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Coded_Text, @dv_coded_text
-    assert_instance_of OpenEHR::RM::Data_Types::Text::Term_Mapping, @term_mapping
 #    assert_instance_of OpenEHR::RM::Demogrphic::Agent, @agent
 #    assert_instance_of OpenEHR::RM::Demogrphic::Organisation, @organisation
 #    assert_instance_of OpenEHR::RM::Demogrphic::Person, @person
@@ -37,45 +30,6 @@ class ReferenceModelTest < Test::Unit::TestCase
     assert_equal("\n", OpenEHR::RM::Support::Definition::OpenEHR_Definitions::LF)
     assert_equal("\r", OpenEHR::RM::Data_Types::Basic::Data_Value::CR)
     assert_equal("\n", OpenEHR::RM::Data_Types::Basic::Data_Value::LF)
-  end
-
-  def test_dv_text
-    assert_equal("valid value", @dv_text.value)
-    assert_raise(ArgumentError){@dv_text.value = "not valid value\n"}
-    assert_raise(ArgumentError){@dv_text.value = nil }
-    assert_raise(ArgumentError){@dv_text.value = "" }
-    assert_raise(ArgumentError){@dv_text.formatting = "" }
-    assert_raise(ArgumentError){@dv_text.encoding = ""}
-    assert_raise(ArgumentError){@dv_text.language = ""}
-    assert_raise(ArgumentError){@dv_text.mappings = Set.new}
-    assert_raise(ArgumentError){@dv_text.mappings = ""}
-    assert_raise(ArgumentError){@dv_text.language = ""}
-  end
-
-  def test_dv_coded_text
-    assert_equal("valid value", @dv_coded_text.value)
-    assert_equal("AT1000", @dv_coded_text.defining_code)
-    assert_raise(ArgumentError){@dv_coded_text.defining_code=nil}
-  end
-
-  def test_dv_paragraph
-    assert_equal((Set.new ["test1", "test2"]), @dv_paragraph.items)
-    assert_raise(ArgumentError){@dv_paragraph.items=Set.new}
-  end
-
-  def test_term_mapping
-    assert_equal '=', @term_mapping.match
-    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('>')
-    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('=')
-    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('<')
-    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('?')
-    assert !OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('!')
-    assert_equal @dv_coded_text, @term_mapping.purpose
-    assert_equal "TEST", @term_mapping.target
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new}
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('!',@dv_coded_text, "invalid case")}
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',nil , "invalid case")}
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text, nil)}
   end
 end
 
@@ -288,7 +242,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
   end
 
   def test_locatable_ref
-# test constructorpp
+# test constructor
     assert_equal 'unknown', @locatable_ref.namespace
     assert_equal 'PERSON', @locatable_ref.type
     assert_equal @uid_based_id, @locatable_ref.id
@@ -394,6 +348,7 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
   end
 end
 
+
 class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   def setup
     @dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")
@@ -445,6 +400,7 @@ class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   end
 end
 
+# fixed
 class RM_Data_Types_URI_Test < Test::Unit::TestCase
   def setup
     @dv_uri = OpenEHR::RM::Data_Types::URI::DV_URI.new("http://www.openehr.jp/changeset/test?cmd=93#file0")
@@ -472,7 +428,60 @@ class RM_Data_Types_URI_Test < Test::Unit::TestCase
     assert_raise(ArgumentError){
       @dv_ehr_uri.value="svn://www.openehr.jp/openehr-jp/" }
   end
+end
 
+class RM_Data_Types_Text_Test < Test::Unit::TestCase
+  def setup
+    @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")
+    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("valid value", "AT1000")
+    @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
+    @term_mapping = OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text,"TEST")
+  end
+
+  def test_init
+    assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Text, @dv_text
+    assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Coded_Text, @dv_coded_text
+    assert_instance_of OpenEHR::RM::Data_Types::Text::Term_Mapping, @term_mapping
+  end
+
+  def test_dv_text
+    assert_equal("valid value", @dv_text.value)
+    assert_raise(ArgumentError){@dv_text.value = "not valid value\n"}
+    assert_raise(ArgumentError){@dv_text.value = nil }
+    assert_raise(ArgumentError){@dv_text.value = "" }
+    assert_raise(ArgumentError){@dv_text.formatting = "" }
+    assert_raise(ArgumentError){@dv_text.encoding = ""}
+    assert_raise(ArgumentError){@dv_text.language = ""}
+    assert_raise(ArgumentError){@dv_text.mappings = Set.new}
+    assert_raise(ArgumentError){@dv_text.mappings = ""}
+    assert_raise(ArgumentError){@dv_text.language = ""}
+  end
+
+  def test_dv_coded_text
+    assert_equal("valid value", @dv_coded_text.value)
+    assert_equal("AT1000", @dv_coded_text.defining_code)
+    assert_raise(ArgumentError){@dv_coded_text.defining_code=nil}
+  end
+
+  def test_dv_paragraph
+    assert_equal((Set.new ["test1", "test2"]), @dv_paragraph.items)
+    assert_raise(ArgumentError){@dv_paragraph.items=Set.new}
+  end
+
+  def test_term_mapping
+    assert_equal '=', @term_mapping.match
+    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('>')
+    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('=')
+    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('<')
+    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('?')
+    assert !OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('!')
+    assert_equal @dv_coded_text, @term_mapping.purpose
+    assert_equal "TEST", @term_mapping.target
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new}
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('!',@dv_coded_text, "invalid case")}
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',nil , "invalid case")}
+    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text, nil)}
+  end
 end
 
 class RM_Common_Generic_Test < Test::Unit::TestCase
