@@ -351,8 +351,11 @@ end
 
 class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   def setup
-    @dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")
-    @dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new("code1",true)
+    assert_nothing_raised(Exception){@dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")}
+    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('C83.3', 'ICD10','')
+    @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase(@terminology_id, 
+    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text
+    @dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new(OpenEHR::RM::Data_Types::Text:DV_Coded_Text.new("Chronic myeloid leukemia", @terminology_id), true)
     @dv_identifier = OpenEHR::RM::Data_Types::Basic::DV_Identifier.new("Ruby Hospital","0123456-0", "Information office", "personal id")
   end
 
@@ -432,8 +435,9 @@ end
 
 class RM_Data_Types_Text_Test < Test::Unit::TestCase
   def setup
-    @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")
-    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("valid value", "AT1000")
+    assert_nothing_raised(Exception){@dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")}
+    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID('ICD10', '')
+    assert_nothing_raised(Exception){@dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("C82.3", @terminology_id)}
     @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
     @term_mapping = OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text,"TEST")
   end
@@ -458,8 +462,8 @@ class RM_Data_Types_Text_Test < Test::Unit::TestCase
   end
 
   def test_dv_coded_text
-    assert_equal("valid value", @dv_coded_text.value)
-    assert_equal("AT1000", @dv_coded_text.defining_code)
+    assert_equal("C83.2", @dv_coded_text.value)
+    assert_equal("ICD10", @dv_coded_text.defining_code)
     assert_raise(ArgumentError){@dv_coded_text.defining_code=nil}
   end
 

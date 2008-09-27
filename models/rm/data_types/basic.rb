@@ -14,25 +14,18 @@ module OpenEHR
 
         class DV_Boolean < Data_Value
           def initialize(value)
-            check_not_nil(value)
+            self.value = value
+          end
+          def value=(value)
+            raise ArgumentError, "value must not be nil" if value.nil?
             if value == "TRUE" or value == true
               @value = true
             else
               @value = false
             end
           end
-          def value=(value)
-            check_not_nil(value)
-            @value = value
-          end
           def value?
             @value == true
-          end
-          private
-          def check_not_nil(value)
-            if value == nil
-              raise ArgumentError, "value must not be empty"
-            end
           end
         end  # end of DV_Boolean
 
@@ -54,16 +47,14 @@ module OpenEHR
             raise ArgumentError, "terminal should not be nil" if s.nil?
             @is_terminal = s
           end
-          private
-          def value_validity?
-            @value.instance_of? OpenEHR::Data_Types::Text::DV_Coded_Text
-          end
         end # end of DV_State
 
         class DV_Identifier
           attr_accessor :issuer, :assigner, :id, :type
           def initialize(assigner, id, issuer, type)
-            if assigner == nil or id == nil or issuer == nil or type == nil
+            if assigner.nil? or assigner.empty?\
+              or id.nil? or id.empty? or issuer.nil? or issuer.empty?\
+              or type.nil? or type.empty?
               raise ArgumentError, "invalid argument"
             end
             @issuer = issuer

@@ -94,14 +94,30 @@ module OpenEHR
           attr_reader :name, :version_id
 
           def initialize(value, name , version_id="")
-            super(value)
+            self.value = value
             self.name = name
             self.version_id = version_id
+          end
+
+          def value = (value)
+            raise ArgumentError, "value not valid" if value.nil? or value.empty?
+            if /(.*)(\(.*\)$)/ = value
+              @name = $1
+              @version_id = $2
+            else
+              @name = value
+            end
+            @value = value
           end
 
           def name=(name)
             raise ArgumentError, "name not valid" if name.nil? or name.empty?
             @name = name
+            if @version_id.empty?
+              @value = name
+            else
+              @value = name + '(' + value ')'
+            end 
           end
 
           def version_id=(version_id)

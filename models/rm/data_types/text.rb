@@ -46,19 +46,19 @@ module OpenEHR
         class Code_Phrase
           attr_reader :terminology_id, :code_string
           def initialize(terminology_id, code_string)
-            if terminlogyID.nil?
-              raise Exception.new("nil terminology")
-            end
-            if code_string.nil?
-              raise Exception.new("empty codeString")
-            end
-            if terminology_id.instance_of?(Terminology_ID)
-              @terminology_id = terminology_id
-            else
-              @terminologyID = Terminology_ID.new(terminology_id)
-            end
-            @code_string = code_string
+            self.terminology_id = terminology_id
+            self.code_string = code_string
           end
+
+          def terminology_id=(terminology_id)
+            raise ArgumentError, "terminology_id should not be nil" if terminology_id.nil?
+            @terminology_id = terminology_id
+          end
+
+          def code_string=(code_string)
+            raise ArgumentError, "code_string should not be empty" if code_string.nil? or code_string.empty?
+            @code_string = code_string
+          end 
         end # of Code_Phrase
 
         class DV_Text < OpenEHR::RM::Data_Types::Basic::Data_Value
