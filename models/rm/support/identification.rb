@@ -93,15 +93,23 @@ module OpenEHR
         class Terminology_ID < Object_ID
           attr_reader :name, :version_id
 
-          def initialize(value, name , version_id="")
-            self.value = value
+          def initialize(name, version_id="")
             self.name = name
             self.version_id = version_id
           end
 
-          def value = (value)
+          def value
+            if @version_id.empty?
+              @name
+            else
+              @name + '(' + @version_id + ')'
+            end 
+          end
+
+
+          def value=(value)
             raise ArgumentError, "value not valid" if value.nil? or value.empty?
-            if /(.*)(\(.*\)$)/ = value
+            if /(.*)\((.*)\)$/ =~ value
               @name = $1
               @version_id = $2
             else
@@ -113,11 +121,6 @@ module OpenEHR
           def name=(name)
             raise ArgumentError, "name not valid" if name.nil? or name.empty?
             @name = name
-            if @version_id.empty?
-              @value = name
-            else
-              @value = name + '(' + value ')'
-            end 
           end
 
           def version_id=(version_id)

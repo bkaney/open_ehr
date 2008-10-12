@@ -45,9 +45,9 @@ module OpenEHR
 
         class Code_Phrase
           attr_reader :terminology_id, :code_string
-          def initialize(terminology_id, code_string)
-            self.terminology_id = terminology_id
+          def initialize(code_string, terminology_id)
             self.code_string = code_string
+            self.terminology_id = terminology_id
           end
 
           def terminology_id=(terminology_id)

@@ -38,7 +38,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new("0.0.3")}
     assert_nothing_raised(Exception){@object_ref = OpenEHR::RM::Support::Identification::Object_Ref.new('local', 'ANY', @object_id)}
     assert_nothing_raised(Exception){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")}
-    assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", 'terminology','0.0.3')}
+    assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("ICD10",'2003')}
     assert_nothing_raised(Exception){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", "openehr")}
     assert_nothing_raised(Exception){@uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.3')}
     assert_nothing_raised(Exception){@hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')}
@@ -164,30 +164,29 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
   end
 
   def test_terminology_id
-    assert_equal "0.0.7", @terminology_id.value
-    assert_nothing_raised(Exception){@terminology_id.value = "0.0.8"}
-    assert_equal "0.0.8", @terminology_id.value
+    assert_equal "ICD10(2003)", @terminology_id.value
+    assert_nothing_raised(Exception){@terminology_id.value = "ICD9(1999)"}
+    assert_equal "ICD9", @terminology_id.name
+    assert_equal "1999", @terminology_id.version_id
     assert_raise(ArgumentError){@terminology_id.value = nil}
     assert_raise(ArgumentError){@terminology_id.value = ""}
 
     assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new}
-    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new(nil, 'terminology','0.0.3')}
-    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("", 'terminology','0.0.3')}
-    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("", 'terminology','0.0.3')}
-    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", nil,'0.0.3')}
-    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", '','0.0.3')}
-    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", "terminology", nil)}
-    assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("0.0.7", "terminology",'')}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new(nil,'2008')}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('','02008')}
+    assert_raise(ArgumentError){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("SNOMED", nil)}
+    assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new("SNOMED",'')}
 
-    assert_equal "terminology", @terminology_id.name
-    assert_nothing_raised(Exception){@terminology_id.name = "snomed"}
-    assert_equal "snomed", @terminology_id.name
+    assert_equal "SNOMED", @terminology_id.name
+    assert_nothing_raised(Exception){@terminology_id.name = "LOINC"}
+    assert_equal "LOINC", @terminology_id.name
     assert_raise(ArgumentError){@terminology_id.name = nil}
     assert_raise(ArgumentError){@terminology_id.name = ""}
 
     assert_equal "", @terminology_id.version_id
-    assert_nothing_raised(Exception){@terminology_id.version_id = "0.0.8"}
-    assert_equal "0.0.8", @terminology_id.version_id
+    assert_nothing_raised(Exception){@terminology_id.version_id = "2008"}
+    assert_equal "2008", @terminology_id.version_id
+    assert_equal 'LOINC(2008)', @terminology_id.value
     assert_raise(ArgumentError){@terminology_id.version_id = nil}
     assert_nothing_raised(Exception){@terminology_id.version_id = ''}
   end
@@ -352,10 +351,10 @@ end
 class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")}
-    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('C83.3', 'ICD10','')
-    @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase(@terminology_id, 
-    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text
-    @dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new(OpenEHR::RM::Data_Types::Text:DV_Coded_Text.new("Chronic myeloid leukemia", @terminology_id), true)
+    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('ICD10')
+    @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('C92.0', @terminology_id)
+    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("Acute Myeloyd Leukemia", @code_phrase)
+    @dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new(@dv_coded_text, true)
     @dv_identifier = OpenEHR::RM::Data_Types::Basic::DV_Identifier.new("Ruby Hospital","0123456-0", "Information office", "personal id")
   end
 
@@ -375,7 +374,7 @@ class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   end
 
   def test_dv_state
-    assert_equal("code1", @dv_state.value)
+    assert_equal(@dv_coded_text, @dv_state.value)
     assert_nothing_raised(Exception){@dv_state.value = "code2"}
     assert_equal("code2", @dv_state.value)
     assert @dv_state.is_terminal?
@@ -436,14 +435,17 @@ end
 class RM_Data_Types_Text_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")}
-    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID('ICD10', '')
-    assert_nothing_raised(Exception){@dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("C82.3", @terminology_id)}
+    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('ICD10', '')
+    
+    assert_nothing_raised(Exception){@code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('C92.0', @terminology_id)}
+    assert_nothing_raised(Exception){@dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("Acute Myeloid Leukemia", @code_phrase)}
     @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
     @term_mapping = OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text,"TEST")
   end
 
   def test_init
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Text, @dv_text
+    assert_instance_of OpenEHR::RM::Data_Types::Text::Code_Phrase, @code_phrase
     assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Coded_Text, @dv_coded_text
     assert_instance_of OpenEHR::RM::Data_Types::Text::Term_Mapping, @term_mapping
   end
@@ -461,9 +463,16 @@ class RM_Data_Types_Text_Test < Test::Unit::TestCase
     assert_raise(ArgumentError){@dv_text.language = ""}
   end
 
+  def test_code_phrase
+    assert_equal 'C92.0', @code_phrase.code_string
+    assert_equal 'ICD10', @code_phrase.terminology_id.value
+    assert_nothing_raised(Exception){@code_phrase.code_string = 'C93.0'}
+    assert_equal 'C93.0', @code_phrase.code_string
+  end
+
   def test_dv_coded_text
-    assert_equal("C83.2", @dv_coded_text.value)
-    assert_equal("ICD10", @dv_coded_text.defining_code)
+    assert_equal("Acute Myeloid Leukemia", @dv_coded_text.value)
+    assert_equal("ICD10", @dv_coded_text.defining_code.terminology_id.name)
     assert_raise(ArgumentError){@dv_coded_text.defining_code=nil}
   end
 
