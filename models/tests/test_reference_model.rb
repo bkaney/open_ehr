@@ -351,11 +351,11 @@ end
 class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")}
-    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('ICD10')
-    @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('C92.0', @terminology_id)
-    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("Acute Myeloyd Leukemia", @code_phrase)
-    @dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new(@dv_coded_text, true)
-    @dv_identifier = OpenEHR::RM::Data_Types::Basic::DV_Identifier.new("Ruby Hospital","0123456-0", "Information office", "personal id")
+    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR','1.0.2')
+    @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('PROPOSED', @terminology_id)
+    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("Blood examination", @code_phrase)
+    assert_nothing_raised(Exception){@dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new(@dv_coded_text, false)}
+    assert_nothing_raised(Exception){@dv_identifier = OpenEHR::RM::Data_Types::Basic::DV_Identifier.new("Ruby Hospital","0123456-0", "Information office", "personal id")}
   end
 
   def test_init
@@ -374,12 +374,15 @@ class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   end
 
   def test_dv_state
-    assert_equal(@dv_coded_text, @dv_state.value)
-    assert_nothing_raised(Exception){@dv_state.value = "code2"}
-    assert_equal("code2", @dv_state.value)
-    assert @dv_state.is_terminal?
-    assert_nothing_raised(Exception){@dv_state.is_terminal = false}
+    assert_equal 'Blood examination', @dv_state.value.value
+    assert_equal 'PROPOSED', @dv_state.value.defining_code.code_string
+    assert_equal 'openEHR', @dv_state.value.defining_code.terminology_id.name
+    assert_equal '1.0.2', @dv_state.value.defining_code.terminology_id.version_id
     assert !@dv_state.is_terminal?
+    assert_nothing_raised(Exception){@dv_state.value.defining_code.code_string = "COMPLETED"}
+    assert_nothing_raised(Exception){@dv_state.is_terminal = true}
+    assert_equal 'COMPLETED', @dv_state.value.defining_code.code_string
+    assert @dv_state.is_terminal?
     assert_raise(ArgumentError) {OpenEHR::RM::Data_Types::Basic::DV_State.new(nil,nil)}
     assert_raise(ArgumentError) {@dv_state.value=nil}
     assert_raise(ArgumentError) {@dv_state.is_terminal=nil}

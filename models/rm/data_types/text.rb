@@ -133,8 +133,7 @@ module OpenEHR
                          hyperlink = nil, mappings = nil, language = nil, 
                          encoding = nil)
             super(value, formatting, hyperlink, mappings, language, encoding)
-            definition_exists(defining_code)
-            @defining_code = defining_code
+            self.defining_code = defining_code
           end
           def defining_code=(defining_code)
             definition_exists(defining_code)
