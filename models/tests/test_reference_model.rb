@@ -508,3 +508,19 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
   def test_init
   end
 end
+
+class RM_Common_Directory_Test < Test::Unit::TestCase
+  def setup
+    dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new('root')
+    assert_nothing_raised(Exception){@folder = OpenEHR::RM::Common::Directory::Folder.new('at0000', dv_text)}
+  end
+  
+  def test_init
+    assert_instance_of OpenEHR::RM::Common::Directory::Folder, @folder
+  end
+
+  def test_folder
+    assert_equal 'root', @folder.archetype_node_id
+    assert_equal 'name', @folder.name.value
+  end
+end  

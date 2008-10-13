@@ -37,26 +37,31 @@ module OpenEHR
 
         class Locatable < Pathable
           include Locater_Constants
-          attr_accessor :uid, :archetype_node_id, :archetype_details
-          attr_accessor :feeder_audit, :links, :parent
-          def initialize(uid, archetype_node_id, name, archetype_details,
-                         feeder_audit, links, parent)
+          attr_reader :archetype_node_id, :name, :links
+          attr_accessor :uid, :archetype_details, :feeder_audit
+          def initialize(archetype_node_id, name, links, parent=nil, uid=nil, archetype_details=nil, feeder_audit=nil)
             super(parent)
-            if archetype_node_id.nil?
-              raise ArgumentError, "null archetype_node_id"
-            end
-            if name.nil?
-              raise ArgumentError, "name is empty"
-            end
-            if links.nil?
-              raise ArgumentError, "links is empty"
-            end
-            @uid = uid
+            self.archetype_node_id = archetype_node_id
+            self.name = name
+            self.links = links
+            self.uid = uid
+            self.archetype_details = archetype_details
+            self.feeder_audit = feeder_audit
+            self.parent = parent
+          end
+          
+          def archetype_node_id=(archetype_node_id)
+            raise ArgumentError, 'archetype_node_id should not be nil' if archetype_node_id.nil?
             @archetype_node_id = archetype_node_id
-            @archetype_details = archetype_details
-            @feeder_audit = feeder_audit
+          end
+
+          def name=(name)
+            raise ArgumentError, 'name should not be empty' if name.nil? or name.empty?
+            @name = name
+          end
+          def links=(links)
+            raise ArgumentError, "links shoud not be nil" if links.nil?
             @links = links
-            @parent = parent
           end
           def item_at_path(path)
             if !@path.nil?
@@ -87,7 +92,7 @@ module OpenEHR
           def initialize(archetype_id, rm_version, template_id = nil)            
             self.archetype_id = archetype_id
             self.rm_version = rm_version
-            @template_id = template_id
+            self.template_id = template_id
           end
           def archetype_id=(archetype_id)
             raise ArgumentError, "invalid archetype_id" if archetype_id.nil?
@@ -118,8 +123,8 @@ module OpenEHR
             raise ArgumentError, "type should not be nil" if type.nil?
             @type = type
           end
-        end
-      end # end of Archetyped
-    end # end of Common
-  end # end of RM
-end # end of OpenEHR
+        end # of Link
+      end # of Archetyped
+    end # of Common
+  end # of RM
+end # OpenEHR
