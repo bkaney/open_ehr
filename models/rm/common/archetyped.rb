@@ -56,11 +56,11 @@ module OpenEHR
           end
 
           def name=(name)
-            raise ArgumentError, 'name should not be empty' if name.nil? or name.empty?
+            raise ArgumentError, 'name should not be empty' if name.nil? or name.value.empty?
             @name = name
           end
           def links=(links)
-            raise ArgumentError, "links shoud not be nil" if links.nil?
+            raise ArgumentError, "links shoud not be empty" if !links.nil? and links.empty?
             @links = links
           end
           def item_at_path(path)

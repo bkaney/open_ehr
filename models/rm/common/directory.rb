@@ -5,15 +5,17 @@ module OpenEHR
   module RM
     module Common
       module Directory
-        class Folder < OpenEHR::RM::Archetyped::Locatable
+        class Folder < OpenEHR::RM::Common::Archetyped::Locatable
           attr_accessor :items
-          attr_reader folders
+          attr_reader :folders
+
           def initialize(archetype_node_id, name, links, parent=nil, folders=nil, items=nil, uid = nil, archetype_details=nil, feeder_audit=nil)
             super(archetype_node_id, name, links, parent, uid, archetype_details, feeder_audit)
-            self.items = items
+            self.folders = folders
           end
+
           def folders=(folders)
-            raise ArgumentError, "empty subfolder" if !@folders.nil and @folders.empty?
+            raise ArgumentError, "empty subfolder" if !folders.nil? and folders.empty?
             @folders = folders
           end
         end        
