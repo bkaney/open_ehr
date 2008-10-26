@@ -17,6 +17,7 @@ module OpenEHR
       autoload :Archetyped, "rm/common/archetyped.rb"
       autoload :Generic, "rm/common/generic.rb"
       autoload :Directory, "rm/common/directory.rb"
+      autoload :Change_Control, "rm/common/change_control.rb"
     end
 
     module Support

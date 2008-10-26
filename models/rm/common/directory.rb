@@ -19,6 +19,8 @@ module OpenEHR
             @folders = folders
           end
         end        
+        class Versioned_Folder < OpenEHR::RM::Common::Change_Control::Versioned_Object
+        end
       end # of Directory
     end # of Common
   end # of RM
