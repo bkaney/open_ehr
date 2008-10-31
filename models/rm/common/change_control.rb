@@ -7,6 +7,7 @@ module OpenEHR
     module Common
       module Change_Control
         class Contribution
+          
         end
         class Versioned_Object
         end

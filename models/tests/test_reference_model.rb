@@ -523,4 +523,10 @@ class RM_Common_Directory_Test < Test::Unit::TestCase
     assert_equal 'at0000', @folder.archetype_node_id
     assert_equal 'root', @folder.name.value
   end
-end  
+end
+
+class RM_Common_Change_Control_Test < Test::Unit::TestCase
+  def setup
+    assert_nothing_raised(Exception){@versioned = OpenEHR::Common::Change_Control::versioned.new(
+  end
+end
