@@ -7,7 +7,35 @@ module OpenEHR
     module Common
       module Change_Control
         class Contribution
-          
+          attr_reader :uid, :versions, :audit
+          def initialize(uid, versions, audit)
+            self.uid = uid
+            self.versions = versions
+            self.audit = audit
+          end
+          def uid=(uid)
+            if uid.nil?
+              raise ArgumentError, "uid should not be nil."
+            end
+            @uid = uid
+          end
+          def versions=(versions)
+            unless uid.nil?
+              if uid.empty?
+                raise ArgumentError, 'versions shoud not be nil or empty.'
+              end
+            end
+            @versions = versions
+          end
+          def audit=(audit)
+            if audit.nil?
+              raise ArgumentError, 'audit should not be nil.'
+            end
+            if audit.description.nil?
+              raise ArgumentError, 'audit.description should not be nil.'
+            end
+            @audit = audit
+          end
         end
         class Versioned_Object
         end
