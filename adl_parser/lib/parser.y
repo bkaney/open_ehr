@@ -1172,6 +1172,7 @@ $:.unshift File.join(File.dirname(__FILE__))
 require 'logger'
 #require 'lib/util.rb'
 #require 'lib/scanner.rb'
+require 'lib/adl_parser.rb'
 require 'rubygems'
 require 'am.rb'
 $DEBUG = false
