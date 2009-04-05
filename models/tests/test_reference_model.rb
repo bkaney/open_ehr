@@ -527,6 +527,7 @@ end
 
 class RM_Common_Change_Control_Test < Test::Unit::TestCase
   def setup
-    assert_nothing_raised(Exception){@versioned = OpenEHR::Common::Change_Control::versioned.new(
+    assert_nothing_raised(Exception){}
+    assert_nothing_raised(Exception){@version = OpenEHR::RM::Common::Change_Control::Contribution.new()}
   end
 end

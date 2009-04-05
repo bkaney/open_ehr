@@ -20,8 +20,8 @@ module OpenEHR
             @uid = uid
           end
           def versions=(versions)
-            unless uid.nil?
-              if uid.empty?
+            unless versions.nil?
+              if versions.empty?
                 raise ArgumentError, 'versions shoud not be nil or empty.'
               end
             end
@@ -39,10 +39,31 @@ module OpenEHR
         end
         class Versioned_Object
         end
+
         class Version
+          attr_reader :uid, :contribution, :commit_audit, :signature
+          attr_reader :attestations, :data
+          def initialize(uid, contribution, commit_audit, signature=nil, attestations=nil, data=nil)
+            self.uid = uid
+            self.contribution = contribution          
+            self.commit_audit = commit_audit
+          end
+          def uid=(uid)
+            raise ArgumentError, "uid should not be nil" if uid.nil?
+          end
+          def contribution=(contribution)
+            raise ArgumentError, "contribution should not be nil" if contribution.nil? or contribution.type == ''
+            @contribution = contribution
+          end
+          def commit_audit=(commit_audit)
+            raise ArgumentError, "commit_audit should not be nil" if commit_audit.nil?
+            @commit_audit = commit_audit
+          end
         end
+
         class Imported_Version < Version
         end
+
         class Original_Version < Version
         end
       end # of Change_Control
