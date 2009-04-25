@@ -503,7 +503,9 @@ end
 class RM_Common_Generic_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@party_proxy = OpenEHR::RM::Common::Generic::Party_Proxy.new}
-#    assert_nothing_raised(Exception){@audit_details = OpenEHR::RM::Common::Generic::Audit_Details.new('pikachu', @party_proxy, OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_DATE_TIME.new(2008))}
+    change_type = OpenEHR::Data_Types::Text::DV_TEXT.new('audit_type')
+    time_committed = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_DATE_TIME.new(2008)
+    assert_nothing_raised(Exception){@audit_details = OpenEHR::RM::Common::Generic::Audit_Details.new('rails',@party_proxy, change_type, time_committed)}
   end
   def test_init
   end
@@ -527,7 +529,20 @@ end
 
 class RM_Common_Change_Control_Test < Test::Unit::TestCase
   def setup
-    assert_nothing_raised(Exception){}
-    assert_nothing_raised(Exception){@version = OpenEHR::RM::Common::Change_Control::Contribution.new()}
+    hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')
+    object_id = OpenEHR::RM::Support::Identification::Object_ID.new("0.0.3")
+    object_ref = OpenEHR::RM::Support::Identification::Object_Ref.new('local', 'ANY', @object_id)
+    versions = Set.new(object_ref)
+    assert_nothing_raised(Exception){@version = OpenEHR::RM::Common::Change_Control::Version.new(hier_object_id, versions)}
+    assert_nothing_raised(Exception){@contribution = OpenEHR::RM::Common::Change_Control::Contribution.new(hier_object_id, versions)}
+  end
+  def test_init
+    assert_instace_of OpenEHR::RM::Common::Change_Control::Contribution @contribution
+    assert_instace_of OpenEHR::RM::Common::Change_Control::Version @version
+  end
+  def test_contribution
+    assert 
+  end
+  def test_version
   end
 end
