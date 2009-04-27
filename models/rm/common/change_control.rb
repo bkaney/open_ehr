@@ -37,6 +37,7 @@ module OpenEHR
             @audit = audit
           end
         end
+
         class Versioned_Object
         end
 
@@ -48,16 +49,26 @@ module OpenEHR
             self.contribution = contribution          
             self.commit_audit = commit_audit
           end
+          def canonical_form
+            raise NotImplementedError, 'canonical form not implemented'
+          end
+
           def uid=(uid)
             raise ArgumentError, "uid should not be nil" if uid.nil?
           end
+
           def contribution=(contribution)
             raise ArgumentError, "contribution should not be nil" if contribution.nil? or contribution.type == ''
             @contribution = contribution
           end
+
           def commit_audit=(commit_audit)
             raise ArgumentError, "commit_audit should not be nil" if commit_audit.nil?
             @commit_audit = commit_audit
+          end
+
+          def is_branch?
+            raise NotImplementedError, 'is_branch not implemented'
           end
         end
 
@@ -66,6 +77,7 @@ module OpenEHR
 
         class Original_Version < Version
         end
+
       end # of Change_Control
     end # of Common
   end # of RM
