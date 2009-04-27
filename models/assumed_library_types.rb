@@ -1,6 +1,7 @@
 # This module is related to the ticket #36
 require 'date'
 require 'time'
+require 'parsedate'
 
 module OpenEHR
   module Assumed_Library_Types
@@ -108,30 +109,18 @@ module OpenEHR
       end
     end # end of TIME_DEFINITIONS
 
-    class ISO8601_DATE < TIME_DEFINITIONS
+    module ISO8601_DATE_MODULE
       attr_reader :year, :month, :day
-      def initialize(year = nil, month = nil, day = nil)
-        @year = @month = @day = nil
-        if !year.nil?
-          self.year = year
-        end
-        if !month.nil?
-          self.month = month
-        end
-        if !day.nil?
-          self.day = day
-        end
-      end
       def year=(year)
-        raise ArgumentError, "Year is not valid" if !ISO8601_DATE.valid_year?(year)
+        raise ArgumentError, "Year is not valid" unless ISO8601_DATE.valid_year?(year)
         @year = year
       end
       def month=(month)
-        raise ArgumentError, "Month is not valid" if !ISO8601_DATE.valid_month?(month)
+        raise ArgumentError, "Month is not valid" unless month.nil? or ISO8601_DATE.valid_month?(month)
         @month = month
       end
       def day=(day)
-        raise ArgumentError, "Day is not valid" if !ISO8601_DATE.valid_day?(@year, @month, day)
+        raise ArgumentError, "Day is not valid" unless day.nil? or ISO8601_DATE.valid_day?(@year, @month, day)
         @day = day
       end
       def as_string
@@ -155,6 +144,28 @@ module OpenEHR
       def is_partial?
         month_unknown? or day_unknown?
       end
+    end
+
+    class ISO8601_DATE < TIME_DEFINITIONS
+      include ISO8601_DATE_MODULE
+      def initialize(string)
+        /(\d{4})(?:-(\d{2})(?:-(\d{2})?)?)?/ =~ string
+        if $1.nil?
+          raise ArgumentError, 'data invalid'
+        else
+          self.year = $1.to_i
+        end
+        if $2.nil?
+          self.month = nil
+        else
+          self.month = $2.to_i
+        end
+        if $3.nil?
+          self.day = nil
+        else
+          self.day = $3.to_i
+        end
+      end
       def self.valid_iso8601_date?(string)
         begin
           Date.parse(string)
@@ -163,16 +174,11 @@ module OpenEHR
         end
         true
       end
-
     end # end of ISO8601_DATE
 
-    class ISO8601_TIME < TIME_DEFINITIONS
+    module ISO8601_TIME_MODULE
       attr_reader :hour, :minute, :second, :fractional_second, :timezone
-      def initialize(hh, mm = nil, ss = nil, msec = nil, tz = nil)
-        raise ArgumentError, "Not valid hour format" if !ISO8601_TIME.valid_hour?(hh,mm,ss)
-        @hour = hh; @minute = mm; @second = ss
-        @fractional_second = msec; @timezone = tz
-      end
+
       def hour=(hour)
         raise ArgumentError, "hour is not valid" if !ISO8601_TIME.valid_hour?(hour, @minute, @second)
         @hour = hour
@@ -188,14 +194,14 @@ module OpenEHR
         @second.nil?
       end
       def second=(second)
-        raise ArgumentError, "minute not defined" if @minute.nil?
+        raise ArgumentError, "minute not defined" if @minute.nil? and !second.nil?
         raise ArgumentError, "second is not valid" if !second.nil? and !ISO8601_TIME.valid_second?(second)
         @second = second
       end
       def fractional_second=(fractional_second)
-        raise ArgumentError, "minute not defined" if minute_unknown?
-        raise ArgumentError, "second not defined" if second_unknown?
-        raise ArgumentError, "fractional second should be lower than 1.0" if fractional_second >= 1.0
+        raise ArgumentError, "minute not defined" if minute_unknown? and !fractional_second.nil?
+        raise ArgumentError, "second not defined" if second_unknown? and !fractional_second.nil?
+        raise ArgumentError, "fractional second should be lower than 1.0" if !fractional_second.nil? and fractional_second >= 1.0
         @fractional_second = fractional_second
       end
       def has_fractional_second?
@@ -203,6 +209,17 @@ module OpenEHR
           return false
         else
           return true
+        end
+      end
+      def timezone=(timezone)
+        unless timezone.nil? or timezone == 'Z'
+          if /[+-](\d{2}):?(\d{2})/ =~ timezone
+            @timezone = timezone
+          else
+            raise ArgumentError, "timezone invalid"
+          end
+        else
+          @timezone = nil
         end
       end
       def is_decimal_sign_comma?
@@ -229,6 +246,38 @@ module OpenEHR
           end
         end
         s
+      end
+    end
+
+    class ISO8601_TIME < TIME_DEFINITIONS
+      include ISO8601_TIME_MODULE
+      def initialize(string)
+        /(\d{2}):?(\d{2})?(:?)(\d{2})?((\.|,)(\d+))?(Z|([+-](\d{2}):?(\d{2})))?/ =~ string
+        if $2.nil?
+          self.minute = nil
+        else
+          self.minute = $2.to_i
+        end
+        if $4.nil?
+          self.second = nil
+        else
+          self.second = $4.to_i
+        end
+        if $1.nil?
+          raise ArgumentError, 'data invalid'
+        else
+          self.hour = $1.to_i
+        end
+        if $7.nil?
+          self.fractional_second = nil
+        else
+          self.fractional_second = ("0." + $7).to_f
+        end
+        if $8.nil?
+          self.timezone = nil
+        else
+          self.timezone = $8
+        end
       end
       def self.valid_iso8601_time?(s)
         if /(\d{2}):?(\d{2})?(:?)(\d{2})?((\.|,)(\d+))?(Z|([+-](\d{2}):?(\d{2})))?/ =~ s
@@ -271,6 +320,53 @@ module OpenEHR
         end
       end
     end # end of ISO8601_TIME
+
+    class ISO8601_DATE_TIME < ISO8601_DATE
+      include ISO8601_DATE_MODULE, ISO8601_TIME_MODULE
+      def initialize(string)
+        /(\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d))?)?(Z|([+-]\d{2}):(\d{2}))?)?)?)?/ =~ string
+        if $1.empty?
+          raise ArgumentError, 'format invalid'
+        else
+          self.year = $1.to_i
+        end
+        if $2.nil?
+          self.month = nil
+        else
+          self.month = $2.to_i
+        end
+        if $3.nil?
+          self.day = nil
+        else
+          self.day = $3.to_i
+        end
+        if $5.nil?
+          self.minute = nil
+        else
+          self.minute = $5.to_i
+        end
+        if $6.nil?
+          self.second = nil
+        else
+          self.second = $6.to_i
+        end
+        if $4.nil?
+          self.hour = nil
+        else
+          self.hour = $4.to_i
+        end
+        if $7.nil?
+          self.fractional_second = nil
+        else
+          self.fractional_second = ("0."+$7).to_f
+        end
+        if $8.nil?
+          self.timezone = nil
+        else
+          self.timezone = $8+$9+$10
+        end
+      end
+    end
 
     class ISO8601_TIMEZONE
       attr_accessor :sign, :hour, :minute

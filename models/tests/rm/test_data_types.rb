@@ -158,3 +158,16 @@ class RM_Data_Types_Text_Test < Test::Unit::TestCase
     assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text, nil)}
   end
 end
+
+class QuantityDateTimeTest < Test::Unit::TestCase
+  def setup
+    assert_nothing_raised(Exception){@dv_temporal = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Temporal.new('2008')}
+  end
+  def test_init
+    assert_instance_of OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Temporal, @dv_temporal
+  end
+  def test_dv_temporal
+    assert_equal '2008', @dv_temporal.value
+    assert_raise(NotImplementedError){@dv_temporal.diff('2009')}
+  end
+end

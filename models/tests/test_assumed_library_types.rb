@@ -5,8 +5,10 @@ class Assumed_Library_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@interval = OpenEHR::Assumed_Library_Types::Interval.new(1,2)}
     assert_nothing_raised(Exception){@time_definition = OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.new}
-    assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new}
-    assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new(1)}
+    assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new('2009-04-27')}
+    assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('15:55:37.32+0900')}
+    assert_nothing_raised(Exception){@iso8601_date_time = OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME.new('2009-04-27T15:55:37.32+0900')}
+#    assert_nothing_raised(Exception){@iso8601_duration = OpenEHR::Assumed_Library_Types::ISO8601_DURATION.new()}
     assert_nothing_raised(Exception){@iso8601_timezone = OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE.new}
   end
   def test_initialize
@@ -14,6 +16,7 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS, @time_definition
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE, @iso8601_date
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIME, @iso8601_time
+    assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME, @iso8601_date_time
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE, @iso8601_timezone
   end
   def test_limits_comparable
@@ -61,7 +64,7 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::SECONDS_IN_MINUTE, 60
   end
 
-  def test_date_time_valid
+  def test_time_definition_validity
     assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_year?(2008)
     assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_year?(-20)
     assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_year?(0)
@@ -160,12 +163,15 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_month?(13)
   end
   def test_iso8601_date
+    assert_equal 2009, @iso8601_date.year
+    assert_equal 4,@iso8601_date.month
+    assert_equal 27,@iso8601_date.day
+    assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new('2008')}
     assert @iso8601_date.day_unknown?
     assert @iso8601_date.month_unknown?
     assert @iso8601_date.is_partial?
     assert @iso8601_date.is_extended?
     assert_nothing_raised(Exception){@iso8601_date.year = 2008}
-    assert_equal 2008, @iso8601_date.year 
     assert_raise(ArgumentError){@iso8601_date.year = -1}
     assert_equal "2008", @iso8601_date.as_string
     assert_nothing_raised(Exception){@iso8601_date.month = 6}
@@ -186,6 +192,15 @@ class Assumed_Library_Test < Test::Unit::TestCase
   end
 
   def test_iso8601_time
+    assert_equal 15, @iso8601_time.hour
+    assert_equal 55, @iso8601_time.minute
+    assert_equal 37, @iso8601_time.second
+    assert_equal 0.32, @iso8601_time.fractional_second
+    assert_equal '+0900', @iso8601_time.timezone
+
+#    assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('15:55:37.32+0900')}
+
+    assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('01')}
     assert_equal 1, @iso8601_time.hour
     assert @iso8601_time.is_partial?
     assert_equal "01", @iso8601_time.as_string
@@ -239,6 +254,13 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("240000Z")
     assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("240000.011Z")
   end
+
+  def test_iso_8601_date_time
+    assert_equal 2009, @iso8601_date_time.year
+    
+#    assert_nothing_raised(Exception){@iso8601_date_time = OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME.new('2009-04-27T15:55:37.32+0900')}
+  end
+
   def test_iso8601_timezone
     @iso8601_timezone.sign = "+1"
     @iso8601_timezone.hour = 0

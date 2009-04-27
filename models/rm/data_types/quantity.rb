@@ -57,6 +57,9 @@ module OpenEHR
           def subtract(a_diff)
           end
         end
+
+        autoload :Date_Time, "rm/data_types/quantity/date_time.rb"
+        
       end # of Quantity
     end # of Data_Types
   end # of RM
