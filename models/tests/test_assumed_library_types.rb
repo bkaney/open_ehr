@@ -257,8 +257,13 @@ class Assumed_Library_Test < Test::Unit::TestCase
 
   def test_iso_8601_date_time
     assert_equal 2009, @iso8601_date_time.year
-    
-#    assert_nothing_raised(Exception){@iso8601_date_time = OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME.new('2009-04-27T15:55:37.32+0900')}
+    assert_equal 4, @iso8601_date_time.month
+    assert_equal 27, @iso8601_date_time.day
+    assert_equal 15, @iso8601_date_time.hour
+    assert_equal 55, @iso8601_date_time.minute
+    assert_equal 37, @iso8601_date_time.second
+    assert_equal 0.32, @iso8601_date_time.fractional_second
+    assert_equal '+0900', @iso8601_date_time.timezone
   end
 
   def test_iso8601_timezone

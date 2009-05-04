@@ -1,7 +1,6 @@
 # This module is related to the ticket #36
 require 'date'
 require 'time'
-require 'parsedate'
 
 module OpenEHR
   module Assumed_Library_Types
@@ -324,7 +323,7 @@ module OpenEHR
     class ISO8601_DATE_TIME < ISO8601_DATE
       include ISO8601_DATE_MODULE, ISO8601_TIME_MODULE
       def initialize(string)
-        /(\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d))?)?(Z|([+-]\d{2}):(\d{2}))?)?)?)?/ =~ string
+        /(\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(Z|([+-]\d{2}):?(\d{2}))?)?)?)?/ =~ string
         if $1.empty?
           raise ArgumentError, 'format invalid'
         else
@@ -355,7 +354,7 @@ module OpenEHR
         else
           self.hour = $4.to_i
         end
-        if $7.nil?
+        if $7.nil? or $7.empty?
           self.fractional_second = nil
         else
           self.fractional_second = ("0."+$7).to_f
@@ -363,7 +362,7 @@ module OpenEHR
         if $8.nil?
           self.timezone = nil
         else
-          self.timezone = $8+$9+$10
+          self.timezone = $9+$10
         end
       end
     end
