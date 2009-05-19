@@ -381,5 +381,12 @@ module OpenEHR
         sprintf("Z%s%02d%02d", s, @hour, @minute)
       end
     end # end of ISO8601_TIMEZONE
+
+    class ISO_8601_DURATION
+      
+      def initialize
+      end
+
+    end
   end # end of Assumed_Types
 end # end of OpenEHR

@@ -159,9 +159,24 @@ class RM_Data_Types_Text_Test < Test::Unit::TestCase
   end
 end
 
+class QuantityTest < Test::Unit::TestCase
+  def setup
+    assert_nothing_raised(Exception){
+      @dv_ordered = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new }
+  end
+  def test_init
+    assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordered, @dv_ordered
+  end
+
+  def test_dv_ordered
+    assert !@dv_ordered.is_normal?
+  end
+end
+
 class QuantityDateTimeTest < Test::Unit::TestCase
   def setup
-    assert_nothing_raised(Exception){@dv_temporal = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Temporal.new('2008')}
+    assert_nothing_raised(Exception){
+      @dv_temporal = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Temporal.new('2008')}
   end
   def test_init
     assert_instance_of OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Temporal, @dv_temporal

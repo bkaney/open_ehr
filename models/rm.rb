@@ -9,6 +9,9 @@ $:.unshift File.join(File.dirname(__FILE__))
 
 # OpenEHR::RM
 module OpenEHR
+
+  autoload :Assumed_Library_Types, "assumed_library_types.rb"
+
   module RM
     autoload :Demographic, "rm/demographic.rb"
 
@@ -33,4 +36,5 @@ module OpenEHR
       autoload :Quantity, "rm/data_types/quantity.rb"
     end
   end
+
 end

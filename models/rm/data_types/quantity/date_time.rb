@@ -8,21 +8,37 @@ module OpenEHR
         module Date_Time
           class DV_Temporal < OpenEHR::RM::Data_Types::Quantity::DV_Absolute_Quantity
             attr_reader :value
+
             def initialize(value)
               self.value = value
             end
+
             def value=(value)
               if value.empty? or value.nil?
                 raise ArgumentError, 'invalid value'
               end
               @value = value
             end
+
             def diff(value)
               raise NotImplementedError, 'diff must be implemented'
             end
           end
 
           class DV_Date < DV_Temporal
+            include OpenEHR::Assumed_Library_Types::ISO8601_DATE_MODULE
+            def initialize
+              
+            end
+
+          end
+          
+          class DV_Time
+            def initialize
+            end
+          end
+
+          class DV_Date_Time
             def initialize
             end
           end

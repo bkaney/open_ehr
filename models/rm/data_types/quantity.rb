@@ -11,14 +11,13 @@ module OpenEHR
 
           def initialize(normal_range=nil, other_reference_ranges=nil,
                          normal_status = nil)
-            other_reference_ranges_validity(other_reference_ranges)
-            @normal_range = normal_range
-            @other_reference_ranges = other_reference_ranges
-            @normal_status = normal_status
+            self.normal_range = normal_range
+            self.other_reference_ranges = other_reference_ranges
+            self.normal_status = normal_status
           end          
 
           def is_normal?
-            !normal_range.nil? or !normal_status.nil
+            !normal_range.nil? or !normal_status.nil?
           end
 
           def is_simple?
@@ -30,17 +29,21 @@ module OpenEHR
           end
 
           def normal_range=(normal_range)
+            @normal_range = normal_range
           end
 
           def other_reference_ranges=(other_reference_ranges)
-          end
-
-          private
-          def other_reference_ranges_validity(other_reference_ranges)
-            if !other_reference_ranges.nil? or other_reference_ranges.is_empty?
+            unless other_reference_ranges.nil? or !other_reference_ranges.is_empty?
               raise ArgumentError, "Other reference ranges validity error"
             end
+            
+            @other_reference_ranges = other_reference_ranges
           end
+
+          def normal_status=(normal_status)
+            @normal_status = normal_status
+          end
+
         end
 
         class DV_Quantified < DV_Ordered

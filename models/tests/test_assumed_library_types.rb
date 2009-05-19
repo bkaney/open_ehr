@@ -264,6 +264,9 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_equal 37, @iso8601_date_time.second
     assert_equal 0.32, @iso8601_date_time.fractional_second
     assert_equal '+0900', @iso8601_date_time.timezone
+    assert_nothing_raised(Exception){
+      @iso8601_date_time.year = 2008 }
+    assert_equal 2008, @iso8601_date_time.year
   end
 
   def test_iso8601_timezone
@@ -279,5 +282,9 @@ class Assumed_Library_Test < Test::Unit::TestCase
     @iso8601_timezone.hour = 4
     @iso8601_timezone.minute = 30
     assert_equal "Z-0430", @iso8601_timezone.as_string
+  end
+
+  def test_iso8601_duration
+    
   end
 end
