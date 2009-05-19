@@ -129,19 +129,19 @@ module OpenEHR
 
         class DV_Coded_Text < DV_Text
           attr_reader :defining_code
+
           def initialize(value, defining_code, formatting = nil, 
                          hyperlink = nil, mappings = nil, language = nil, 
                          encoding = nil)
             super(value, formatting, hyperlink, mappings, language, encoding)
             self.defining_code = defining_code
           end
+
           def defining_code=(defining_code)
-            definition_exists(defining_code)
+            if defining_code.nil?
+              raise ArgumentError, "Defiinition must be exist" 
+            end
             @defining_code = defining_code
-          end
-          private
-          def definition_exists(defining_code)
-            raise ArgumentError, "Defiinition must be exist" if defining_code.nil?
           end
         end
 

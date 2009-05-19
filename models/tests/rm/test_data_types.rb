@@ -170,6 +170,16 @@ class QuantityTest < Test::Unit::TestCase
 
   def test_dv_ordered
     assert !@dv_ordered.is_normal?
+    assert_nil @dv_ordered.normal_status
+    assert_nil @dv_ordered.normal_range
+    assert_nil @dv_ordered.other_refference_ranges
+    assert_raise(NotImplementedError){@dv_ordered<=>1}
+    openehr_terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR','')
+    normal_code = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('N', openehr_terminology_id)
+    assert_equal 'N', normal_code.code_string
+    assert_nothing_raised(Exception){
+      @dv_ordered.normal_status = normal_code }
+    assert @dv_ordered.is_normal?
   end
 end
 

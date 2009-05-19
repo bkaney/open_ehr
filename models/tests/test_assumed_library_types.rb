@@ -8,23 +8,27 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new('2009-04-27')}
     assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('15:55:37.32+0900')}
     assert_nothing_raised(Exception){@iso8601_date_time = OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME.new('2009-04-27T15:55:37.32+0900')}
-#    assert_nothing_raised(Exception){@iso8601_duration = OpenEHR::Assumed_Library_Types::ISO8601_DURATION.new()}
+    assert_nothing_raised(Exception){@iso8601_duration = OpenEHR::Assumed_Library_Types::ISO8601_DURATION.new()}
     assert_nothing_raised(Exception){@iso8601_timezone = OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE.new}
   end
+
   def test_initialize
     assert_instance_of OpenEHR::Assumed_Library_Types::Interval, @interval
     assert_instance_of OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS, @time_definition
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE, @iso8601_date
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIME, @iso8601_time
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME, @iso8601_date_time
+    assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DURATION, @iso8601_duration
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE, @iso8601_timezone
   end
+
   def test_limits_comparable
     assert @interval.lower < @interval.upper
     assert_nothing_raised(Exception){@interval.set_lower(1.0)}
     assert_nothing_raised(Exception){@interval.set_upper(2.0)}
     assert @interval.lower < @interval.upper
   end
+
   def test_limits_consistent
     assert @interval.has?(1.5)
     assert !@interval.has?(3.0)

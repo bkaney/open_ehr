@@ -182,27 +182,33 @@ module OpenEHR
         raise ArgumentError, "hour is not valid" if !ISO8601_TIME.valid_hour?(hour, @minute, @second)
         @hour = hour
       end
+
       def minute_unknown?
         @minute.nil?
       end
+
       def minute=(minute)
         raise ArgumentError, "minute is not valid" if !minute.nil? and !ISO8601_TIME.valid_minute?(minute)
         @minute = minute
       end
+
       def second_unknown?
         @second.nil?
       end
+
       def second=(second)
         raise ArgumentError, "minute not defined" if @minute.nil? and !second.nil?
         raise ArgumentError, "second is not valid" if !second.nil? and !ISO8601_TIME.valid_second?(second)
         @second = second
       end
+
       def fractional_second=(fractional_second)
         raise ArgumentError, "minute not defined" if minute_unknown? and !fractional_second.nil?
         raise ArgumentError, "second not defined" if second_unknown? and !fractional_second.nil?
         raise ArgumentError, "fractional second should be lower than 1.0" if !fractional_second.nil? and fractional_second >= 1.0
         @fractional_second = fractional_second
       end
+
       def has_fractional_second?
         if @fractional_second.nil?
           return false
@@ -210,6 +216,7 @@ module OpenEHR
           return true
         end
       end
+
       def timezone=(timezone)
         unless timezone.nil? or timezone == 'Z'
           if /[+-](\d{2}):?(\d{2})/ =~ timezone
@@ -221,12 +228,15 @@ module OpenEHR
           @timezone = nil
         end
       end
+
       def is_decimal_sign_comma?
         true
       end
+
       def is_extended?
         true
       end
+
       def is_partial?
         second_unknown? or minute_unknown?
       end
@@ -369,9 +379,11 @@ module OpenEHR
 
     class ISO8601_TIMEZONE
       attr_accessor :sign, :hour, :minute
+
       def is_gmt?
         @sign == "+1" and @hour == 0 and @minute == 0
       end
+
       def as_string
         if @sign == "+1"
           s = "+"
@@ -382,11 +394,15 @@ module OpenEHR
       end
     end # end of ISO8601_TIMEZONE
 
-    class ISO_8601_DURATION
+    class ISO8601_DURATION
       
       def initialize
+        
       end
 
-    end
+      def as_string
+
+      end
+    end # end of ISO8601_DURATION
   end # end of Assumed_Types
 end # end of OpenEHR

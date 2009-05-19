@@ -9,15 +9,21 @@ module OpenEHR
           include Comparable
           attr_reader :other_refference_ranges, :normal_range, :normal_status
 
-          def initialize(normal_range=nil, other_reference_ranges=nil,
-                         normal_status = nil)
+          def initialize(normal_range=nil, normal_status = nil,
+                         other_reference_ranges=nil)
             self.normal_range = normal_range
-            self.other_reference_ranges = other_reference_ranges
             self.normal_status = normal_status
+            self.other_reference_ranges = other_reference_ranges
           end          
 
           def is_normal?
-            !normal_range.nil? or !normal_status.nil?
+            if @normal_range.nil? and @normal_status.nil?
+              return false
+            elsif !@normal_range.nil?
+              return @normal_range.has(@value)
+            elsif !@normal_status.nil?
+              return @normal_status.code_string == 'N'
+            end
           end
 
           def is_simple?
@@ -25,7 +31,7 @@ module OpenEHR
           end
 
           def <=>(other)
-            raise NotImplementError, 'This method should be implemented'
+            raise NotImplementedError, 'This method should be implemented'
           end
 
           def normal_range=(normal_range)
@@ -85,6 +91,10 @@ module OpenEHR
           def accuracy=(accuracy)
             raise ArgumentError, 'accuracy invalid'
           end
+        end
+
+        class Reference_Range
+          
         end
 
         autoload :Date_Time, "rm/data_types/quantity/date_time.rb"
