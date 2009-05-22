@@ -247,7 +247,7 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@iso8601_time.fractional_second = 0.23}
     assert @iso8601_time.has_fractional_second?
     assert_equal 0.23, @iso8601_time.fractional_second
-    assert_equal "23:59:59,23", @iso8601_time.as_string
+    assert_equal "23:59:59.23", @iso8601_time.as_string
     assert @iso8601_time.is_extended?
     assert @iso8601_time.is_decimal_sign_comma?
     assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345Z")
@@ -268,6 +268,7 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_equal 37, @iso8601_date_time.second
     assert_equal 0.32, @iso8601_date_time.fractional_second
     assert_equal '+0900', @iso8601_date_time.timezone
+    assert_equal '2009-04-27T15:55:37.32+0900', @iso8601_date_time.as_string
     assert_nothing_raised(Exception){
       @iso8601_date_time.year = 2008 }
     assert_equal 2008, @iso8601_date_time.year

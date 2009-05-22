@@ -118,10 +118,12 @@ module OpenEHR
         raise ArgumentError, "Month is not valid" unless month.nil? or ISO8601_DATE.valid_month?(month)
         @month = month
       end
+
       def day=(day)
         raise ArgumentError, "Day is not valid" unless day.nil? or ISO8601_DATE.valid_day?(@year, @month, day)
         @day = day
       end
+
       def as_string
         if (!@year.nil? and !@month.nil? and !@day.nil?)
           Date.new(@year, @month, @day).to_s
@@ -131,15 +133,19 @@ module OpenEHR
           Date.new(@year).to_s[0,4]
         end          
       end
+
       def month_unknown?
         @month.nil?
       end
+
       def day_unknown?
         @day.nil?
       end
+
       def is_extended?
         true
       end
+
       def is_partial?
         month_unknown? or day_unknown?
       end
@@ -240,6 +246,7 @@ module OpenEHR
       def is_partial?
         second_unknown? or minute_unknown?
       end
+
       def as_string
         s = sprintf("%02d", @hour)
         if !@minute.nil?
@@ -247,14 +254,14 @@ module OpenEHR
           if !@second.nil?
             s += ":" + sprintf("%02d", @second)
             if !@fractional_second.nil?
-              s += "," + @fractional_second.to_s[2..-1]
+              s += "." + @fractional_second.to_s[2..-1]
               if !@timezone.nil?
                 s += @timezone
               end
             end
           end
         end
-        s
+        return s
       end
     end
 
@@ -331,7 +338,7 @@ module OpenEHR
     end # end of ISO8601_TIME
 
     class ISO8601_DATE_TIME < ISO8601_DATE
-      include ISO8601_DATE_MODULE, ISO8601_TIME_MODULE
+      include ISO8601_TIME_MODULE, ISO8601_DATE_MODULE
       def initialize(string)
         /(\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(Z|([+-]\d{2}):?(\d{2}))?)?)?)?/ =~ string
         if $1.empty?
@@ -375,6 +382,31 @@ module OpenEHR
           self.timezone = $9+$10
         end
       end
+
+      def as_string
+        if (!@year.nil? and !@month.nil? and !@day.nil?)
+          s = Date.new(@year, @month, @day).to_s
+        elsif (!@year.nil? and !@month.nil? and @day.nil?)
+          return Date.new(@year, @month).to_s[0,7]
+        elsif (!@year.nil? and @month.nil? and @day.nil?)
+          return Date.new(@year).to_s[0,4]
+        end          
+        s += sprintf("T%02d", @hour)
+        if !@minute.nil?
+          s += ":" + sprintf("%02d",@minute)
+          if !@second.nil?
+            s += ":" + sprintf("%02d", @second)
+            if !@fractional_second.nil?
+              s += "." + @fractional_second.to_s[2..-1]
+              if !@timezone.nil?
+                s += @timezone
+              end
+            end
+          end
+        end
+        return s
+      end
+
     end
 
     class ISO8601_TIMEZONE
