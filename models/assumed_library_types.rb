@@ -236,7 +236,7 @@ module OpenEHR
       end
 
       def is_decimal_sign_comma?
-        true
+        false
       end
 
       def is_extended?
@@ -390,16 +390,18 @@ module OpenEHR
           return Date.new(@year, @month).to_s[0,7]
         elsif (!@year.nil? and @month.nil? and @day.nil?)
           return Date.new(@year).to_s[0,4]
-        end          
-        s += sprintf("T%02d", @hour)
-        if !@minute.nil?
-          s += ":" + sprintf("%02d",@minute)
-          if !@second.nil?
-            s += ":" + sprintf("%02d", @second)
-            if !@fractional_second.nil?
-              s += "." + @fractional_second.to_s[2..-1]
-              if !@timezone.nil?
-                s += @timezone
+        end
+        unless hour.nil?
+          s += sprintf("T%02d", @hour)
+          unless @minute.nil?
+            s += ":" + sprintf("%02d",@minute)
+            unless @second.nil?
+              s += ":" + sprintf("%02d", @second)
+              unless @fractional_second.nil?
+                s += "." + @fractional_second.to_s[2..-1]
+                unless @timezone.nil?
+                  s += @timezone
+                end
               end
             end
           end
@@ -426,14 +428,106 @@ module OpenEHR
       end
     end # end of ISO8601_TIMEZONE
 
-    class ISO8601_DURATION
-      
-      def initialize
-        
+    class ISO8601_DURATION < TIME_DEFINITIONS
+      attr_reader :years, :months, :weeks, :days
+      attr_reader :hours, :minutes, :seconds, :fractional_second
+
+      def initialize(str)
+        /^P((\d+)Y)?((\d+)M)?((\d+)W)?((\d)D)?(T((\d+)H)?((\d+)M)?((\d+)(\.\d+)?S)?)?$/ =~ str
+        self.years = $2.to_i
+        self.months = $4.to_i
+        self.weeks = $6.to_i
+        self.days = $8.to_i
+        self.hours = $11.to_i
+        self.minutes = $13.to_i
+        self.seconds = $15.to_i
+        self.fractional_second = $16.to_f
+      end
+
+      def years=(years)
+        unless years.nil? || years > 0
+          raise ArgumentError, 'years must be above zero'
+        end
+        @years = years
+      end
+
+      def months=(months)
+        unless months.nil? || months > 0
+          raise ArgumentError, 'months must be above zero'
+        end
+        @months = months
+      end
+
+      def weeks=(weeks)
+        unless weeks.nil? || weeks > 0
+          raise ArgumentError, 'weeks must be above zero'
+        end
+        @weeks = weeks
+      end
+
+      def days=(days)
+        unless days.nil? || days > 0
+          raise ArgumentError, 'days must be above zero'
+        end
+        @days = days
+      end
+
+      def hours=(hours)
+        unless hours.nil? || hours > 0
+          raise ArgumentError, 'hours must be above zero'
+        end
+        @hours = hours
+      end
+
+      def minutes=(minutes)
+        unless minutes.nil? || minutes > 0
+          raise ArgumentError, 'minutes must be above zero'
+        end
+        @minutes = minutes
+      end
+
+      def seconds=(seconds)
+        unless seconds.nil? || seconds > 0
+          raise ArgumentError, 'seconds must be above zero'
+        end
+        @seconds = seconds
+      end
+
+      def fractional_second=(fractional_second)
+        unless fractional_second.nil? || (fractional_second > 0 && fractional_second < 1.0)
+          raise ArgumentError, 'fractional_second must be between 0.0 and 1.0'
+        end
+        @fractional_second = fractional_second
       end
 
       def as_string
-
+        str = 'P'
+        unless @years.nil?
+          str += @years.to_s + 'Y'
+        end
+        unless @months.nil?
+          str += @months.to_s + 'M'
+        end
+        unless @weeks.nil?
+          str += @weeks.to_s + 'W'
+        end
+        unless @days.nil?
+          str += @days.to_s + 'D'
+        end
+        unless @hours.nil?
+          str += 'T' + @hours.to_s + 'H'
+          unless @minutes.nil?
+            str += @minutes.to_s + 'M'
+            unless @seconds.nil?
+              str += @seconds.to_s
+              unless @fractional_second.nil?
+                str += @fractional_second.to_s[1 .. -1]
+              end
+              str += 'S'
+            end
+          end
+        end
+        return str
       end
     end # end of ISO8601_DURATION
   end # end of Assumed_Types

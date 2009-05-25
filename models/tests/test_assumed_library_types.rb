@@ -8,7 +8,7 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new('2009-04-27')}
     assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('15:55:37.32+0900')}
     assert_nothing_raised(Exception){@iso8601_date_time = OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME.new('2009-04-27T15:55:37.32+0900')}
-    assert_nothing_raised(Exception){@iso8601_duration = OpenEHR::Assumed_Library_Types::ISO8601_DURATION.new()}
+    assert_nothing_raised(Exception){@iso8601_duration = OpenEHR::Assumed_Library_Types::ISO8601_DURATION.new('P1Y2M3W4DT5H6M7.8S')}
     assert_nothing_raised(Exception){@iso8601_timezone = OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE.new}
   end
 
@@ -249,7 +249,7 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_equal 0.23, @iso8601_time.fractional_second
     assert_equal "23:59:59.23", @iso8601_time.as_string
     assert @iso8601_time.is_extended?
-    assert @iso8601_time.is_decimal_sign_comma?
+    assert !@iso8601_time.is_decimal_sign_comma?
     assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345Z")
     assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345.67+0900")
     assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("242345.67+0900")
@@ -290,6 +290,17 @@ class Assumed_Library_Test < Test::Unit::TestCase
   end
 
   def test_iso8601_duration
-    
+    assert_equal 1, @iso8601_duration.years
+    assert_equal 2, @iso8601_duration.months
+    assert_equal 3, @iso8601_duration.weeks
+    assert_equal 4, @iso8601_duration.days
+    assert_equal 5, @iso8601_duration.hours
+    assert_equal 6, @iso8601_duration.minutes
+    assert_equal 7, @iso8601_duration.seconds
+    assert_equal 0.8, @iso8601_duration.fractional_second
+    assert_equal 'P1Y2M3W4DT5H6M7.8S', @iso8601_duration.as_string
+    assert_raise(ArgumentError){@iso8601_duration.years = -1}
+    assert_nothing_raised(Exception){@iso8601_duration.years = nil}
+    assert_equal 'P2M3W4DT5H6M7.8S', @iso8601_duration.as_string
   end
 end
