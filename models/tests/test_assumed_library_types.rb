@@ -301,6 +301,54 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_equal 'P1Y2M3W4DT5H6M7.8S', @iso8601_duration.as_string
     assert_raise(ArgumentError){@iso8601_duration.years = -1}
     assert_nothing_raised(Exception){@iso8601_duration.years = nil}
+    assert_nil @iso8601_duration.years
     assert_equal 'P2M3W4DT5H6M7.8S', @iso8601_duration.as_string
+    assert_nothing_raised(Exception){@iso8601_duration.years = 2}
+    assert_equal 2, @iso8601_duration.years
+    assert_nothing_raised(Exception){@iso8601_duration.months = nil}
+    assert_nil @iso8601_duration.months
+    assert_equal 'P2Y3W4DT5H6M7.8S', @iso8601_duration.as_string
+    assert_raise(ArgumentError){@iso8601_duration.months = -1}
+    assert_nothing_raised(Exception){@iso8601_duration.months = 3}
+    assert_equal 3, @iso8601_duration.months
+    assert_nothing_raised(Exception){@iso8601_duration.weeks = nil}
+    assert_nil @iso8601_duration.weeks
+    assert_equal 'P2Y3M4DT5H6M7.8S', @iso8601_duration.as_string
+    assert_raise(ArgumentError){@iso8601_duration.weeks = -1}
+    assert_nothing_raised(Exception){@iso8601_duration.weeks = 1}
+    assert_equal 'P2Y3M1W4DT5H6M7.8S', @iso8601_duration.as_string
+    assert_raise(ArgumentError){@iso8601_duration.days = -1}
+    assert_nothing_raised(Exception){@iso8601_duration.days = nil}
+    assert_nil @iso8601_duration.days
+    assert_equal 'P2Y3M1WT5H6M7.8S', @iso8601_duration.as_string
+    assert_nothing_raised(Exception){@iso8601_duration.hours = nil}
+    assert_nil @iso8601_duration.hours
+    assert_equal 'P2Y3M1W', @iso8601_duration.as_string
+    assert_raise(ArgumentError){@iso8601_duration.hours = -1}
+    assert_nothing_raised(Exception){@iso8601_duration.hours = 5}
+    assert_equal 5, @iso8601_duration.hours
+    assert_equal 'P2Y3M1WT5H6M7.8S', @iso8601_duration.as_string
+    assert_raise(ArgumentError){@iso8601_duration.minutes = -1}
+    assert_nothing_raised(Exception){@iso8601_duration.minutes = nil}
+    assert_nil @iso8601_duration.minutes
+    assert_equal 'P2Y3M1WT5H', @iso8601_duration.as_string
+    assert_nothing_raised(Exception){@iso8601_duration.minutes = 0}
+    assert_equal 0, @iso8601_duration.minutes
+    assert_equal 'P2Y3M1WT5H0M7.8S', @iso8601_duration.as_string
+    assert_raise(ArgumentError){@iso8601_duration.seconds = -1}
+    assert_nothing_raised(Exception){@iso8601_duration.seconds = nil}
+    assert_nil @iso8601_duration.seconds
+    assert_equal 'P2Y3M1WT5H0M', @iso8601_duration.as_string
+    assert_nothing_raised(Exception){@iso8601_duration.seconds = 10}
+    assert_equal 10, @iso8601_duration.seconds
+    assert_equal 'P2Y3M1WT5H0M10.8S', @iso8601_duration.as_string
+    assert_raise(ArgumentError){@iso8601_duration.fractional_second = 1.0}
+    assert_raise(ArgumentError){@iso8601_duration.fractional_second = -0.1}
+    assert_nothing_raised(Exception){@iso8601_duration.fractional_second = nil}
+    assert_nil @iso8601_duration.fractional_second
+    assert_equal 'P2Y3M1WT5H0M10S', @iso8601_duration.as_string
+    assert_nothing_raised(Exception){@iso8601_duration.fractional_second = 0.2}
+    assert_equal 0.2, @iso8601_duration.fractional_second
+    assert_equal 'P2Y3M1WT5H0M10.2S', @iso8601_duration.as_string
   end
 end
