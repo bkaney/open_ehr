@@ -24,11 +24,19 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     @template_id = OpenEHR::RM::Support::Identification::Template_ID.new('1.0.1')
     assert_nothing_raised(Exception){@archetyped = OpenEHR::RM::Common::Archetyped::Archetyped.new(@archetype_id, '1.0.1')}
     assert_nothing_raised(Exception){@link = OpenEHR::RM::Common::Archetyped::Link.new(OpenEHR::RM::Data_Types::Text::DV_Text.new("generic"), OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://test/"),OpenEHR::RM::Data_Types::Text::DV_Text.new("problem"))}
+    assert_nothing_raised(Exception){
+      @pathable = OpenEHR::RM::Common::Archetyped::Pathable.new }
+    name = OpenEHR::RM::Data_Types::Text::DV_Text.new('blood')
+    links = Set.new([@uid_based_id])
+    assert_nothing_raised(Exception){
+      @locatable = OpenEHR::RM::Common::Archetyped::Locatable.new('at0001',name,links)}
   end
 
   def test_init
     assert_instance_of OpenEHR::RM::Common::Archetyped::Archetyped, @archetyped
     assert_instance_of OpenEHR::RM::Common::Archetyped::Link, @link
+    assert_instance_of OpenEHR::RM::Common::Archetyped::Pathable, @pathable
+    assert_instance_of OpenEHR::RM::Common::Archetyped::Locatable, @locatable
   end
 
   def test_archetyped

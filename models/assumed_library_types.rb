@@ -445,56 +445,56 @@ module OpenEHR
       end
 
       def years=(years)
-        unless years.nil? || years > 0
+        unless years.nil? || years >= 0
           raise ArgumentError, 'years must be above zero'
         end
         @years = years
       end
 
       def months=(months)
-        unless months.nil? || months > 0
+        unless months.nil? || months >= 0
           raise ArgumentError, 'months must be above zero'
         end
         @months = months
       end
 
       def weeks=(weeks)
-        unless weeks.nil? || weeks > 0
+        unless weeks.nil? || weeks >= 0
           raise ArgumentError, 'weeks must be above zero'
         end
         @weeks = weeks
       end
 
       def days=(days)
-        unless days.nil? || days > 0
+        unless days.nil? || days >= 0
           raise ArgumentError, 'days must be above zero'
         end
         @days = days
       end
 
       def hours=(hours)
-        unless hours.nil? || hours > 0
+        unless hours.nil? || hours >= 0
           raise ArgumentError, 'hours must be above zero'
         end
         @hours = hours
       end
 
       def minutes=(minutes)
-        unless minutes.nil? || minutes > 0
+        unless minutes.nil? || minutes >= 0
           raise ArgumentError, 'minutes must be above zero'
         end
         @minutes = minutes
       end
 
       def seconds=(seconds)
-        unless seconds.nil? || seconds > 0
+        unless seconds.nil? || seconds >= 0
           raise ArgumentError, 'seconds must be above zero'
         end
         @seconds = seconds
       end
 
       def fractional_second=(fractional_second)
-        unless fractional_second.nil? || (fractional_second > 0 && fractional_second < 1.0)
+        unless fractional_second.nil? || (fractional_second >= 0 && fractional_second < 1.0)
           raise ArgumentError, 'fractional_second must be between 0.0 and 1.0'
         end
         @fractional_second = fractional_second

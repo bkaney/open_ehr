@@ -35,6 +35,10 @@ module OpenEHR
       autoload :URI, "rm/data_types/uri.rb"
       autoload :Quantity, "rm/data_types/quantity.rb"
     end
+
+    module Data_Structures
+      autoload :Data_Structure, "rm/data_structure.rb"
+    end
   end
 
 end

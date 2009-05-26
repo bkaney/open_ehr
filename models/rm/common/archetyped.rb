@@ -15,21 +15,27 @@ module OpenEHR
 
         class Pathable
           attr_accessor :parent
+
           def initialize(parent = nil)
             @parent = parent
           end
+
           def item_at_path(path)
             raise NotImplementError, "item_at_path must be implemented"
           end
+
           def items_at_path(path)
             raise NotImplementError, "items_at_path must be implemented"
           end
+
           def path_exists?(path)
             raise NotImplementError, "path_exists? must be implemented"
           end
+
           def path_of_item(item)
             raise NotImplementError, "path_of_item must be implemented"
           end
+
           def path_unique(path)
             raise NotImplementError, "path_unique must be implemented"
           end
@@ -39,6 +45,7 @@ module OpenEHR
           include Locater_Constants
           attr_reader :archetype_node_id, :name, :links
           attr_accessor :uid, :archetype_details, :feeder_audit
+
           def initialize(archetype_node_id, name, links, parent=nil, uid=nil, archetype_details=nil, feeder_audit=nil)
             super(parent)
             self.archetype_node_id = archetype_node_id
