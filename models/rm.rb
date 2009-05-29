@@ -34,6 +34,7 @@ module OpenEHR
       autoload :Text, "rm/data_types/text.rb"
       autoload :URI, "rm/data_types/uri.rb"
       autoload :Quantity, "rm/data_types/quantity.rb"
+      autoload :Encapsulated, "rm/data_types/encapsulated.rb"
     end
 
     module Data_Structures

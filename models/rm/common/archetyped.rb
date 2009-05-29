@@ -131,6 +131,14 @@ module OpenEHR
             @type = type
           end
         end # of Link
+
+        class Feeder_Audit
+          
+        end # of Feeder_Audit
+
+        class Feeder_Audit_Details
+
+        end # of Feeder_Audit_Details
       end # of Archetyped
     end # of Common
   end # of RM

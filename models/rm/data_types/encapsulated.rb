@@ -10,23 +10,28 @@ module OpenEHR
       module Encapsulated
         class DV_Encapsulated  < OpenEHR::RM::Data_Types::Basic::Data_Value
           attr_reader :language, :charset
+          def initialize(charset, language)
+            self.charset = charset
+            self.language = language
+          end
 
           def size
             raise NotImplementedError, "size method not implemented"
           end
 
           def language=(language)
-            unless Language::Info.valid_language?(language.code_string)
+            if language.nil? ||
+                !Locale::Info.language_code?(language.code_string)
               raise ArgumentError, 'invalid language code'
             end
             @language = language
           end
 
           def charset=(charset)
-            unless charset_valid?(charset)
+            if charset.nil? || !charset_valid?(charset.code_string)
               raise ArgumentError, 'invalid charset'
             end
-            @charset=charset
+            @charset = charset
           end
 
           private
@@ -35,15 +40,16 @@ module OpenEHR
           end
 
           def charset_valid?(charset)
-            open('charset.list') do |file|
+            result = false
+            open('rm/data_types/charset.lst') do |file|
               while line = file.gets
-                if charset == line
-                  file.close
-                  return true
+                if charset == line.chomp
+                  result = true
+                  break
                 end
               end
             end
-            return false
+            return result
           end
         end
 

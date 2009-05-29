@@ -196,3 +196,16 @@ class QuantityDateTimeTest < Test::Unit::TestCase
     assert_raise(NotImplementedError){@dv_temporal.diff('2009')}
   end
 end
+
+class EncapsulatedTest < Test::Unit::TestCase
+  def setup
+    charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('UTF-8','character-sets')
+    language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('ja', 'languages')
+    assert_nothing_raised(Exception){
+      @dv_encapsulated = OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated.new(charset, language)}
+  end
+
+  def test_init
+    assert_instance_of OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated, @dv_encapsulated
+  end
+end
