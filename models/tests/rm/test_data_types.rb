@@ -202,10 +202,35 @@ class EncapsulatedTest < Test::Unit::TestCase
     charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('UTF-8','character-sets')
     language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('ja', 'languages')
     assert_nothing_raised(Exception){
-      @dv_encapsulated = OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated.new(charset, language)}
+      @dv_encapsulated = OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated.new(charset, language, 10)}
+    assert_nothing_raised(Exception){
+      @dv_parsable = OpenEHR::RM::Data_Types::Encapsulated::Dv_Parsable.new(charset, language, 10, '','')}
+    assert_nothing_raised(Exception){
+    }
   end
 
   def test_init
     assert_instance_of OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated, @dv_encapsulated
   end
+
+  def test_dv_encapsulated
+    assert_equal 'UTF-8', @dv_encapsulated.charset.code_string
+    assert_equal 'ja', @dv_encapsulated.language.code_string
+    assert_equal 10, @dv_encapsulated.size
+    wrong_charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('USO8000', 'character-sets')
+    assert_raise(ArgumentError){@dv_encapsulated.charset = wrong_charset}
+    charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('EUC-JP', 'character-sets')
+    assert_nothing_raised(Exception){@dv_encapsulated.charset = charset}
+    assert_equal 'EUC-JP', @dv_encapsulated.charset.code_string
+    wrong_language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('jpg', 'language')
+    assert_raise(ArgumentError){@dv_encapsulated.language = wrong_language}
+    language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('eng', 'language')
+    assert_nothing_raised(Exception){@dv_encapsulated.language = language}
+    assert_equal 'eng', @dv_encapsulated.language.code_string
+    assert_raise(ArgumentError){@dv_encapsulated.size = -1}
+    assert_nothing_raised(Exception){@dv_encapsulated.size = 0}
+    assert_equal 0, @dv_encapsulated.size
+  end
+
+
 end

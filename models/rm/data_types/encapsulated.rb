@@ -9,14 +9,18 @@ module OpenEHR
     module Data_Types
       module Encapsulated
         class DV_Encapsulated  < OpenEHR::RM::Data_Types::Basic::Data_Value
-          attr_reader :language, :charset
-          def initialize(charset, language)
+          attr_reader :language, :charset, :size
+          def initialize(charset, language, size)
             self.charset = charset
             self.language = language
+            self.size = size
           end
 
-          def size
-            raise NotImplementedError, "size method not implemented"
+          def size=(size)
+            if size < 0
+              raise ArgumentError, "negative size"
+            end
+            @size = size
           end
 
           def language=(language)
@@ -65,9 +69,6 @@ module OpenEHR
             formalism_validity(formalism)
             @formalism = formalism
             @charset, @language = charset, language
-          end
-          def size
-            value.size
           end
           private
           def formalism_validity(formalism)
