@@ -57,26 +57,37 @@ module OpenEHR
           end
         end
 
+# media type http://www.iana.org/assignments/media-types/text/
         class DV_Multimedia < DV_Encapsulated
+          def initialize(charset, language, size, media_type, uri=nil,
+                         data=nil, compression_algorithm=nil,
+                         integrity_check=nil, integrity_check_algorithm=nil,
+                         alternate_text=nil)
+
+          end
           
         end
 
         class DV_Parsable < DV_Encapsulated
           attr_reader :value, :formalism
-          def initialize(value, formalism, charset = nil, language = nil)
-            @value = value
-            size_positive
-            formalism_validity(formalism)
-            @formalism = formalism
-            @charset, @language = charset, language
+          def initialize(charset, language, size, formalism, value)
+            super(charset, language, size)
+            self.formalism = formalism
+            self.value = value
           end
-          private
-          def formalism_validity(formalism)
-            if formalism.nil
+
+          def value=(value)
+            raise ArgumentError, 'value must not be nil' if value.nil?
+            @value = value
+          end
+
+          def formalism=(formalism)
+            if formalism.nil?
               raise ArgumentError, "formalism must not be nil"
             elsif formalism.empty?
               raise ArgumentError, "formalism must nto be empty"
             end
+            @formalism = formalism
           end
         end
       end # of Encapsulated

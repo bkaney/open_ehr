@@ -204,13 +204,17 @@ class EncapsulatedTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_encapsulated = OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated.new(charset, language, 10)}
     assert_nothing_raised(Exception){
-      @dv_parsable = OpenEHR::RM::Data_Types::Encapsulated::Dv_Parsable.new(charset, language, 10, '','')}
+      @dv_parsable = OpenEHR::RM::Data_Types::Encapsulated::DV_Parsable.new(charset, language, 10, 'XML','<TEST>test</TEST>')}
+    media_type = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('text/html', 'media-types')
+    uri = OpenEHR::RM::Data_Types::URI::DV_URI.new("http://www.openehr.jp/changeset/test?cmd=93#file0")
     assert_nothing_raised(Exception){
-    }
+      @dv_multimedia = OpenEHR::RM::Data_Types::Encapsulated::DV_Multimedia.new(charset, language, 10, media_type, uri)}
   end
 
   def test_init
     assert_instance_of OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated, @dv_encapsulated
+    assert_instance_of OpenEHR::RM::Data_Types::Encapsulated::DV_Parsable, @dv_parsable
+    assert_instance_of OpenEHR::RM::Data_Types::Encapsulated::DV_Multimedia, @dv_multimedia
   end
 
   def test_dv_encapsulated
@@ -232,5 +236,21 @@ class EncapsulatedTest < Test::Unit::TestCase
     assert_equal 0, @dv_encapsulated.size
   end
 
-
+  def test_dv_parsable
+    assert_equal 'UTF-8', @dv_parsable.charset.code_string
+    assert_equal 'ja', @dv_parsable.language.code_string
+    assert_equal 10, @dv_parsable.size
+    assert_equal 'XML', @dv_parsable.formalism
+    assert_equal '<TEST>test</TEST>', @dv_parsable.value
+    assert_raise(ArgumentError){
+      @dv_parsable.formalism = nil }
+    assert_nothing_raised(Exception){
+      @dv_parsable.formalism = 'HTML' }
+    assert_equal 'HTML', @dv_parsable.formalism
+    assert_raise(ArgumentError){
+      @dv_parsable.value = nil }
+    assert_nothing_raised(Exception){
+      @dv_parsable.value = '<H1>test</H1>' }
+    assert_equal '<H1>test</H1>', @dv_parsable.value
+  end
 end
