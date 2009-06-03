@@ -59,13 +59,28 @@ module OpenEHR
 
 # media type http://www.iana.org/assignments/media-types/text/
         class DV_Multimedia < DV_Encapsulated
+          attr_reader :media_type
+          attr_accessor :uri, :data, :compression_algorithm,
+          :integrity_check, :integrity_check_algorithm, :alternate_text
           def initialize(charset, language, size, media_type, uri=nil,
                          data=nil, compression_algorithm=nil,
                          integrity_check=nil, integrity_check_algorithm=nil,
                          alternate_text=nil)
-
+            super(charset, language, size)
+            self.media_type = media_type
+            @uri = uri
+            @data = data
+            @compression_algorithm = compression_algorithm
+            @integrity_check = integrity_check
+            @integrity_check_algorithm = integrity_check_algorithm
+            @alternate_text = alternate_text
           end
-          
+          def media_type=(media_type)
+            if media_type.code_string.nil?
+              raise ArgumentError, 'media_type should not be nil'
+            end
+            @media_type = media_type
+          end
         end
 
         class DV_Parsable < DV_Encapsulated

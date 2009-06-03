@@ -253,4 +253,12 @@ class EncapsulatedTest < Test::Unit::TestCase
       @dv_parsable.value = '<H1>test</H1>' }
     assert_equal '<H1>test</H1>', @dv_parsable.value
   end
+
+  def test_dv_multimedia
+    assert_equal 'UTF-8', @dv_multimedia.charset.code_string
+    assert_equal 'ja', @dv_multimedia.language.code_string
+    assert_equal 10, @dv_multimedia.size
+    assert_equal 'text/html', @dv_multimedia.media_type.code_string
+    assert_equal 'http://www.openehr.jp/changeset/test?cmd=93#file0', @dv_multimedia.uri.value
+  end
 end
