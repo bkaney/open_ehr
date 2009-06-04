@@ -14,6 +14,7 @@ module OpenEHR
 
   module RM
     autoload :Demographic, "rm/demographic.rb"
+    autoload :Security, "rm/security.rb"
 
     module Common
       autoload :Resource, "rm/common/resource.rb"

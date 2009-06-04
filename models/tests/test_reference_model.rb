@@ -1,3 +1,4 @@
+# this is obsoleted file
 require 'test/unit'
 require 'set'
 require 'rm'

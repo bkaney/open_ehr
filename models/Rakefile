@@ -20,7 +20,7 @@ end
 
 Rake::TestTask.new('test:rm') do |t|
   t.libs = ["lib"]
-  t.pattern = ['tests/test_reference_model.rb']
+  t.pattern = ['tests/rm/test_*.rb']
   t.warning = true
   t.verbose = true
 end
