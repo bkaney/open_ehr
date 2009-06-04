@@ -163,6 +163,8 @@ class QuantityTest < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){
       @dv_ordered = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new }
+    assert_nothing_raised(Exception){
+      @dv_quantified = OpenEHR::RM::Data_Types::Quantity::Dv_Quantified.new }
   end
   def test_init
     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordered, @dv_ordered
@@ -180,6 +182,8 @@ class QuantityTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_ordered.normal_status = normal_code }
     assert @dv_ordered.is_normal?
+    assert_raise(NotImplementedError){
+      @dv_ordered.is_strictry_comparable_to? }
   end
 end
 

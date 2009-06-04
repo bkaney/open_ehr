@@ -5,6 +5,9 @@ module OpenEHR
   module RM
     module Data_Types
       module Quantity
+
+        autoload :Date_Time, "rm/data_types/quantity/date_time.rb"
+
         class DV_Ordered < OpenEHR::RM::Data_Types::Basic::Data_Value
           include Comparable
           attr_reader :other_refference_ranges, :normal_range, :normal_status
@@ -50,19 +53,35 @@ module OpenEHR
             @normal_status = normal_status
           end
 
+          def is_strictry_comparable_to?(other)
+            raise NotImplementedError, 'this method should be implemented'
+          end
         end
 
         class DV_Quantified < DV_Ordered
-          def magnitude
+
+          def initialize
+            
           end
+
+          def magnitude
+            
+          end
+
+          def <=>(others)
+            
+          end
+
           def valid_magnitude_status(s)
           end
         end
 
         class DV_Ordinal < DV_Ordered
           attr_reader :symbol, :value
+
           def is_strictly_comparable_to?
           end
+
           def limits
           end
         end
@@ -96,9 +115,6 @@ module OpenEHR
         class Reference_Range
           
         end
-
-        autoload :Date_Time, "rm/data_types/quantity/date_time.rb"
-        
       end # of Quantity
     end # of Data_Types
   end # of RM

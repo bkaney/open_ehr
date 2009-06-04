@@ -4,7 +4,7 @@
 module OpenEHR
   module RM
     module Security
-      class Access_Control_Setting
+      class Access_Control_Settings
         
       end
     end
