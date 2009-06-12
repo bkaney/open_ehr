@@ -10,7 +10,7 @@ module OpenEHR
 
         class DV_Ordered < OpenEHR::RM::Data_Types::Basic::Data_Value
           include Comparable
-          attr_reader :other_refference_ranges, :normal_range, :normal_status
+          attr_accessor :normal_range, :other_refference_ranges, :normal_status
 
           def initialize(normal_range=nil, normal_status = nil,
                          other_reference_ranges=nil)
@@ -60,7 +60,9 @@ module OpenEHR
 
         class DV_Quantified < DV_Ordered
 
-          def initialize
+          def initialize(normal_range=nil, normal_status = nil,
+                         other_reference_ranges=nil)
+            
             
           end
 

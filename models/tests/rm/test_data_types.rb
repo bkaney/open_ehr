@@ -164,10 +164,28 @@ class QuantityTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_ordered = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new }
     assert_nothing_raised(Exception){
-      @dv_quantified = OpenEHR::RM::Data_Types::Quantity::Dv_Quantified.new }
-  end
-  def test_init
-    assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordered, @dv_ordered
+      @dv_interval = OpenEHR::RM::Data_Types::Quantity::DV_Interval.new}
+    assert_nothing_raised(Exception){
+      @reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new}
+    assert_nothing_raised(Exception){
+      @dv_ordinal = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new}
+    assert_nothing_raised(Exception){
+      @dv_quantified = OpenEHR::RM::Data_Types::Quantity::DV_Quantified.new }
+    assert_nothing_raised(Exception){
+      @dv_amount = OpenEHR::RM::Data_Types::Quantity::DV_Amount.new}
+    assert_nothing_raised(Exception){
+      @dv_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new}
+   end
+
+   def test_init
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordered, @dv_ordered
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Interval, @dv_interval
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::Reference_Range, @reference_range
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordinal, @dv_ordinal
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Amount, @dv_amount
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity:DV_Quantity, @dv_quantity
   end
 
   def test_dv_ordered
@@ -175,6 +193,7 @@ class QuantityTest < Test::Unit::TestCase
     assert_nil @dv_ordered.normal_status
     assert_nil @dv_ordered.normal_range
     assert_nil @dv_ordered.other_refference_ranges
+    assert @dv_orderd.is_simple?
     assert_raise(NotImplementedError){@dv_ordered<=>1}
     openehr_terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR','')
     normal_code = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('N', openehr_terminology_id)
@@ -184,6 +203,10 @@ class QuantityTest < Test::Unit::TestCase
     assert @dv_ordered.is_normal?
     assert_raise(NotImplementedError){
       @dv_ordered.is_strictry_comparable_to? }
+  end
+
+  def test_dv_quantifie
+
   end
 end
 
