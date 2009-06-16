@@ -37,20 +37,12 @@ module OpenEHR
             raise NotImplementedError, 'This method should be implemented'
           end
 
-          def normal_range=(normal_range)
-            @normal_range = normal_range
-          end
-
           def other_reference_ranges=(other_reference_ranges)
             unless other_reference_ranges.nil? or !other_reference_ranges.is_empty?
               raise ArgumentError, "Other reference ranges validity error"
             end
             
             @other_reference_ranges = other_reference_ranges
-          end
-
-          def normal_status=(normal_status)
-            @normal_status = normal_status
           end
 
           def is_strictry_comparable_to?(other)
@@ -62,6 +54,7 @@ module OpenEHR
 
           def initialize(normal_range=nil, normal_status = nil,
                          other_reference_ranges=nil)
+            super(normal_range, normal_status, other_reference_ranges)
             
             
           end
@@ -71,7 +64,7 @@ module OpenEHR
           end
 
           def <=>(others)
-            
+            @symbol.
           end
 
           def valid_magnitude_status(s)
@@ -84,6 +77,9 @@ module OpenEHR
           def is_strictly_comparable_to?
           end
 
+          def <=>(other)
+              @symbol.
+          end
           def limits
           end
         end
@@ -116,6 +112,19 @@ module OpenEHR
 
         class Reference_Range
           
+        end
+
+        module Proportion_Kind
+          PK_RATIO = 0
+          PK_UNITARY = 1
+          PK_PERCENT = 2
+          PK_FRACTION = 3
+          PK_INTEGER_FRACTION = 4
+
+          def Proportion_Kind.valid_proportion_kind?(kind)
+            return true if kind >= 0 && kind <= 4
+            return false
+          end
         end
       end # of Quantity
     end # of Data_Types

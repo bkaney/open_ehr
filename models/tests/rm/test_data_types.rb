@@ -205,8 +205,20 @@ class QuantityTest < Test::Unit::TestCase
       @dv_ordered.is_strictry_comparable_to? }
   end
 
-  def test_dv_quantifie
+  def test_dv_quantified
 
+  end
+
+  def test_proportion_kind
+    assert_equal 0, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_RATIO
+    assert_equal 1, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_UNITARITY
+    assert_equal 2, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_PERCENT
+    assert_equal 3, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_FRACTION
+    assert_equal 4, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_INTEGER_FRACTION
+    assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(0)
+    assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(4)
+    assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(-1)
+    assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(5)
   end
 end
 
