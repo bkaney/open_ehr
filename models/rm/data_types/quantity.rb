@@ -41,7 +41,6 @@ module OpenEHR
             unless other_reference_ranges.nil? or !other_reference_ranges.is_empty?
               raise ArgumentError, "Other reference ranges validity error"
             end
-            
             @other_reference_ranges = other_reference_ranges
           end
 
@@ -55,8 +54,6 @@ module OpenEHR
           def initialize(normal_range=nil, normal_status = nil,
                          other_reference_ranges=nil)
             super(normal_range, normal_status, other_reference_ranges)
-            
-            
           end
 
           def magnitude
@@ -64,23 +61,30 @@ module OpenEHR
           end
 
           def <=>(others)
-            @symbol.
+            @value <=> others.value
           end
 
           def valid_magnitude_status(s)
+
           end
         end
 
         class DV_Ordinal < DV_Ordered
-          attr_reader :symbol, :value
+          attr_reader :value, :symbol
+          def initialize(value, symbol, normal_range=nil, normal_status = nil,
+                         other_reference_ranges=nil)
+          end
 
           def is_strictly_comparable_to?
+
           end
 
           def <=>(other)
-              @symbol.
+              @value <=> other.value
           end
+
           def limits
+
           end
         end
 
@@ -102,12 +106,18 @@ module OpenEHR
 
         class DV_Amount < DV_Quantified
           attr_reader :accuracy, :accuracy_is_percent
+
           def infix(dv_amount, op)
             raise NotImplementError, 'infix must be implemented'
           end
+          
           def accuracy=(accuracy)
             raise ArgumentError, 'accuracy invalid'
           end
+        end
+
+        class DV_Quantity < DV_Amount
+
         end
 
         class Reference_Range
@@ -125,7 +135,7 @@ module OpenEHR
             return true if kind >= 0 && kind <= 4
             return false
           end
-        end
+        end # end of Proportion_Kind
       end # of Quantity
     end # of Data_Types
   end # of RM

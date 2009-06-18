@@ -164,11 +164,11 @@ class QuantityTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_ordered = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new }
     assert_nothing_raised(Exception){
-      @dv_interval = OpenEHR::RM::Data_Types::Quantity::DV_Interval.new}
+      @dv_interval = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Interval.new}
     assert_nothing_raised(Exception){
       @reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new}
     assert_nothing_raised(Exception){
-      @dv_ordinal = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new}
+      @dv_ordinal = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(1,'+')}
     assert_nothing_raised(Exception){
       @dv_quantified = OpenEHR::RM::Data_Types::Quantity::DV_Quantified.new }
     assert_nothing_raised(Exception){
@@ -180,12 +180,12 @@ class QuantityTest < Test::Unit::TestCase
    def test_init
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordered, @dv_ordered
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Interval, @dv_interval
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Interval, @dv_interval
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::Reference_Range, @reference_range
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordinal, @dv_ordinal
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Amount, @dv_amount
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity:DV_Quantity, @dv_quantity
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantity, @dv_quantity
   end
 
   def test_dv_ordered
@@ -193,7 +193,7 @@ class QuantityTest < Test::Unit::TestCase
     assert_nil @dv_ordered.normal_status
     assert_nil @dv_ordered.normal_range
     assert_nil @dv_ordered.other_refference_ranges
-    assert @dv_orderd.is_simple?
+    assert @dv_ordered.is_simple?
     assert_raise(NotImplementedError){@dv_ordered<=>1}
     openehr_terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR','')
     normal_code = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('N', openehr_terminology_id)
@@ -201,8 +201,9 @@ class QuantityTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_ordered.normal_status = normal_code }
     assert @dv_ordered.is_normal?
+    other = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new
     assert_raise(NotImplementedError){
-      @dv_ordered.is_strictry_comparable_to? }
+      @dv_ordered.is_strictry_comparable_to?(other)}
   end
 
   def test_dv_quantified
@@ -211,14 +212,14 @@ class QuantityTest < Test::Unit::TestCase
 
   def test_proportion_kind
     assert_equal 0, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_RATIO
-    assert_equal 1, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_UNITARITY
+    assert_equal 1, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_UNITARY
     assert_equal 2, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_PERCENT
     assert_equal 3, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_FRACTION
     assert_equal 4, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_INTEGER_FRACTION
     assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(0)
     assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(4)
-    assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(-1)
-    assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(5)
+    assert !OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(-1)
+    assert !OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(5)
   end
 end
 
@@ -230,6 +231,7 @@ class QuantityDateTimeTest < Test::Unit::TestCase
   def test_init
     assert_instance_of OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Temporal, @dv_temporal
   end
+
   def test_dv_temporal
     assert_equal '2008', @dv_temporal.value
     assert_raise(NotImplementedError){@dv_temporal.diff('2009')}
