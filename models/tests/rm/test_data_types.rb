@@ -165,8 +165,9 @@ class QuantityTest < Test::Unit::TestCase
       @dv_ordered = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new }
     assert_nothing_raised(Exception){
       @dv_interval = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Interval.new}
+    meaning = OpenEHR::RM::Data_Types::Text::DV_Text.new('normal')
     assert_nothing_raised(Exception){
-      @reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new}
+      @reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new(meaning)}
     assert_nothing_raised(Exception){
       @dv_ordinal = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(1,'+')}
     assert_nothing_raised(Exception){
@@ -182,6 +183,7 @@ class QuantityTest < Test::Unit::TestCase
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Interval, @dv_interval
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::Reference_Range, @reference_range
+     
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordinal, @dv_ordinal
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Amount, @dv_amount
@@ -206,8 +208,24 @@ class QuantityTest < Test::Unit::TestCase
       @dv_ordered.is_strictry_comparable_to?(other)}
   end
 
-  def test_dv_quantified
+  def test_reference_range
+    assert_equal 'normal', @reference_range.meaning.value
+  end
 
+  def test_dv_quantified
+    
+  end
+
+  def test_dv_amount
+
+  end
+
+  def test_dv_interval
+    
+  end
+
+  def test_dv_ordinal
+    
   end
 
   def test_proportion_kind

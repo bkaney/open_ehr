@@ -1,6 +1,7 @@
 # This modules are implemented from the UML shown bellow
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109599337877_94556_1510Report.html
 # Ticket refs #50
+require 'assumed_library_types'
 module OpenEHR
   module RM
     module Data_Types
@@ -49,6 +50,10 @@ module OpenEHR
           end
         end
 
+        class DV_Interval < OpenEHR::Assumed_Library_Types::Interval
+
+        end
+        
         class DV_Quantified < DV_Ordered
 
           def initialize(normal_range=nil, normal_status = nil,
@@ -121,7 +126,18 @@ module OpenEHR
         end
 
         class Reference_Range
-          
+          attr_reader :meaning
+
+          def initialize(meaning)
+            self.meaning = meaning
+          end
+
+          def meaning=(meaning)
+            if meaning.nil?
+              raise ArgumentError, 'meaning should not be nil'
+            end
+            @meaning = meaning
+          end
         end
 
         module Proportion_Kind
