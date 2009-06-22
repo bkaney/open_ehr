@@ -24,8 +24,8 @@ class Assumed_Library_Test < Test::Unit::TestCase
 
   def test_limits_comparable
     assert @interval.lower < @interval.upper
-    assert_nothing_raised(Exception){@interval.set_lower(1.0)}
-    assert_nothing_raised(Exception){@interval.set_upper(2.0)}
+    assert_nothing_raised(Exception){@interval.lower=1.0}
+    assert_nothing_raised(Exception){@interval.upper=2.0}
     assert @interval.lower < @interval.upper
   end
 
@@ -33,25 +33,27 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert @interval.has?(1.5)
     assert !@interval.has?(3.0)
     assert !@interval.has?(0.5)
-    assert_nothing_raised(Exception){@interval.set_lower_included(true)}
+    assert_nothing_raised(Exception){@interval.lower_included=true}
     assert @interval.has?(1.0)
-    assert_nothing_raised(Exception){@interval.set_lower_included(false)}
+    assert_nothing_raised(Exception){@interval.lower_included=false}
     assert !@interval.has?(1.0)
-    assert_nothing_raised(Exception){@interval.set_upper_included(true)}
+    assert_nothing_raised(Exception){@interval.upper_included=true}
     assert @interval.has?(2.0)
-    assert_nothing_raised(Exception){@interval.set_upper_included(false)}
+    assert_nothing_raised(Exception){@interval.upper_included=false}
     assert !@interval.has?(2.0)
   end
+
   def test_lower_included_valid
-    assert_nothing_raised(Exception){@interval.set_lower(nil)}
-    assert @interval.lower_unbounded
-    assert !@interval.lower_included
-    assert_nothing_raised(Exception){@interval.set_lower(1.0)}
+    assert_nothing_raised(Exception){@interval.lower=nil}
+    assert @interval.lower_unbounded?
+    assert !@interval.lower_included?
+    assert_nothing_raised(Exception){@interval.lower=1.0}
   end
+
   def test_upper_included_valid
-    assert_nothing_raised(Exception){@interval.set_upper(nil)}
-    assert @interval.upper_unbounded
-    assert !@interval.upper_included
+    assert_nothing_raised(Exception){@interval.upper=nil}
+    assert @interval.upper_unbounded?
+    assert !@interval.upper_included?
   end
 
   def test_time_definitions

@@ -211,9 +211,12 @@ class QuantityTest < Test::Unit::TestCase
       @dv_ordered.is_strictly_comparable_to?(other)}
   end
 
+  def test_dv_interval
+    assert 
+  end
+
   def test_reference_range
-    assert_equal 'normal', @reference_range.meaning.value
-    
+    assert_equal 'normal', @reference_range.meaning.value    
   end
 
   def test_dv_quantified
@@ -222,10 +225,6 @@ class QuantityTest < Test::Unit::TestCase
 
   def test_dv_amount
 
-  end
-
-  def test_dv_interval
-    
   end
 
   def test_dv_ordinal

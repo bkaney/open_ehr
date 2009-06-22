@@ -7,36 +7,53 @@ module OpenEHR
     class Any < Object
       
     end # of Any
+
     class Interval < Any
-      attr_reader :lower, :lower_included, :lower_unbounded
-      attr_reader :upper, :upper_included, :upper_unbounded
+      attr_reader :lower, :upper
+      
       def initialize(lower, upper, 
                      lower_included = nil, upper_included = nil)
         check_lower_upper(lower, upper)
-        set_lower_included(lower_included)
-        set_upper_included(upper_included)
+        self.lower_included = lower_included
+        self.upper_included = upper_included
       end
 
-      def set_lower(lower)
+      def lower=(lower)
         check_lower_upper(lower, @upper)
       end
 
-      def set_upper(upper)
+      def upper=(upper)
         check_lower_upper(@lower, upper)
       end
 
-      def set_lower_included(lower_included)
+      def lower_included?
+        return @lower_included
+      end
+
+      def lower_included=(lower_included)
         if (lower == nil) && (lower_included != nil)
           raise ArgumentError, "lower is not set"
         end
         @lower_included = lower_included
       end
+      
+      def lower_unbounded?
+        return @lower.nil?
+      end
 
-      def set_upper_included(upper_included)
-        @upper_included = upper_included
+      def upper_included?
+        return @upper_included
+      end
+
+      def upper_included=(upper_included)
         if (upper == nil) && (upper_included != nil)
           raise ArgumentError, "upper is not set"
         end
+        @upper_included = upper_included
+      end
+
+      def upper_unbounded?
+        return @upper.nil?
       end
 
       def has?(value)
@@ -55,18 +72,16 @@ module OpenEHR
         if (lower == nil) && (upper == nil)
           raise ArgumentError, "Either lower or upper must be assigned"
         end
-        if (lower == nil) && (upper != nil)
-          @lower_unbounded = true          
-        elsif (lower != nil) && (upper == nil)
-          @upper_unbounded = true
-        elsif lower > upper
-          raise ArgumentError, "Upper must be larger than lower."
+        unless (lower.nil? || upper.nil?)
+          if lower > upper
+            raise ArgumentError, "Upper must be larger than lower."
+          end
         end
         @lower = lower
         @upper = upper
-      end      
+      end
     end # end of Interval
-
+  
     class TIME_DEFINITIONS < Any
       DAYS_IN_LEAP_YEAR = 366
       DAYS_IN_WEEK = 7
