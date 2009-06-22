@@ -45,7 +45,7 @@ module OpenEHR
             @other_reference_ranges = other_reference_ranges
           end
 
-          def is_strictry_comparable_to?(other)
+          def is_strictly_comparable_to?(other)
             raise NotImplementedError, 'this method should be implemented'
           end
         end
@@ -53,7 +53,7 @@ module OpenEHR
         class DV_Interval < OpenEHR::Assumed_Library_Types::Interval
 
         end
-        
+
         class DV_Quantified < DV_Ordered
 
           def initialize(normal_range=nil, normal_status = nil,
@@ -75,21 +75,47 @@ module OpenEHR
         end
 
         class DV_Ordinal < DV_Ordered
-          attr_reader :value, :symbol
-          def initialize(value, symbol, normal_range=nil, normal_status = nil,
-                         other_reference_ranges=nil)
+          attr_reader :value, :symbol, :limits
+
+          def initialize(value, symbol, limits=nil, normal_range=nil,
+                         normal_status = nil, other_reference_ranges=nil)
+            self.value = value
+            self.symbol = symbol
+            self.limits = limits
+            super(normal_range, normal_status, other_reference_ranges)
           end
 
-          def is_strictly_comparable_to?
+          def value=(value)
+            raise ArgumentError, 'value should not be nil' if value.nil?
+            @value = value
+          end
 
+          def symbol=(symbol)
+            raise ArgumentError,'symbol should not be nil' if symbol.nil?
+            @symbol = symbol
+          end
+
+          def is_strictly_comparable_to?(others)
+            unless others.instance_of? OpenEHR::RM::Data_Types::Quantity::DV_Ordinal
+              return false
+            end
+            unless others.symbol.defining_code.terminology_id.value ==
+                @symbol.defining_code.terminology_id.value
+              return false
+            end
+            return true
           end
 
           def <=>(other)
-              @value <=> other.value
+            @value <=> other.value
           end
 
-          def limits
-
+          def limits=(limits)
+            unless limits.nil? or limits.meaning.value == 'limits'
+              raise ArgumentError, 'invalid limits'
+            else
+              @limits = limits
+            end
           end
         end
 

@@ -42,11 +42,6 @@ module OpenEHR
             def initialize
             end
           end
-
-          class DV_Interval
-            def initialize
-            end
-          end
         end # of Date_Time
       end # of Quantity
     end # of Data_Types

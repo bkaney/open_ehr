@@ -164,12 +164,15 @@ class QuantityTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_ordered = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new }
     assert_nothing_raised(Exception){
-      @dv_interval = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Interval.new}
+      @dv_interval = OpenEHR::RM::Data_Types::Quantity::DV_Interval.new(1,10)}
     meaning = OpenEHR::RM::Data_Types::Text::DV_Text.new('normal')
     assert_nothing_raised(Exception){
       @reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new(meaning)}
     assert_nothing_raised(Exception){
-      @dv_ordinal = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(1,'+')}
+      terminology = OpenEHR::RM::Support::Identification::Terminology_ID.new('urine', '')
+      code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('protein',terminology)
+      urinary_protein = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new('+', code_phrase)
+      @dv_ordinal = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(1, urinary_protein)}
     assert_nothing_raised(Exception){
       @dv_quantified = OpenEHR::RM::Data_Types::Quantity::DV_Quantified.new }
     assert_nothing_raised(Exception){
@@ -181,7 +184,7 @@ class QuantityTest < Test::Unit::TestCase
    def test_init
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordered, @dv_ordered
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Interval, @dv_interval
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Interval, @dv_interval
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::Reference_Range, @reference_range
      
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordinal, @dv_ordinal
@@ -205,11 +208,12 @@ class QuantityTest < Test::Unit::TestCase
     assert @dv_ordered.is_normal?
     other = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new
     assert_raise(NotImplementedError){
-      @dv_ordered.is_strictry_comparable_to?(other)}
+      @dv_ordered.is_strictly_comparable_to?(other)}
   end
 
   def test_reference_range
     assert_equal 'normal', @reference_range.meaning.value
+    
   end
 
   def test_dv_quantified
@@ -225,7 +229,26 @@ class QuantityTest < Test::Unit::TestCase
   end
 
   def test_dv_ordinal
-    
+    assert_equal 1, @dv_ordinal.value
+    assert_equal '+', @dv_ordinal.symbol.value
+    assert_raise(ArgumentError){@dv_ordinal.symbol = nil}
+    assert_raise(ArgumentError){@dv_ordinal.value = nil}
+    terminology = OpenEHR::RM::Support::Identification::Terminology_ID.new('urine', '')
+    code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('protein',terminology)
+    urinary_protein = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new('++', code_phrase)
+    assert_nothing_raised(Exception){
+      @dv_ordinal2 = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(2, urinary_protein)}
+    assert @dv_ordinal.is_strictly_comparable_to?(@dv_ordinal2)
+    assert @dv_ordinal < @dv_ordinal2
+    assert @dv_ordinal2 > @dv_ordinal
+    @dv_ordinal.value = 3
+    assert 3, @dv_ordinal.value
+    assert @dv_ordinal > @dv_ordinal2
+    assert_raise(ArgumentError){@dv_ordinal.limits = @reference_range}
+    meaning = OpenEHR::RM::Data_Types::Text::DV_Text.new('limits')
+    limit_reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new(meaning)
+    assert_nothing_raised(Exception){@dv_ordinal.limits = limit_reference_range}
+    assert_equal 'limits', @dv_ordinal.limits.meaning.value
   end
 
   def test_proportion_kind
