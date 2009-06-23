@@ -179,9 +179,9 @@ class QuantityTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_quantified = OpenEHR::RM::Data_Types::Quantity::DV_Quantified.new(1,'=')}
     assert_nothing_raised(Exception){
-      @dv_amount = OpenEHR::RM::Data_Types::Quantity::DV_Amount.new(1)}
+      @dv_amount = OpenEHR::RM::Data_Types::Quantity::DV_Amount.new(2,'<')}
     assert_nothing_raised(Exception){
-      @dv_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new(1)}
+      @dv_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new(3,'~')}
    end
 
    def test_init
@@ -246,7 +246,16 @@ class QuantityTest < Test::Unit::TestCase
   end
 
   def test_dv_amount
-
+    assert_equal 2, @dv_amount.magnitude
+    assert_equal '<', @dv_amount.magnitude_status
+    assert @dv_amount.accuracy_unknown?
+    assert_nothing_raised(Exception){@dv_amount.set_accuracy(50,true)}
+    assert_equal 50, @dv_amount.accuracy
+    assert @dv_amount.accuracy_is_percent?
+    assert_nothing_raised(Exception){@dv_amount.set_accuracy(0.3, false)}
+    assert_equal 0.3, @dv_amount.accuracy
+    assert !@dv_amount.accuracy_is_percent?
+    assert !@dv_amount.accuracy_unknown?
   end
 
   def test_dv_ordinal

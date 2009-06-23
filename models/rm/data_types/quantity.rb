@@ -55,7 +55,7 @@ module OpenEHR
         end
 
         class DV_Quantified < DV_Ordered
-          attr_reader :magnitude, :accuracy, :magnitude_status
+          attr_reader :magnitude, :magnitude_status, :accuracy
 
           def initialize(magnitude, magnitude_status=nil,
                          normal_range=nil, normal_status = nil,
@@ -164,14 +164,33 @@ module OpenEHR
         end
 
         class DV_Amount < DV_Quantified
-          attr_reader :accuracy, :accuracy_is_percent
-
-          def infix(dv_amount, op)
-            raise NotImplementError, 'infix must be implemented'
+          attr_reader :accuracy_is_percent
+          def initialize(magnitude, magnitude_status=nil, accuracy=nil,
+                         accuracy_percent=nil, normal_range=nil,
+                         normal_status = nil, other_reference_ranges=nil)
+            super(magnitude, magnitude_status, normal_range,
+                  normal_status, other_reference_ranges)
+            set_accuracy(accuracy, accuracy_percent) unless accuracy.nil?
           end
-          
-          def accuracy=(accuracy)
-            raise ArgumentError, 'accuracy invalid'
+          def +(other)
+            raise NotImplementError, '+ operator must be overloaded'
+          end
+
+          def -(other)
+            raise NotImplementError, '- operator must be overloaded'
+          end
+
+          def set_accuracy(accuracy, accuracy_percent)
+            if accuracy_percent
+              raise ArgumentError, 'accuracy invalid' if accuracy < 0.0 || accuracy > 100.0
+            else
+              raise ArgumentError, 'accuracy invaild' if accuracy < 0.0 || accuracy > 1.0
+            end
+            @accuracy, @accuracy_percent = accuracy, accuracy_percent
+          end
+
+          def accuracy_is_percent?
+            return @accuracy_percent
           end
         end
 
