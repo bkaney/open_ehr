@@ -55,22 +55,50 @@ module OpenEHR
         end
 
         class DV_Quantified < DV_Ordered
+          attr_reader :magnitude, :accuracy, :magnitude_status
 
-          def initialize(normal_range=nil, normal_status = nil,
+          def initialize(magnitude, magnitude_status=nil,
+                         normal_range=nil, normal_status = nil,
                          other_reference_ranges=nil)
             super(normal_range, normal_status, other_reference_ranges)
-          end
-
-          def magnitude
-            
+            self.magnitude = magnitude
+            self.magnitude_status = magnitude_status
           end
 
           def <=>(others)
             @value <=> others.value
           end
 
-          def valid_magnitude_status(s)
+          def magnitude=(magnitude)
+            raise ArgumentError, 'magnitude should not be nil' if magnitude.nil?
+            @magnitude = magnitude
+          end
 
+          def magnitude_status=(magnitude_status)
+            if magnitude_status.nil?
+              @magnitude_status = '='
+            elsif DV_Quantified.valid_magnitude_status?(magnitude_status)
+              @magnitude_status = magnitude_status
+            else
+              raise ArgumentError, 'magnitude_status invalid'
+            end
+          end
+
+          def accuracy=(accuracy)
+            raise NotImplementedError, 'subclasses need to implemented'
+          end
+
+          def accuracy_unknown?
+            return accuracy.nil?
+          end
+
+          def self.valid_magnitude_status?(s)
+            if s == '=' || s == '>' || s == '<' || s == '<=' ||
+                s == '>=' || s == '~'
+              return true
+            else
+              return false
+            end
           end
         end
 
@@ -152,10 +180,11 @@ module OpenEHR
         end
 
         class Reference_Range
-          attr_reader :meaning
+          attr_reader :meaning, :range
 
-          def initialize(meaning)
+          def initialize(meaning, range)
             self.meaning = meaning
+            self.range = range
           end
 
           def meaning=(meaning)
@@ -163,6 +192,17 @@ module OpenEHR
               raise ArgumentError, 'meaning should not be nil'
             end
             @meaning = meaning
+          end
+
+          def range=(range)
+            if range.nil?
+              raise ArgumentError, 'range should not be nil'
+            end
+            @range = range
+          end
+
+          def is_in_range?(val)
+            return @range.has?(val)
           end
         end
 
