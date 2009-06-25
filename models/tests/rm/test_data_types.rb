@@ -181,7 +181,7 @@ class QuantityTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_amount = OpenEHR::RM::Data_Types::Quantity::DV_Amount.new(2,'<')}
     assert_nothing_raised(Exception){
-      @dv_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new(3,'~')}
+      @dv_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new(3, 'mg', '~')}
    end
 
    def test_init
@@ -274,6 +274,27 @@ class QuantityTest < Test::Unit::TestCase
     limit_reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new(meaning, @dv_interval)
     assert_nothing_raised(Exception){@dv_ordinal1.limits = limit_reference_range}
     assert_equal 'limits', @dv_ordinal1.limits.meaning.value
+  end
+
+  def test_dv_quantity
+    assert_equal 3, @dv_quantity.magnitude
+    assert_equal 'mg', @dv_quantity.units
+    assert_equal '~', @dv_quantity.magnitude_status
+    dv_quantity2 = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new(4, 'mg', '~')
+    assert_equal 'mg', dv_quantity2.units
+    assert @dv_quantity.is_strictly_comparable_to?(dv_quantity2)
+    assert_nothing_raised(Exception){@dv_quantity.precision = -1}
+    assert_equal(-1, @dv_quantity.precision)
+    assert !@dv_quantity.is_integral?
+    assert_raise(ArgumentError){@dv_quantity.precision = -1.1}
+    @dv_quantity.precision = 0
+    assert @dv_quantity.is_integral?
+    dv_quantity3 = @dv_quantity + dv_quantity2
+    assert_equal 7, dv_quantity3.magnitude
+    assert_equal 'mg', dv_quantity3.units
+    dv_quantity3 = @dv_quantity - dv_quantity2
+    assert_equal(-1, dv_quantity3.magnitude)
+    assert_equal 'mg', dv_quantity3.units
   end
 
   def test_proportion_kind

@@ -55,7 +55,7 @@ module OpenEHR
         end
 
         class DV_Quantified < DV_Ordered
-          attr_reader :magnitude, :magnitude_status, :accuracy
+          attr_reader :magnitude, :magnitude_status
 
           def initialize(magnitude, magnitude_status=nil,
                          normal_range=nil, normal_status = nil,
@@ -164,13 +164,17 @@ module OpenEHR
         end
 
         class DV_Amount < DV_Quantified
-          attr_reader :accuracy_is_percent
+          attr_reader :accuracy, :accuracy_percent
           def initialize(magnitude, magnitude_status=nil, accuracy=nil,
                          accuracy_percent=nil, normal_range=nil,
                          normal_status = nil, other_reference_ranges=nil)
             super(magnitude, magnitude_status, normal_range,
                   normal_status, other_reference_ranges)
-            set_accuracy(accuracy, accuracy_percent) unless accuracy.nil?
+            unless accuracy.nil?
+              set_accuracy(accuracy, accuracy_percent)
+            else
+              @accuracy, @accuracy_percent = nil, nil
+            end
           end
           def +(other)
             raise NotImplementError, '+ operator must be overloaded'
@@ -195,7 +199,58 @@ module OpenEHR
         end
 
         class DV_Quantity < DV_Amount
+          attr_reader :units, :precision
+          def initialize(magnitude, units, magnitude_status=nil, precision=nil,
+                         accuracy=nil, accuracy_percent=nil, normal_range=nil,
+                         normal_status = nil, other_reference_ranges=nil)
+            super(magnitude, magnitude_status, accuracy, accuracy_percent,
+                  normal_range, normal_status, other_reference_ranges)
+            self.units = units
+            self.precision = precision
+          end
 
+          def units=(units)
+            raise ArgumentError, 'units should not be nil' if units.nil?
+            @units = units
+          end
+
+          def precision=(precision)
+            unless precision.nil? || precision >= -1
+              raise ArgumentError, 'precision invalid'
+            end
+            @precision = precision
+          end
+
+          def is_strictly_comparable_to?(others)
+            return false if others.nil?
+            if others.instance_of?(DV_Quantity) && others.units == @units
+              return true
+            else
+              return false
+            end
+          end
+
+          def is_integral?
+            if @precision.nil? || precision != 0
+              return false
+            else
+              return true
+            end
+          end
+# accuracy???
+          def +(other)
+            unless self.is_strictly_comparable_to?(other)
+              raise ArgumentError, 'type mismatch'
+            end
+            return DV_Quantity.new(@magnitude+other.magnitude, @units,
+                                   @magnitude_status, @precision,
+                                   @accuracy, @accuracy_percent, @normal_range,
+                                   @normal_status, @other_reference_ranges)
+          end
+          def -(other)
+            other.magnitude = - other.magnitude
+            self+(other)
+          end
         end
 
         class Reference_Range
