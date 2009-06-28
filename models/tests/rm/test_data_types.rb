@@ -182,6 +182,10 @@ class QuantityTest < Test::Unit::TestCase
       @dv_amount = OpenEHR::RM::Data_Types::Quantity::DV_Amount.new(2,'<')}
     assert_nothing_raised(Exception){
       @dv_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new(3, 'mg', '~')}
+    assert_nothing_raised(Exception){
+      @dv_count = OpenEHR::RM::Data_Types::Quantity::DV_Count.new(1)}
+    assert_nothing_raised(Exception){
+      @dv_proportion = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(2,3,0)}
    end
 
    def test_init
@@ -194,6 +198,8 @@ class QuantityTest < Test::Unit::TestCase
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Amount, @dv_amount
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantity, @dv_quantity
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Count, @dv_count
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Proportion, @dv_proportion
   end
 
   def test_dv_ordered
@@ -215,7 +221,7 @@ class QuantityTest < Test::Unit::TestCase
   end
 
   def test_dv_interval
-    assert @dv_interval.lower < @dv_interval.upper 
+    assert @dv_interval.lower < @dv_interval.upper
   end
 
   def test_reference_range
@@ -297,6 +303,15 @@ class QuantityTest < Test::Unit::TestCase
     assert_equal 'mg', dv_quantity3.units
   end
 
+  def test_dv_count
+    assert_equal 1, @dv_count.magnitude
+    dv_count2 = OpenEHR::RM::Data_Types::Quantity::DV_Count.new(2)
+    dv_count3 = @dv_count + dv_count2
+    assert 3, dv_count3.magnitude
+    dv_count3 = dv_count2 - @dv_count
+    assert 1, dv_count3.magnitude
+  end
+
   def test_proportion_kind
     assert_equal 0, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_RATIO
     assert_equal 1, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_UNITARY
@@ -308,6 +323,29 @@ class QuantityTest < Test::Unit::TestCase
     assert !OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(-1)
     assert !OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(5)
   end
+
+  def test_dv_proportion
+    assert_equal 2.0, @dv_proportion.numerator
+    assert_equal 3.0, @dv_proportion.denominator
+    assert_equal 0, @dv_proportion.type
+    assert_equal 2.0/3.0, @dv_proportion.magnitude
+    assert @dv_proportion.is_integral?
+    dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(1,3,0)
+    assert @dv_proportion.is_strictly_comparable_to?(dv_proportion2)
+    dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(1,3,4)
+    assert !@dv_proportion.is_strictly_comparable_to?(dv_proportion2)
+    assert_raise(ArgumentError){
+      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(1.5,2.3,3)}
+    assert_raise(ArgumentError){
+      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,10,1)}
+    assert_nothing_raised(Exception){
+      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,1,1)}
+    assert_raise(ArgumentError){
+      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,10,2)}
+    assert_nothing_raised(Exception){
+      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,100,2)}
+  end
+
 end
 
 class QuantityDateTimeTest < Test::Unit::TestCase

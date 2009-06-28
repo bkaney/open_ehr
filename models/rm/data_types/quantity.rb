@@ -176,12 +176,19 @@ module OpenEHR
               @accuracy, @accuracy_percent = nil, nil
             end
           end
+
           def +(other)
-            raise NotImplementError, '+ operator must be overloaded'
+            unless self.is_strictly_comparable_to?(other)
+              raise ArgumentError, 'type mismatch'
+            end
+            return DV_Amount.new(@magnitude+other.magnitude, @magnitude_status,
+                                 @accuracy, @accuracy_percent, @normal_range,
+                                 @normal_status, @other_reference_ranges)
           end
 
           def -(other)
-            raise NotImplementError, '- operator must be overloaded'
+            other.magnitude = - other.magnitude
+            self+(other)
           end
 
           def set_accuracy(accuracy, accuracy_percent)
@@ -239,17 +246,22 @@ module OpenEHR
           end
 # accuracy???
           def +(other)
-            unless self.is_strictly_comparable_to?(other)
-              raise ArgumentError, 'type mismatch'
-            end
-            return DV_Quantity.new(@magnitude+other.magnitude, @units,
+            dv_amount = super(other)
+            return DV_Quantity.new(dv_amount.magnitude, @units,
                                    @magnitude_status, @precision,
                                    @accuracy, @accuracy_percent, @normal_range,
                                    @normal_status, @other_reference_ranges)
           end
-          def -(other)
-            other.magnitude = - other.magnitude
-            self+(other)
+        end
+
+        class DV_Count < DV_Amount
+          def is_strictly_comparable_to?(others)
+            return false if others.nil?
+            if others.instance_of?(DV_Count)
+              return true
+            else
+              return false
+            end
           end
         end
 
@@ -292,6 +304,85 @@ module OpenEHR
             return false
           end
         end # end of Proportion_Kind
+
+        class DV_Proportion < DV_Amount
+          include Proportion_Kind
+          attr_reader :numerator, :denominator, :type, :precision
+
+          def initialize(numerator, denominator, type, precision=nil,
+                         magnitude_status=nil, accuracy=nil,
+                         accuracy_percent=nil, normal_range=nil,
+                         normal_status = nil, other_reference_ranges=nil)
+            self.type = type
+            self.numerator = numerator
+            self.denominator = denominator
+            self.precision = precision
+          end
+
+          def numerator=(numerator)
+            raise ArgumentError, 'numerator should not be nil' if numerator.nil?
+            if (@type == PK_FRACTION || @type == PK_INTEGER_FRACTION) &&
+                !numerator.integer?
+              raise ArgumentError, 'numerator invalid for type'
+            end
+            @numerator = numerator
+          end
+
+          def denominator=(denominator)
+            if denominator.nil? or denominator == PK_RATIO
+              raise ArgumentError, 'denominator invalid'
+            end
+            if (@type == PK_FRACTION || @type == PK_INTEGER_FRACTION) &&
+                !denominator.integer?
+              raise ArgumentError, 'denominator invalid for type'
+            end
+            if @type == PK_UNITARY && denominator != 1
+              raise ArgumentError, 'denominator invalid for type'
+            end
+            if @type == PK_PERCENT && denominator != 100
+              raise ArgumentError, 'denominator invaild for type'
+            end
+            @denominator = denominator
+          end
+
+          def type=(type)
+            if Proportion_Kind.valid_proportion_kind?(type)
+              @type = type
+            else
+              raise ArgumentError, 'type invalid'
+            end
+          end
+
+          def magnitude
+            return numerator.to_f/denominator.to_f
+          end
+
+          def precision=(precision)
+            unless precision.nil?
+              unless precision == 0 || self.is_integral?
+                @precision = precision
+              else
+                raise ArgumentError, 'precision invalid'
+              end
+            end
+          end
+
+          def is_integral?
+            return denominator.integer? && numerator.integer?
+          end
+
+          def is_strictly_comparable_to?(other)
+            unless other.instance_of?(DV_Proportion)
+              return false
+            end
+            if other.type == @type
+              return true
+            else
+              return false
+            end
+          end
+        end # end of DV_Proportion
+
       end # of Quantity
     end # of Data_Types
   end # of RM
