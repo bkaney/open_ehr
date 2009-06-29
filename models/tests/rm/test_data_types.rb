@@ -186,6 +186,8 @@ class QuantityTest < Test::Unit::TestCase
       @dv_count = OpenEHR::RM::Data_Types::Quantity::DV_Count.new(1)}
     assert_nothing_raised(Exception){
       @dv_proportion = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(2,3,0)}
+    assert_nothing_raised(Exception){
+      @dv_absolute_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Absolute_Quantity.new(7,'=')}
    end
 
    def test_init
@@ -200,6 +202,7 @@ class QuantityTest < Test::Unit::TestCase
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantity, @dv_quantity
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Count, @dv_count
      assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Proportion, @dv_proportion
+     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Absolute_Quantity, @dv_absolute_quantity
   end
 
   def test_dv_ordered
@@ -249,6 +252,14 @@ class QuantityTest < Test::Unit::TestCase
     assert_equal 0, @dv_quantified.magnitude
     assert_nothing_raised(Exception){@dv_quantified.magnitude_status = nil}
     assert_equal '=',  @dv_quantified.magnitude_status
+  end
+
+  def test_dv_absolute_quantity
+    assert_equal 7, @dv_absolute_quantity.magnitude
+    assert @dv_absolute_quantity.accuracy_unknown?
+    assert_nothing_raised(Exception){@dv_absolute_quantity.accuracy = 0.5}
+    assert_equal 0.5, @dv_absolute_quantity.accuracy
+    assert !@dv_absolute_quantity.accuracy_unknown?
   end
 
   def test_dv_amount

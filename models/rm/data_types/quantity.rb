@@ -84,12 +84,8 @@ module OpenEHR
             end
           end
 
-          def accuracy=(accuracy)
-            raise NotImplementedError, 'subclasses need to implemented'
-          end
-
           def accuracy_unknown?
-            return accuracy.nil?
+            return @accuracy.nil?
           end
 
           def self.valid_magnitude_status?(s)
@@ -148,7 +144,15 @@ module OpenEHR
         end
 
         class DV_Absolute_Quantity < DV_Quantified
-          attr_reader :accuracy
+          attr_accessor :accuracy
+
+          def initialize(magnitude, magnitude_status=nil, accuracy=nil,
+                         normal_range=nil, normal_status = nil,
+                         other_reference_ranges=nil)
+            super (magnitude, magnitude_status, normal_range,
+                   normal_status, other_reference_ranges)
+            self.accuracy = accuracy
+          end
 
           def add(a_diff)
             raise NotImplementError, 'add must be implemented'
@@ -317,6 +321,15 @@ module OpenEHR
             self.numerator = numerator
             self.denominator = denominator
             self.precision = precision
+            self.magnitude_status = magnitude_status
+            unless accuracy.nil?
+              set_accuracy(accuracy, accuracy_percent)
+            else
+              @accuracy, @accuracy_percent = nil, nil
+            end
+            self.normal_range = normal_range
+            self.normal_status = normal_status
+            self.other_reference_ranges = other_reference_ranges
           end
 
           def numerator=(numerator)
