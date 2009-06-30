@@ -3,6 +3,7 @@
 # Ticket refs #49
 require 'assumed_library_types'
 
+
 module OpenEHR
   module RM
     module Data_Types
@@ -53,7 +54,7 @@ module OpenEHR
             undef magnitude=
 
             def magnitude
-              return Date.new(@year, @month, @day)-Date.new(1601,1,1)
+              return Date.new(@year, @month, @day)-Date.new(0000,1,1)
             end
 
             def diff(other)
@@ -90,12 +91,42 @@ module OpenEHR
             end
           end
           
-          class DV_Time
-            def initialize
+          class DV_Time < DV_Temporal
+            include OpenEHR::Assumed_Library_Types::ISO8601_TIME_MODULE
+            def initialize(value, magnitude_status=nil, accuracy=nil,
+                           normal_range=nil, normal_status=nil,
+                           other_reference_range=nil)
+              super(value, magnitude_status, accuracy, normal_range,
+                    normal_status, other_reference_range)
+            end
+
+            def value=(value)
+              super(value)
+              iso8601_time = Assumed_Library_Types::ISO8601_TIME.new(value)
+              @hour = iso8601_time.hour
+              @minute = iso8601_time.minute
+              @second = iso8601_time.second
+              @fractional_second = iso8601_time.fractional_second
+            end
+
+            def magnitude
+              return @hour * 60 * 60 + @minute * 60 + @second + @fractional_second
+            end
+
+            def diff(other)
+              diff = (other.magnitude - self.magnitude).abs
+              hour = (diff / 60 / 60).to_i
+              minute = ((diff - hour*60*60)/60).to_i
+              second = (diff - hour * 60 *60 - minute * 60).to_i
+              fractional_second = ((diff - diff.to_i)*1000.0).to_i/1000.0
+              return 'P0Y0M0W0DT' + hour.to_s + 'H' + minute.to_s + 'M' +
+                second.to_s + fractional_second.to_s[1..-1] + 'S'
             end
           end
 
-          class DV_Date_Time
+          class DV_Date_Time < DV_Date
+            include OpenEHR::Assumed_Library_Types::ISO8601_TIME_MODULE
+            
             def initialize
             end
           end
