@@ -164,6 +164,15 @@ module OpenEHR
       def is_partial?
         month_unknown? or day_unknown?
       end
+
+      protected
+      def leapyear?(year)
+        case
+        when year % 400 == 0: true
+        when year % 100 == 0: false
+        else year % 4 == 0
+        end
+      end
     end
 
     class ISO8601_DATE < TIME_DEFINITIONS
@@ -186,6 +195,7 @@ module OpenEHR
           self.day = $3.to_i
         end
       end
+
       def self.valid_iso8601_date?(string)
         begin
           Date.parse(string)
@@ -352,8 +362,37 @@ module OpenEHR
       end
     end # end of ISO8601_TIME
 
+    module ISO8601_DATE_TIME_MODULE
+      include ISO8601_DATE_MODULE, ISO8601_TIME_MODULE
+      def as_string
+        if (!@year.nil? and !@month.nil? and !@day.nil?)
+          s = Date.new(@year, @month, @day).to_s
+        elsif (!@year.nil? and !@month.nil? and @day.nil?)
+          return Date.new(@year, @month).to_s[0,7]
+        elsif (!@year.nil? and @month.nil? and @day.nil?)
+          return Date.new(@year).to_s[0,4]
+        end
+        unless hour.nil?
+          s += sprintf("T%02d", @hour)
+          unless @minute.nil?
+            s += ":" + sprintf("%02d",@minute)
+            unless @second.nil?
+              s += ":" + sprintf("%02d", @second)
+              unless @fractional_second.nil?
+                s += "." + @fractional_second.to_s[2..-1]
+                unless @timezone.nil?
+                  s += @timezone
+                end
+              end
+            end
+          end
+        end
+        return s
+      end
+    end
+
     class ISO8601_DATE_TIME < ISO8601_DATE
-      include ISO8601_TIME_MODULE, ISO8601_DATE_MODULE
+      include ISO8601_DATE_TIME_MODULE
       def initialize(string)
         /(\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(Z|([+-]\d{2}):?(\d{2}))?)?)?)?/ =~ string
         if $1.empty?
@@ -397,35 +436,8 @@ module OpenEHR
           self.timezone = $9+$10
         end
       end
-
-      def as_string
-        if (!@year.nil? and !@month.nil? and !@day.nil?)
-          s = Date.new(@year, @month, @day).to_s
-        elsif (!@year.nil? and !@month.nil? and @day.nil?)
-          return Date.new(@year, @month).to_s[0,7]
-        elsif (!@year.nil? and @month.nil? and @day.nil?)
-          return Date.new(@year).to_s[0,4]
-        end
-        unless hour.nil?
-          s += sprintf("T%02d", @hour)
-          unless @minute.nil?
-            s += ":" + sprintf("%02d",@minute)
-            unless @second.nil?
-              s += ":" + sprintf("%02d", @second)
-              unless @fractional_second.nil?
-                s += "." + @fractional_second.to_s[2..-1]
-                unless @timezone.nil?
-                  s += @timezone
-                end
-              end
-            end
-          end
-        end
-        return s
-      end
-
     end
-
+  
     class ISO8601_TIMEZONE
       attr_accessor :sign, :hour, :minute
 
@@ -443,21 +455,9 @@ module OpenEHR
       end
     end # end of ISO8601_TIMEZONE
 
-    class ISO8601_DURATION < TIME_DEFINITIONS
+    module ISO8601_DURATION_MODULE
       attr_reader :years, :months, :weeks, :days
       attr_reader :hours, :minutes, :seconds, :fractional_second
-
-      def initialize(str)
-        /^P((\d+)Y)?((\d+)M)?((\d+)W)?((\d)D)?(T((\d+)H)?((\d+)M)?((\d+)(\.\d+)?S)?)?$/ =~ str
-        self.years = $2.to_i
-        self.months = $4.to_i
-        self.weeks = $6.to_i
-        self.days = $8.to_i
-        self.hours = $11.to_i
-        self.minutes = $13.to_i
-        self.seconds = $15.to_i
-        self.fractional_second = $16.to_f
-      end
 
       def years=(years)
         unless years.nil? || years >= 0
@@ -543,6 +543,20 @@ module OpenEHR
           end
         end
         return str
+      end
+    end
+    class ISO8601_DURATION < TIME_DEFINITIONS
+      include ISO8601_DURATION_MODULE
+      def initialize(str)
+        /^P((\d+)Y)?((\d+)M)?((\d+)W)?((\d)D)?(T((\d+)H)?((\d+)M)?((\d+)(\.\d+)?S)?)?$/ =~ str
+        self.years = $2.to_i
+        self.months = $4.to_i
+        self.weeks = $6.to_i
+        self.days = $8.to_i
+        self.hours = $11.to_i
+        self.minutes = $13.to_i
+        self.seconds = $15.to_i
+        self.fractional_second = $16.to_f
       end
     end # end of ISO8601_DURATION
   end # end of Assumed_Types

@@ -1,6 +1,7 @@
 require 'test/unit'
 require 'set'
 require 'rm'
+require 'tests/rm/quantity/ts_date_time'
 
 class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   def setup
@@ -357,21 +358,6 @@ class QuantityTest < Test::Unit::TestCase
       dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,100,2)}
   end
 
-end
-
-class QuantityDateTimeTest < Test::Unit::TestCase
-  def setup
-    assert_nothing_raised(Exception){
-      @dv_temporal = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Temporal.new('2008')}
-  end
-  def test_init
-    assert_instance_of OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Temporal, @dv_temporal
-  end
-
-  def test_dv_temporal
-    assert_equal '2008', @dv_temporal.value
-    assert_raise(NotImplementedError){@dv_temporal.diff('2009')}
-  end
 end
 
 class EncapsulatedTest < Test::Unit::TestCase

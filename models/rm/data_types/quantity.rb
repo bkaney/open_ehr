@@ -149,21 +149,21 @@ module OpenEHR
           def initialize(magnitude, magnitude_status=nil, accuracy=nil,
                          normal_range=nil, normal_status = nil,
                          other_reference_ranges=nil)
-            super (magnitude, magnitude_status, normal_range,
+            super(magnitude, magnitude_status, normal_range,
                    normal_status, other_reference_ranges)
             self.accuracy = accuracy
           end
 
           def add(a_diff)
-            raise NotImplementError, 'add must be implemented'
+            raise NotImplementedError, 'add must be implemented'
           end
 
           def diff(other)
-            raise NotImplementError, 'diff must be implemented'
+            raise NotImplementedError, 'diff must be implemented'
           end
 
           def subtract(a_diff)
-            raise NotImplementError, 'subtract must be implemented'
+            raise NotImplementedError, 'subtract must be implemented'
           end
         end
 

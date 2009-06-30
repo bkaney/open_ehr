@@ -1,6 +1,8 @@
 require 'test/unit'
 require 'assumed_library_types.rb'
 
+include OpenEHR::Assumed_Library_Types
+
 class Assumed_Library_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@interval = OpenEHR::Assumed_Library_Types::Interval.new(1,2)}
