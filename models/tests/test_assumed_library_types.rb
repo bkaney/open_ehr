@@ -6,7 +6,6 @@ include OpenEHR::Assumed_Library_Types
 class Assumed_Library_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@interval = OpenEHR::Assumed_Library_Types::Interval.new(1,2)}
-    assert_nothing_raised(Exception){@time_definition = OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.new}
     assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new('2009-04-27')}
     assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('15:55:37.32+0900')}
     assert_nothing_raised(Exception){@iso8601_date_time = OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME.new('2009-04-27T15:55:37.32+0900')}
@@ -16,7 +15,6 @@ class Assumed_Library_Test < Test::Unit::TestCase
 
   def test_initialize
     assert_instance_of OpenEHR::Assumed_Library_Types::Interval, @interval
-    assert_instance_of OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS, @time_definition
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE, @iso8601_date
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIME, @iso8601_time
     assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME, @iso8601_date_time

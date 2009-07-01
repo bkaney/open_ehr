@@ -11,6 +11,8 @@ class DateTimeTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_time = DV_Time.new('12:34:56.78')}
     assert_nothing_raised(Exception){
+      @dv_date_time = DV_Date_Time.new('2009-06-29T12:34:56.78')}
+    assert_nothing_raised(Exception){
       @dv_duration = DV_Duration.new('P1Y2M3W4DT5H6M7.8S')}
   end
 
@@ -18,6 +20,7 @@ class DateTimeTest < Test::Unit::TestCase
     assert_instance_of DV_Temporal, @dv_temporal
     assert_instance_of DV_Date, @dv_date
     assert_instance_of DV_Time, @dv_time
+    assert_instance_of DV_Date_Time, @dv_date_time
     assert_instance_of DV_Duration, @dv_duration
   end
 
@@ -44,13 +47,27 @@ class DateTimeTest < Test::Unit::TestCase
   end
 
   def test_dv_time
+    assert_equal '12:34:56.78', @dv_time.value
     assert_equal 12, @dv_time.hour
     assert_equal 34, @dv_time.minute
     assert_equal 56, @dv_time.second
     assert_equal 0.78, @dv_time.fractional_second
-    assert_equal (12*60*60 + 34 * 60 + 56 + 0.78), @dv_time.magnitude
+    assert_equal((12*60*60 + 34 * 60 + 56 + 0.78), @dv_time.magnitude)
     dv_time2 = DV_Time.new('15:36:48.05')
-    assert_equal 'P0Y0M0W0DT3H1M51.27S', @dv_time.diff(dv_time2)
+    assert_equal 'P0Y0M0W0DT3H1M51.27S', @dv_time.diff(dv_time2).value
+  end
+
+  def test_dv_date_time
+    assert_equal '2009-06-29T12:34:56.78', @dv_date_time.value
+    assert_equal 2009, @dv_date_time.year
+    assert_equal 6, @dv_date_time.month
+    assert_equal 29, @dv_date_time.day
+    assert_equal 12, @dv_date_time.hour
+    assert_equal 34, @dv_date_time.minute
+    assert_equal 56, @dv_date_time.second
+    assert_equal 0.78, @dv_date_time.fractional_second
+    dv_date_time2 = DV_Date_Time.new('1970-04-19T13:55:30.12')
+    assert_equal 'P39Y2M1W9DT22H39M26.66S', @dv_date_time.diff(dv_date_time2).value
   end
 
   def test_dv_duration

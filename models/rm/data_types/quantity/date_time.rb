@@ -2,7 +2,7 @@
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109696321450_28117_5362Report.html
 # Ticket refs #49
 require 'assumed_library_types'
-
+require 'date'
 
 module OpenEHR
   module RM
@@ -118,16 +118,75 @@ module OpenEHR
               hour = (diff / 60 / 60).to_i
               minute = ((diff - hour*60*60)/60).to_i
               second = (diff - hour * 60 *60 - minute * 60).to_i
-              fractional_second = ((diff - diff.to_i)*1000.0).to_i/1000.0
-              return 'P0Y0M0W0DT' + hour.to_s + 'H' + minute.to_s + 'M' +
-                second.to_s + fractional_second.to_s[1..-1] + 'S'
+              fractional_second = ((diff - diff.to_i)*1000000.0).to_i/1000000.0
+              return DV_Duration.new('P0Y0M0W0DT' + hour.to_s + 'H' +
+                        minute.to_s + 'M' +
+                        second.to_s + fractional_second.to_s[1..-1] + 'S')
             end
           end
 
-          class DV_Date_Time < DV_Date
-            include OpenEHR::Assumed_Library_Types::ISO8601_TIME_MODULE
-            
-            def initialize
+          class DV_Date_Time < DV_Temporal
+            include OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME_MODULE
+            attr_reader :value
+
+            def initialize(value, magnitude_status=nil, accuracy=nil,
+                           normal_range=nil, normal_status=nil,
+                           other_reference_range=nil)
+              super(value, magnitude_status, accuracy, normal_range,
+                    normal_status, other_reference_range)
+            end
+
+            def value=(value)              
+              super(value)
+              iso8601date_time = Assumed_Library_Types::ISO8601_DATE_TIME.new(value)
+              self.year = iso8601date_time.year
+              self.month = iso8601date_time.month
+              self.day = iso8601date_time.day
+              self.minute = iso8601date_time.minute
+              self.second = iso8601date_time.second
+              self.hour = iso8601date_time.hour
+              self.fractional_second = iso8601date_time.fractional_second
+              self.timezone = iso8601date_time.timezone
+            end
+
+            def magnitude
+              return DateTime.new(@year,@month,@day,@hour,@minute,@second) - 
+                DateTime.new(0000,1,1,0,0,0) + @fractional_second
+            end
+
+            undef magnitude=
+
+            def diff(other)
+              if self.magnitude >= other.magnitude
+                past, future = other, self
+              else
+                past, future = self, other
+              end
+              past_date, past_time = split_date_time(past)
+              future_date, future_time = split_date_time(future)
+              time_diff = future_time.magnitude - past_time.magnitude
+              if future_time.magnitude < past_time.magnitude
+                future_date.day = future_date.day - 1
+                time_diff += 24 * 60 * 60
+              end
+              date_duration = past_date.diff(future_date)
+              hour = (time_diff / 60 / 60).to_i
+              minute = ((time_diff - hour*60*60)/60).to_i
+              second = (time_diff - hour * 60 *60 - minute * 60).to_i
+              fractional_second = ((time_diff - time_diff.to_i)*1000000.0).to_i/1000000.0
+
+              return DV_Duration.new(date_duration.value + 'T' + 
+                        hour.to_s + 'H' +
+                        minute.to_s + 'M' +
+                        second.to_s + fractional_second.to_s[1..-1] + 'S')
+                                   
+            end
+
+            private
+
+            def split_date_time(date_time)
+              /^(.*)T(.*)$/ =~ date_time.as_string
+              return DV_Date.new($1), DV_Time.new($2)             
             end
           end
 
