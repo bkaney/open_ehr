@@ -425,3 +425,28 @@ class EncapsulatedTest < Test::Unit::TestCase
     assert_equal 'http://www.openehr.jp/changeset/test?cmd=93#file0', @dv_multimedia.uri.value
   end
 end
+
+
+class TestDvTimeSpecification < Test::Unit::TestCase
+  include OpenEHR::RM::Data_Types::Time_Specification
+  include OpenEHR::RM::Data_Types::Encapsulated
+  def setup
+    charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('UTF-8','character-sets')
+    language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('ja', 'languages')
+    assert_nothing_raised(Exception){
+      dv_parsable = DV_Parsable.new(charset, language, 10, 'XML','<TEST>test</TEST>')
+      @dv_time_specification = DV_Time_Specification.new(dv_parsable)}
+    
+    assert_nothing_raised(Exception){
+      @dv_periodic_time_specification = Dv_Periodic_Time_Specification.new(
+           charset, language, 10, 'PIVL
+  end
+
+  def test_init
+    assert_instance_of DV_Time_Specification, @dv_time_specification
+  end
+
+  def test_dv_time_specification
+    assert_equal '<TEST>test</TEST>', @dv_time_specification.value.value
+  end
+end

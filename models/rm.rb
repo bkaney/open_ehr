@@ -36,6 +36,7 @@ module OpenEHR
       autoload :URI, "rm/data_types/uri.rb"
       autoload :Quantity, "rm/data_types/quantity.rb"
       autoload :Encapsulated, "rm/data_types/encapsulated.rb"
+      autoload :Time_Specification, 'rm/data_types/time_specification.rb'
     end
 
     module Data_Structures
