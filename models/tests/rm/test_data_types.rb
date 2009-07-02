@@ -436,10 +436,8 @@ class TestDvTimeSpecification < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       dv_parsable = DV_Parsable.new(charset, language, 10, 'XML','<TEST>test</TEST>')
       @dv_time_specification = DV_Time_Specification.new(dv_parsable)}
-    
-    assert_nothing_raised(Exception){
-      @dv_periodic_time_specification = Dv_Periodic_Time_Specification.new(
-           charset, language, 10, 'PIVL
+#    assert_nothing_raised(Exception){
+#      @dv_periodic_time_specification = DV_Periodic_Time_Specification.new('[200004181100;200004181110]/(7d)@DWIST', charset, language, 10, 'HL7:PIVL')}
   end
 
   def test_init

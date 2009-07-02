@@ -137,7 +137,16 @@ module OpenEHR
         end # of Feeder_Audit
 
         class Feeder_Audit_Details
+          attr_reader :system_id
 
+          def initialize(args ={ })
+            self.system_id = args[:system_id]
+          end
+
+          def system_id=(system_id)
+            raise ArgumentError, 'system_id invalid' if system_id.nil? or system_id.empty?
+            @system_id = system_id
+          end
         end # of Feeder_Audit_Details
       end # of Archetyped
     end # of Common

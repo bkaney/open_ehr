@@ -2,6 +2,10 @@ require 'test/unit'
 require 'set'
 require 'rm'
 
+include OpenEHR::RM::Data_Types::Text
+include OpenEHR::RM::Common::Resource
+include OpenEHR::RM::Common::Archetyped
+
 class RM_Common_Resource_Test < Test::Unit::TestCase
   def setup
         @authored_resource = OpenEHR::RM::Common::Resource::AUTHORED_RESOURCE.new(:original_language => "ja",
@@ -14,6 +18,9 @@ class RM_Common_Resource_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Common::Resource::TRANSLATION_DETAILS, @translation_details
   end
 
+  def test_authoured_resource
+    assert_equal 'ja', @authored_resource.original_language
+  end
 end
 
 class RM_Common_Archetyped_Test < Test::Unit::TestCase
@@ -30,6 +37,8 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     links = Set.new([@uid_based_id])
     assert_nothing_raised(Exception){
       @locatable = OpenEHR::RM::Common::Archetyped::Locatable.new('at0001',name,links)}
+    assert_nothing_raised(Exception){
+      @feeder_audit_details = Feeder_Audit_Details.new(:system_id => 'MAGI')}
   end
 
   def test_init
@@ -37,6 +46,7 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Common::Archetyped::Link, @link
     assert_instance_of OpenEHR::RM::Common::Archetyped::Pathable, @pathable
     assert_instance_of OpenEHR::RM::Common::Archetyped::Locatable, @locatable
+    assert_instance_of Feeder_Audit_Details, @feeder_audit_details
   end
 
   def test_archetyped
@@ -72,16 +82,66 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_equal 'issue', @link.type.value
     assert_raise(ArgumentError){@link.type = nil}
   end
+
+  def test_feeder_audit
+  end
+
+  def test_feeder_audit_detail
+    assert_equal 'MAGI', @feeder_audit_details.system_id
+  end
 end
 
 class RM_Common_Generic_Test < Test::Unit::TestCase
+  include OpenEHR::RM::Common::Generic
+  include OpenEHR::RM::Support::Identification
+  include OpenEHR::RM::Data_Types::Basic
   def setup
-#    assert_nothing_raised(Exception){@party_proxy = OpenEHR::RM::Common::Generic::Party_Proxy.new}
+    assert_nothing_raised(Exception){party_proxy = Party_Proxy.new}
+    object_id = Object_ID.new('0.0.4')
+    party_ref = Party_Ref.new('unknown', 'ORGANISATION', object_id)
+    assert_nothing_raised(Exception){
+      @party_proxy = Party_Proxy.new(:external_ref => party_ref)}
+    assert_nothing_raised(Exception){party_self = Party_Self.new}
+    assert_nothing_raised(Exception){
+      @party_self = Party_Self.new(:external_ref => party_ref)}
+    assert_raise(ArgumentError){
+      party_identified = Party_Identified.new}
+    identifiers = []
+    identifiers << DV_Identifier.new('NERV', 'MELCHIOR', 'GENDO', 'COMPUTER')
+    identifiers << DV_Identifier.new('NERV', 'CASPER', 'GENDO', 'COMPUTER')
+    identifiers << DV_Identifier.new('NERV', 'BALTHAZAR', 'GENDO', 'COMPUTER')
+    assert_nothing_raised(Exception){
+      @party_identified = Party_Identified.new(:name => 'NERV',
+                                               :external_ref => party_ref,
+                                               :identifier => identifiers)}
 #    change_type = OpenEHR::RM::Data_Types::Text::DV_Text.new('audit_type')
 #    time_committed = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Date_Time.new(2008)
 #    assert_nothing_raised(Exception){@audit_details = OpenEHR::RM::Common::Generic::Audit_Details.new('rails',@party_proxy, change_type, time_committed)}
   end
+
   def test_init
+    assert_instance_of Party_Proxy, @party_proxy
+    assert_instance_of Party_Self, @party_self
+    assert_instance_of Party_Identified, @party_identified
+  end
+
+  def test_party_proxy
+    assert_equal 'unknown', @party_proxy.external_ref.namespace
+  end
+
+  def test_party_self
+    assert_equal 'ORGANISATION', @party_self.external_ref.type
+  end
+
+  def test_party_identified
+    assert_equal 'NERV', @party_identified.name
+    assert_equal '0.0.4', @party_identified.external_ref.id.value
+    identifiers = @party_identified.identifier
+    ids = [ ]
+    identifiers.each do |id|
+      ids << id.id
+    end
+    assert_equal %w[MELCHIOR CASPER BALTHAZAR], ids
   end
 end
 

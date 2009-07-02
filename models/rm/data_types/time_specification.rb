@@ -29,6 +29,9 @@ module OpenEHR
           end
         end
 
+# I have not implemented two classes bellow,
+# because I could not obtain HL7 specification related them.
+
 
         class DV_General_Time_Specification < DV_Time_Specification
           attr_reader :value
@@ -54,24 +57,16 @@ module OpenEHR
             unless value.formalism.is_equal('HL7:PIVL') or value.formalism.is_equal('HL7:EIVL')
               raise ArgumentError, "value is not valid"
             end
-            /^\[(\d+)\;?(\d+)?\]\/\((\d+\w+)\)(@(\w+?))?(IST)?$/ =~ value
-            interval1, interval2, difference, allignment = $1, $2, $3, $5
-# not implemented because of unknown HL7 specification
-
-          end
-
-          def calender_alignment
-
-          end
-
-          def event_alignment
-
+            if value.formalism('HL7:PIVL')
+              /^\[(\d+)\;?(\d+)?\]\/\((\d+\w+)\)(@(\w+?))?(IST)?$/ =~ value
+              interval1, interval2, difference, allignment = $1, $2, $3, $5
+            end
+            if value
+            end
           end
 
           def institution_specified?
 
-          end
-          def period
           end
         end
       end
