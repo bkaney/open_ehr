@@ -6,6 +6,8 @@ include OpenEHR::RM::Data_Types::Text
 include OpenEHR::RM::Common::Resource
 include OpenEHR::RM::Common::Archetyped
 include OpenEHR::RM::Common::Generic
+include OpenEHR::RM::Support::Identification
+include OpenEHR::RM::Data_Types::Basic
 
 class RM_Common_Resource_Test < Test::Unit::TestCase
   def setup
@@ -128,9 +130,6 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
 end
 
 class RM_Common_Generic_Test < Test::Unit::TestCase
-  include OpenEHR::RM::Common::Generic
-  include OpenEHR::RM::Support::Identification
-  include OpenEHR::RM::Data_Types::Basic
   def setup
     assert_nothing_raised(Exception){party_proxy = Party_Proxy.new}
     object_id = Object_ID.new('0.0.4')
@@ -150,6 +149,14 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
       @party_identified = Party_Identified.new(:name => 'NERV',
                                                :external_ref => party_ref,
                                                :identifier => identifiers)}
+    terminology_id = Terminology_ID.new('test','0.04')
+    code_phrase = Code_Phrase.new('self', terminology_id)
+    dv_coded_text = DV_Coded_Text.new('Seele',terminology_id)
+    assert_nothing_raised(Exception){
+      @party_related = Party_Related.new(:name => 'GEHIRN',
+                                         :relationship => dv_coded_text)}
+                                         
+
 #    change_type = OpenEHR::RM::Data_Types::Text::DV_Text.new('audit_type')
 #    time_committed = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Date_Time.new(2008)
 #    assert_nothing_raised(Exception){@audit_details = OpenEHR::RM::Common::Generic::Audit_Details.new('rails',@party_proxy, change_type, time_committed)}
@@ -178,6 +185,10 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
       ids << id.id
     end
     assert_equal %w[MELCHIOR CASPER BALTHAZAR], ids
+  end
+
+  def test_party_related
+    assert_equal 'GEHIRN', @party_related.name
   end
 end
 

@@ -60,6 +60,20 @@ module OpenEHR
           end
         end
 
+        class Party_Related < Party_Identified
+          attr_reader :relationship
+          def initialize(args = { })
+            super(args)
+            self.relationship = args[:relationship]
+          end
+
+          def relationship=(relationship)
+            if relationship.nil?
+              raise ArgumentError, 'relationship must not be nil'
+            end
+            @relationship = relationship
+          end
+        end
       end # of Generic
     end # of Common
   end # of RM
