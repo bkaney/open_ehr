@@ -133,14 +133,37 @@ module OpenEHR
         end # of Link
 
         class Feeder_Audit
-          
+          attr_reader :originating_system_audit
+          attr_accessor :originating_system_item_ids, :feeder_system_audit,
+                        :feeder_system_item_ids, :original_content
+
+          def initialize(args = { })
+            self.originating_system_audit = args[:originating_system_audit]
+            self.originating_system_item_ids = args[:originating_system_item_ids]
+            self.feeder_system_audit = args[:feeder_system_audit]
+            self.feeder_system_item_ids = args[:feeder_system_item_ids]
+            self.original_content = args[:original_content]
+          end
+
+          def originating_system_audit=(originating_system_audit)
+            if originating_system_audit.nil?
+              raise ArgumentError, 'originating_system_audit must be not nil'
+            end
+            @originating_system_audit = originating_system_audit
+          end
         end # of Feeder_Audit
 
         class Feeder_Audit_Details
           attr_reader :system_id
+          attr_accessor :provider, :location, :time, :subject, :version_id
 
           def initialize(args ={ })
             self.system_id = args[:system_id]
+            self.provider = args[:provider]
+            self.location = args[:location]
+            self.time = args[:time]
+            self.subject = args[:subject]
+            self.version_id = args[:version_id]
           end
 
           def system_id=(system_id)

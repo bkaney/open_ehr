@@ -5,6 +5,7 @@ require 'rm'
 include OpenEHR::RM::Data_Types::Text
 include OpenEHR::RM::Common::Resource
 include OpenEHR::RM::Common::Archetyped
+include OpenEHR::RM::Common::Generic
 
 class RM_Common_Resource_Test < Test::Unit::TestCase
   def setup
@@ -23,6 +24,7 @@ class RM_Common_Resource_Test < Test::Unit::TestCase
   end
 end
 
+
 class RM_Common_Archetyped_Test < Test::Unit::TestCase
   def setup
     @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new('Test')
@@ -37,8 +39,31 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     links = Set.new([@uid_based_id])
     assert_nothing_raised(Exception){
       @locatable = OpenEHR::RM::Common::Archetyped::Locatable.new('at0001',name,links)}
+    provider = Party_Identified.new(:name => 'NERV')
+    location = Party_Identified.new(:name => 'GEOFRONT')
+    object_id = Object_ID.new('0.0.4')
+    party_ref = Party_Ref.new('local', 'ORGANISATION', object_id)
     assert_nothing_raised(Exception){
-      @feeder_audit_details = Feeder_Audit_Details.new(:system_id => 'MAGI')}
+      @feeder_audit_details = Feeder_Audit_Details.new(:system_id => 'MAGI',
+                                                       :provider => provider,
+                                                       :location => location,
+                                                       :time => DV_Date_Time.new('2009-07-03T12:16:31'),
+                                                       :subject => Party_Proxy.new(:external_ref => party_ref),
+                                                       :version_id => '0.0.4')}
+    feeder_audit_details = Feeder_Audit_Details.new(:system_id => 'AKAGI')
+    dv_identifier = DV_Identifier.new('NERV', 'MELCHIOR', 'RITSUKO', 'COMPUTER')
+    feeder_audit_details2 = Feeder_Audit_Details.new(:system_id => 'KATSURAGI')
+    dv_identifier2 = DV_Identifier.new('NERV', 'SHOGOUKI', 'MISATO', 'EVANGELION')
+    charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('UTF-8','character-sets')
+    language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('ja', 'languages')
+
+    dv_encapsulated = OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated.new(charset, language, 10)
+    assert_nothing_raised(Exception){
+      @feeder_audit = Feeder_Audit.new(:originating_system_audit => feeder_audit_details,
+                                       :originating_system_item_ids => [dv_identifier],
+                                       :feeder_system_audit => feeder_audit_details2,
+                                       :feeder_system_item_ids => [dv_identifier2],
+                                       :original_content => dv_encapsulated)}
   end
 
   def test_init
@@ -47,6 +72,7 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Common::Archetyped::Pathable, @pathable
     assert_instance_of OpenEHR::RM::Common::Archetyped::Locatable, @locatable
     assert_instance_of Feeder_Audit_Details, @feeder_audit_details
+    assert_instance_of Feeder_Audit, @feeder_audit
   end
 
   def test_archetyped
@@ -84,10 +110,20 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
   end
 
   def test_feeder_audit
+    assert_equal 'AKAGI', @feeder_audit.originating_system_audit.system_id
+    assert_equal 'RITSUKO', @feeder_audit.originating_system_item_ids[0].issuer
+    assert_equal 'KATSURAGI', @feeder_audit.feeder_system_audit.system_id
+    assert_equal 'MISATO', @feeder_audit.feeder_system_item_ids[0].issuer
+    assert_equal 'UTF-8', @feeder_audit.original_content.charset.code_string
   end
 
   def test_feeder_audit_detail
     assert_equal 'MAGI', @feeder_audit_details.system_id
+    assert_equal 'NERV', @feeder_audit_details.provider.name
+    assert_equal 'GEOFRONT', @feeder_audit_details.location.name
+    assert_equal 2009, @feeder_audit_details.time.year
+    assert_equal 'local', @feeder_audit_details.subject.external_ref.namespace
+    assert_equal '0.0.4', @feeder_audit_details.version_id
   end
 end
 
