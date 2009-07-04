@@ -8,7 +8,42 @@ module OpenEHR
     module Common
       module Generic
         class Audit_Details
+          attr_reader :system_id, :committer, :time_committed, :change_type
+          attr_accessor :description
+
+          def initialize(args = { })
+            self.system_id = args[:system_id]
+            self.committer = args[:committer]
+            self.time_committed = args[:time_committed]
+            self.change_type = args[:change_type]
+            self.description = args[:description]
+          end
+
+          def system_id=(system_id)
+            if system_id.nil? or system_id.empty?
+              raise ArgumentError, 'system_id is mandatory'
+            end
+            @system_id = system_id
+          end
+
+          def committer=(committer)
+            raise ArgumentError, 'committer is mandatory' if committer.nil?
+            @committer = committer
+          end
+
+          def time_committed=(time_committed)
+            if time_committed.nil?
+              raise ArgumentError, 'time_commited is mandatory'
+            end
+            @time_committed = time_committed
+          end
+
+          def change_type=(change_type)
+            raise ArgumentError, 'change_type is mandatory' if change_type.nil?
+            @change_type = change_type
+          end
         end
+
         class Revision_History
           
         end # of Revision_History
@@ -72,6 +107,33 @@ module OpenEHR
               raise ArgumentError, 'relationship must not be nil'
             end
             @relationship = relationship
+          end
+        end
+
+        class Participation
+          attr_reader :performer, :function, :mode
+          attr_accessor :time
+
+          def initialize(args ={ })
+            self.performer = args[:performer]
+            self.function = args[:function]
+            self.mode = args[:mode]
+            self.time = args[:time]
+          end
+
+          def performer=(performer)
+            raise ArgumentError, 'performer is mandatory' if performer.nil?
+            @performer = performer
+          end
+
+          def function=(function)
+            raise ArgumentError, 'function is mandatory' if function.nil?
+            @function = function
+          end
+
+          def mode=(mode)
+            raise ArgumentError, 'mode is mandatory' if mode.nil?
+            @mode = mode
           end
         end
       end # of Generic

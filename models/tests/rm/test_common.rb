@@ -8,6 +8,7 @@ include OpenEHR::RM::Common::Archetyped
 include OpenEHR::RM::Common::Generic
 include OpenEHR::RM::Support::Identification
 include OpenEHR::RM::Data_Types::Basic
+include OpenEHR::RM::Data_Types::Quantity
 
 class RM_Common_Resource_Test < Test::Unit::TestCase
   def setup
@@ -141,6 +142,7 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
       @party_self = Party_Self.new(:external_ref => party_ref)}
     assert_raise(ArgumentError){
       party_identified = Party_Identified.new}
+
     identifiers = []
     identifiers << DV_Identifier.new('NERV', 'MELCHIOR', 'GENDO', 'COMPUTER')
     identifiers << DV_Identifier.new('NERV', 'CASPER', 'GENDO', 'COMPUTER')
@@ -149,14 +151,34 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
       @party_identified = Party_Identified.new(:name => 'NERV',
                                                :external_ref => party_ref,
                                                :identifier => identifiers)}
+
     terminology_id = Terminology_ID.new('test','0.04')
     code_phrase = Code_Phrase.new('self', terminology_id)
-    dv_coded_text = DV_Coded_Text.new('Seele',terminology_id)
+    dv_coded_text = DV_Coded_Text.new('Seele',code_phrase)
     assert_nothing_raised(Exception){
       @party_related = Party_Related.new(:name => 'GEHIRN',
                                          :relationship => dv_coded_text)}
-                                         
-
+    dv_text = DV_Text.new('commiter')
+    dv_coded_text = DV_Coded_Text.new('present',terminology_id)
+    dv_date_time1 = DV_Date_Time.new('2009-07-04T16:30:00')
+    dv_date_time2 = DV_Date_Time.new('2009-07-14T00:00:00')
+    dv_interval = DV_Interval.new(dv_date_time1, dv_date_time2)
+    assert_nothing_raised(Exception){
+      @participation = Participation.new(:performer => @party_proxy,
+                                         :function => dv_text,
+                                         :mode => dv_coded_text,
+                                         :time => dv_interval)}
+    dv_date_time = DV_Date_Time.new('2009-07-04T18:56:00')
+    terminology_id = Terminology_ID.new('openehr','1.0.2')
+    code_phrase = Code_Phrase.new('249', terminology_id)
+    dv_coded_text = DV_Coded_Text.new('creation', code_phrase)
+    dv_text = DV_Text.new('test environment')
+    assert_nothing_raised(Exception){
+      @audit_details = Audit_Details.new(:system_id => 'MAGI',
+                                         :committer => @party_proxy,
+                                         :time_committed => dv_date_time,
+                                         :change_type => dv_coded_text,
+                                         :description => dv_text)}
 #    change_type = OpenEHR::RM::Data_Types::Text::DV_Text.new('audit_type')
 #    time_committed = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Date_Time.new(2008)
 #    assert_nothing_raised(Exception){@audit_details = OpenEHR::RM::Common::Generic::Audit_Details.new('rails',@party_proxy, change_type, time_committed)}
@@ -166,6 +188,8 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
     assert_instance_of Party_Proxy, @party_proxy
     assert_instance_of Party_Self, @party_self
     assert_instance_of Party_Identified, @party_identified
+    assert_instance_of Participation, @participation
+    assert_instance_of Audit_Details, @audit_details
   end
 
   def test_party_proxy
@@ -189,6 +213,21 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
 
   def test_party_related
     assert_equal 'GEHIRN', @party_related.name
+  end
+
+  def test_participation
+    assert_equal 'unknown', @participation.performer.external_ref.namespace
+    assert_equal 'commiter', @participation.function.value
+    assert_equal 'present', @participation.mode.value
+    assert_equal 2009, @participation.time.lower.year
+  end
+
+  def test_audit_details
+    assert_equal 'MAGI', @audit_details.system_id
+    assert_equal 'unknown', @audit_details.committer.external_ref.namespace
+    assert_equal '2009-07-04T18:56:00', @audit_details.time_committed.as_string
+    assert_equal 'creation', @audit_details.change_type.value
+    assert_equal 'test environment', @audit_details.description.value
   end
 end
 
