@@ -23,6 +23,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@party_ref = OpenEHR::RM::Support::Identification::Party_Ref.new('unknown', 'ORGANISATION', @object_id)}
     assert_nothing_raised(Exception){@access_group_ref = OpenEHR::RM::Support::Identification::Access_Group_Ref.new('unknown', 'ACCESS_GROUP', @object_id)}
     assert_nothing_raised(Exception){@version_tree_id = OpenEHR::RM::Support::Identification::Version_Tree_ID.new('1.2.3')}
+    assert_nothing_raised(Exception){@object_version_id = OpenEHR::RM::Support::Identification::Object_Version_ID.new('ABC::DEF::1.2.3')}
   end
   
   def test_init
@@ -38,6 +39,7 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_instance_of OpenEHR::RM::Support::Identification::Party_Ref, @party_ref
     assert_instance_of OpenEHR::RM::Support::Identification::Access_Group_Ref, @access_group_ref
     assert_instance_of OpenEHR::RM::Support::Identification::Version_Tree_ID, @version_tree_id
+    assert_instance_of OpenEHR::RM::Support::Identification::Object_Version_ID, @object_version_id
   end
 
   def test_object_id
@@ -215,6 +217,13 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert !@hier_object_id.root.nil?
     assert @hier_object_id.has_extension?
     assert !@hier_object_id.extension.empty?
+  end
+
+  def test_object_version_id
+    assert_equal 'ABC::DEF::1.2.3', @object_version_id.value
+    assert_equal 'ABC', @object_version_id.object_id.value
+    assert_equal 'DEF', @object_version_id.creating_system_id.value
+    assert_equal '1', @object_version_id.version_tree_id.trunk_version
   end
 
   def test_locatable_ref

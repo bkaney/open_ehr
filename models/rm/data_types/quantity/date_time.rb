@@ -10,6 +10,7 @@ module OpenEHR
       module Quantity
         module Date_Time
           class DV_Temporal < OpenEHR::RM::Data_Types::Quantity::DV_Absolute_Quantity
+            include Comparable
             attr_reader :value
 
             def initialize(value, magnitude_status=nil, accuracy=nil,
@@ -28,6 +29,10 @@ module OpenEHR
                 raise ArgumentError, 'invalid value'
               end
               @value = value
+            end
+
+            def <=>(other)
+              self.magnitude <=> other.magnitude
             end
           end
 
@@ -150,8 +155,13 @@ module OpenEHR
             end
 
             def magnitude
-              return DateTime.new(@year,@month,@day,@hour,@minute,@second) - 
-                DateTime.new(0000,1,1,0,0,0) + @fractional_second
+              seconds = DateTime.new(@year,@month,@day,@hour,@minute,@second) - 
+                DateTime.new(0000,1,1,0,0,0)
+              if @fractional_second.nil?
+                return seconds
+              else
+                return seconds + @fractional_second
+              end
             end
 
             undef magnitude=

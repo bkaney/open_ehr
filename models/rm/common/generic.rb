@@ -45,11 +45,47 @@ module OpenEHR
         end
 
         class Revision_History
-          
+          attr_reader :items
+
+          def initialize(items)
+            self.items = items
+          end
+
+          def items=(items)
+            if items.nil? or items.empty?
+              raise ArgumentError, 'item(s) is/are mandatory'
+            end
+            @items  = items
+          end
+
+          def most_recent_version
+            return @items.last.version_id.value
+          end
+
+          def most_recent_version_time_committed
+            return @items.last.audits.first.time_committed.value
+          end
         end # of Revision_History
 
         class Revision_History_Item
-          
+          attr_reader :version_id, :audits
+
+          def initialize(args = { })
+            self.version_id = args[:version_id]
+            self.audits = args[:audits]
+          end
+
+          def audits=(audits)
+            if audits.nil? or audits.empty?
+              raise ArgumentError, 'audits is mandatory'
+            end
+            @audits = audits
+          end
+
+          def version_id=(version_id)
+            raise ArgumentError, 'version_id is mandatory' if version_id.nil?
+            @version_id = version_id
+          end
         end # of Revision_History_Item
 
         class Party_Proxy
@@ -134,6 +170,23 @@ module OpenEHR
           def mode=(mode)
             raise ArgumentError, 'mode is mandatory' if mode.nil?
             @mode = mode
+          end
+        end
+
+        class Attestation < Audit_Details
+          attr_reader :reason
+          attr_accessor :proof, :items
+
+          def initialize(args = { })
+            super(args)
+            self.reason = args[:reason]
+            self.proof = args[:proof]
+            self.items = args[:items]
+          end
+
+          def reason=(reason)
+            raise ArgumentError, 'reason is mandatory' if reason.nil?
+            @reason = reason
           end
         end
       end # of Generic

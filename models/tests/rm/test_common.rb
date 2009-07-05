@@ -9,6 +9,7 @@ include OpenEHR::RM::Common::Generic
 include OpenEHR::RM::Support::Identification
 include OpenEHR::RM::Data_Types::Basic
 include OpenEHR::RM::Data_Types::Quantity
+include OpenEHR::RM::Data_Types::URI
 
 class RM_Common_Resource_Test < Test::Unit::TestCase
   def setup
@@ -44,7 +45,7 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
       @locatable = OpenEHR::RM::Common::Archetyped::Locatable.new('at0001',name,links)}
     provider = Party_Identified.new(:name => 'NERV')
     location = Party_Identified.new(:name => 'GEOFRONT')
-    object_id = Object_ID.new('0.0.4')
+    object_version_id = Object_Version_ID.new('ABC::DEF::1.3.4')
     party_ref = Party_Ref.new('local', 'ORGANISATION', object_id)
     assert_nothing_raised(Exception){
       @feeder_audit_details = Feeder_Audit_Details.new(:system_id => 'MAGI',
@@ -179,9 +180,40 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
                                          :time_committed => dv_date_time,
                                          :change_type => dv_coded_text,
                                          :description => dv_text)}
-#    change_type = OpenEHR::RM::Data_Types::Text::DV_Text.new('audit_type')
-#    time_committed = OpenEHR::RM::Data_Types::Quantity::Date_Time::DV_Date_Time.new(2008)
-#    assert_nothing_raised(Exception){@audit_details = OpenEHR::RM::Common::Generic::Audit_Details.new('rails',@party_proxy, change_type, time_committed)}
+    dv_text = DV_Text.new('authorisation')
+    dv_ehr_uri = DV_EHR_URI.new('ehr://test/')
+    assert_nothing_raised(Exception){
+      @attestation = Attestation.new(:system_id => 'NERV',
+                                     :committer => @party_proxy,
+                                     :time_committed => dv_date_time,
+                                     :change_type => dv_coded_text,
+                                     :reason => dv_text,
+                                     :description => dv_text,
+                                     :proof => 'hashedstring',
+                                     :items => Set[dv_ehr_uri])}
+    object_version_id = Object_Version_ID.new('SHOGOUKI::NERV::1.1.1')
+    audit_details2 = Audit_Details.new(:system_id => 'MAGI',
+                                       :committer => @party_proxy,
+                                       :time_committed => dv_date_time2,
+                                       :change_type => dv_coded_text)
+    assert_nothing_raised(Exception){
+      @revision_history_item = Revision_History_Item.new(:audits => [@audit_details, audit_details2],
+                                                         :version_id => object_version_id)}
+    dv_date_time3 = DV_Date_Time.new('2009-07-14T12:00:00')
+    dv_date_time4 = DV_Date_Time.new('2009-07-15T00:00:00')
+    audit_details3 = Audit_Details.new(:system_id => 'MAGI',
+                                     :committer => @party_proxy,
+                                     :time_committed => dv_date_time3,
+                                     :change_type => dv_coded_text)
+    audit_details4 = Audit_Details.new(:system_id => 'MAGI',
+                                     :committer => @party_proxy,
+                                     :time_committed => dv_date_time4,
+                                     :change_type => dv_coded_text)
+    object_version_id = Object_Version_ID.new('NIGOUKI::NERV::2.2.2')
+    revision_history_item2 = Revision_History_Item.new(:audits => [audit_details3, audit_details4],
+                                                      :version_id => object_version_id)
+    assert_nothing_raised(Exception){
+      @revision_history = Revision_History.new([@revision_history_item, revision_history_item2])}
   end
 
   def test_init
@@ -190,6 +222,9 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
     assert_instance_of Party_Identified, @party_identified
     assert_instance_of Participation, @participation
     assert_instance_of Audit_Details, @audit_details
+    assert_instance_of Attestation, @attestation
+    assert_instance_of Revision_History_Item, @revision_history_item
+    assert_instance_of Revision_History, @revision_history
   end
 
   def test_party_proxy
@@ -228,6 +263,27 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
     assert_equal '2009-07-04T18:56:00', @audit_details.time_committed.as_string
     assert_equal 'creation', @audit_details.change_type.value
     assert_equal 'test environment', @audit_details.description.value
+  end
+
+  def test_attestation
+    assert_equal 'NERV', @attestation.system_id
+    assert_equal 'unknown', @attestation.committer.external_ref.namespace
+    assert_equal '249', @attestation.change_type.defining_code.code_string
+    assert_equal 7, @attestation.time_committed.month
+    assert_equal 'authorisation', @attestation.reason.value
+    assert_equal 'authorisation', @attestation.description.value
+    assert_equal 'hashedstring', @attestation.proof
+    assert_equal 'ehr://test/', @attestation.items.to_a[0].value
+  end
+
+  def test_revision_history_item
+    assert_equal 'SHOGOUKI::NERV::1.1.1', @revision_history_item.version_id.value
+    assert_equal 'MAGI', @revision_history_item.audits[0].system_id
+  end
+
+  def test_revision_history
+    assert_equal 'NIGOUKI::NERV::2.2.2', @revision_history.most_recent_version
+    assert_equal '2009-07-14T12:00:00', @revision_history.most_recent_version_time_committed
   end
 end
 

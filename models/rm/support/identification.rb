@@ -173,6 +173,44 @@ module OpenEHR
           end
         end
 
+        class Object_Version_ID < UID_Based_ID
+          attr_reader :object_id, :creating_system_id, :version_tree_id
+
+          def initialize(value)
+            super(value)
+          end
+
+          def value=(value)
+            super(value)
+            if /^(\w+)::(\w+)::((\d|\.)+)$/ =~ value
+              self.object_id = UID.new($1)
+              self.creating_system_id = UID.new($2)
+              self.version_tree_id = Version_Tree_ID.new($3)
+            else
+              raise ArgumentError, 'invalid format'
+            end
+          end
+
+          def object_id=(object_id)
+            raise ArgumentError, 'object_id is mandatory' if object_id.nil?
+            @object_id = object_id
+          end
+
+          def creating_system_id=(creating_system_id)
+            if creating_system_id.nil?
+              raise ArgumentError, 'creating_system_id is mandatory'
+            end
+            @creating_system_id = creating_system_id
+          end
+
+          def version_tree_id=(version_tree_id)
+            if version_tree_id.nil?
+              raise ArgumentError, 'version_tree_id is mandatory'
+            end
+            @version_tree_id = version_tree_id
+          end
+        end
+
         class Locatable_Ref < Object_Ref
           attr_reader :namespace, :type, :id, :path
 
@@ -283,7 +321,7 @@ module OpenEHR
 
         class ISO_OID <UID
 
-        end
+        end        
       end # of Identification
     end # of Support
   end # of RM
