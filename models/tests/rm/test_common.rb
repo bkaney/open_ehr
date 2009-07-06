@@ -6,6 +6,7 @@ include OpenEHR::RM::Data_Types::Text
 include OpenEHR::RM::Common::Resource
 include OpenEHR::RM::Common::Archetyped
 include OpenEHR::RM::Common::Generic
+include OpenEHR::RM::Common::Change_Control
 include OpenEHR::RM::Support::Identification
 include OpenEHR::RM::Data_Types::Basic
 include OpenEHR::RM::Data_Types::Quantity
@@ -13,7 +14,7 @@ include OpenEHR::RM::Data_Types::URI
 
 class RM_Common_Resource_Test < Test::Unit::TestCase
   def setup
-        @authored_resource = OpenEHR::RM::Common::Resource::AUTHORED_RESOURCE.new(:original_language => "ja",
+    @authored_resource = OpenEHR::RM::Common::Resource::AUTHORED_RESOURCE.new(:original_language => "ja",
                                                                               :translations => "en",
                                                                               :description => "test")
     @translation_details = OpenEHR::RM::Common::Resource::TRANSLATION_DETAILS.new(nil,nil,nil,nil,nil)
@@ -153,7 +154,7 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
                                                :external_ref => party_ref,
                                                :identifier => identifiers)}
 
-    terminology_id = Terminology_ID.new('test','0.04')
+    terminology_id = Terminology_ID.new('test(0.04)')
     code_phrase = Code_Phrase.new('self', terminology_id)
     dv_coded_text = DV_Coded_Text.new('Seele',code_phrase)
     assert_nothing_raised(Exception){
@@ -170,7 +171,7 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
                                          :mode => dv_coded_text,
                                          :time => dv_interval)}
     dv_date_time = DV_Date_Time.new('2009-07-04T18:56:00')
-    terminology_id = Terminology_ID.new('openehr','1.0.2')
+    terminology_id = Terminology_ID.new('openehr(1.0.2)')
     code_phrase = Code_Phrase.new('249', terminology_id)
     dv_coded_text = DV_Coded_Text.new('creation', code_phrase)
     dv_text = DV_Text.new('test environment')
@@ -305,20 +306,76 @@ end
 
 class RM_Common_Change_Control_Test < Test::Unit::TestCase
   def setup
-    hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')
-    object_id = OpenEHR::RM::Support::Identification::Object_ID.new("0.0.3")
-    object_ref = OpenEHR::RM::Support::Identification::Object_Ref.new('local', 'ANY', object_id)
-    versions = Set.new [object_ref]
-#    audit_detail = OpenEHR::RM::Generic::Audit_Detail.new()
-#    assert_nothing_raised(Exception){@version = OpenEHR::RM::Common::Change_Control::Version.new(hier_object_id, versions)}
-#    assert_nothing_raised(Exception){@contribution = OpenEHR::RM::Common::Change_Control::Contribution.new(hier_object_id, versions, audit_detail)}
+    object_version_id1 = Object_Version_ID.new('ABC::DEF::2.2.3')
+    object_version_id2 = Object_Version_ID.new('GHI::JKL::4.5.6')
+    object_id = Object_ID.new('ehr://uniqueid1020')
+    dv_date_time = DV_Date_Time.new('2009-07-06T21:10:12')
+    party_ref = Party_Ref.new('unknown', 'ORGANISATION', object_id)
+    party_proxy = Party_Proxy.new(:external_ref => party_ref)
+    terminology_id = Terminology_ID.new('openehr(1.0.2)')
+    code_phrase = Code_Phrase.new('249', terminology_id)
+    dv_coded_text = DV_Coded_Text.new('creation', code_phrase)
+    audit_details = Audit_Details.new(:system_id => 'MAGI',
+                                      :committer => party_proxy,
+                                      :time_committed => dv_date_time,
+                                      :change_type => dv_coded_text)
+    code_phrase = Code_Phrase.new('532', terminology_id)
+    dv_coded_text = DV_Coded_Text.new('complete', code_phrase)
+    object_id = Object_ID.new('ehr://test_location')
+    object_ref = Object_Ref.new('local', 'PARTY', object_id)
+    hier_object_id = Hier_Object_ID.new('ABC')
+    assert_nothing_raised(Exception){
+      @version = Version.new(:uid => object_version_id1,
+                             :preceding_version_uid => object_version_id2,
+                             :lifecycle_state => dv_coded_text,
+                             :commit_audit => audit_details,
+                             :contribution => object_ref,
+                             :signature => 'test_version',
+                             :data => 'data')}
+    object_version_id3 = Object_Version_ID.new('MNO::PQR::7.8.9')
+    object_version_id4 = Object_Version_ID.new('STU::VWX::1.2.3')
+    code_phrase = Code_Phrase.new('240', terminology_id)
+    dv_coded_text2 = DV_Coded_Text.new('signed', code_phrase)
+    attestation = Attestation.new(:system_id => 'NERV',
+                                  :committer => party_proxy,
+                                  :time_committed => dv_date_time,
+                                  :change_type => dv_coded_text,
+                                  :reason => DV_Text.new('signed'))
+    assert_nothing_raised(Exception){
+      @original_version = Original_Version.new(:uid => object_version_id3,
+                                               :preceding_version_uid => object_version_id4,
+                                               :other_input_version_uids => Set[object_version_id1, object_version_id2],
+                                               :commit_audit => audit_details,
+                                               :contribution => object_ref,
+                                               :attestations => [attestation],
+                                               :data => 'data',
+                                               :lifecycle_state => dv_coded_text)}
   end
+
   def test_init
-#    assert_instace_of OpenEHR::RM::Common::Change_Control::Contribution @contribution
-#    assert_instace_of OpenEHR::RM::Common::Change_Control::Version @version
+    assert_instance_of OpenEHR::RM::Common::Change_Control::Version, @version
+    assert_instance_of Original_Version, @original_version
+#    assert_instance_of OpenEHR::RM::Common::Change_Control::Contribution @contribution
   end
+
   def test_version
+    assert_equal 'ABC::DEF::2.2.3', @version.uid.value
+    assert !@version.uid.version_tree_id.is_first?
+    assert_equal 'GHI::JKL::4.5.6', @version.preceding_version_uid.value
+    assert_equal '532', @version.lifecycle_state.defining_code.code_string
+    assert_equal 'MAGI', @version.commit_audit.system_id
+    assert_equal 'local', @version.contribution.namespace
+    assert_equal 'test_version', @version.signature
+    assert_equal 'ABC', @version.owner_id.value
+    assert_equal 'data', @version.data
+    assert @version.is_branch?
   end
+
+  def test_original_version
+    assert_equal 'MNO::PQR::7.8.9', @original_version.uid.value
+    assert_equal 'NERV', @original_version.attestations[0].system_id
+  end
+
   def test_contribution
 #    assert_equal @contribution.uid
   end

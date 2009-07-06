@@ -6,7 +6,7 @@ require 'tests/rm/quantity/ts_date_time'
 class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")}
-    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR','1.0.2')
+    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR(1.0.2)')
     @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('PROPOSED', @terminology_id)
     @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("Blood examination", @code_phrase)
     assert_nothing_raised(Exception){@dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new(@dv_coded_text, false)}
@@ -98,7 +98,7 @@ end
 class RM_Data_Types_Text_Test < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){@dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")}
-    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('ICD10', '')
+    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('ICD10')
     
     assert_nothing_raised(Exception){@code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('C92.0', @terminology_id)}
     assert_nothing_raised(Exception){@dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("Acute Myeloid Leukemia", @code_phrase)}
@@ -165,7 +165,7 @@ class QuantityTest < Test::Unit::TestCase
     assert_nothing_raised(Exception){
       @dv_ordered = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new }
     assert_nothing_raised(Exception){
-      terminology = OpenEHR::RM::Support::Identification::Terminology_ID.new('urine', '')
+      terminology = OpenEHR::RM::Support::Identification::Terminology_ID.new('urine')
       code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('protein',terminology)
       urinary_protein = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new('+', code_phrase)
       @dv_ordinal1 = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(1, urinary_protein)
@@ -213,7 +213,7 @@ class QuantityTest < Test::Unit::TestCase
     assert_nil @dv_ordered.other_refference_ranges
     assert @dv_ordered.is_simple?
     assert_raise(NotImplementedError){@dv_ordered<=>1}
-    openehr_terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR','')
+    openehr_terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR')
     normal_code = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('N', openehr_terminology_id)
     assert_equal 'N', normal_code.code_string
     assert_nothing_raised(Exception){
@@ -231,7 +231,7 @@ class QuantityTest < Test::Unit::TestCase
   def test_reference_range
     assert_equal 'normal', @reference_range.meaning.value
     assert_equal 1, @reference_range.range.lower.value
-    terminology = OpenEHR::RM::Support::Identification::Terminology_ID.new('urine', '')
+    terminology = OpenEHR::RM::Support::Identification::Terminology_ID.new('urine')
     code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('protein',terminology)
     urinary_protein = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new('++', code_phrase)
     dv_ordinal = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(2, urinary_protein)

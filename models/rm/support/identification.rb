@@ -93,9 +93,8 @@ module OpenEHR
         class Terminology_ID < Object_ID
           attr_reader :name, :version_id
 
-          def initialize(name, version_id="")
-            self.name = name
-            self.version_id = version_id
+          def initialize(value)
+            super(value)
           end
 
           def value
@@ -114,6 +113,7 @@ module OpenEHR
               @version_id = $2
             else
               @name = value
+              @version_id = ''
             end
             @value = value
           end
@@ -208,6 +208,10 @@ module OpenEHR
               raise ArgumentError, 'version_tree_id is mandatory'
             end
             @version_tree_id = version_tree_id
+          end
+
+          def is_branch?
+            return @version_tree_id.is_branch?
           end
         end
 
