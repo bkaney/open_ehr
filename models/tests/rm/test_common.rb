@@ -458,5 +458,31 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
                                                 :data => 'commit original',
                                                 :signature => 'testtett')}
     assert_equal 5, @versioned_object.version_count
+    assert_nothing_raised(Exception){
+      @versioned_object.commit_original_merged_version(:contribution => @original_version.contribution,
+                                                       :uid => @original_version.uid,
+                                                       :preceding_version_uid => @original_version.preceding_version_uid,
+                                                       :commit_audit => @original_version.commit_audit,
+                                                       :lifecycle_state => @original_version.lifecycle_state,
+                                                       :attestations => @original_version.attestations,
+                                                       :data => @original_version.data,
+                                                       :other_input_version_uids => @original_version.other_input_version_uids,
+                                                       :signature => @original_version.signature)}
+    assert_equal 6, @versioned_object.version_count
+    assert_nothing_raised(Exception){
+      @versioned_object.commit_imported_version(:contribution => @imported_version.contribution,
+                                                :commit_audit => @imported_version.commit_audit,
+                                                :item => @imported_version.item)}
+    assert_equal 7, @versioned_object.version_count
+    dv_date_time = DV_Date_Time.new('2009-07-07T22:11:31')
+    attestation = Attestation.new(:system_id => 'NERV2',
+                                  :committer => @version.contribution,
+                                  :time_committed => dv_date_time,
+                                  :change_type => @original_version.commit_audit.change_type,
+                                  :reason => DV_Text.new('signed'))
+    assert_nothing_raised(Exception){
+      @versioned_object.commit_attestation(:attestation => attestation,
+                                           :uid => @original_version.uid,
+                                           :signature => 'new signature')}
   end
 end

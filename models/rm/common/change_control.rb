@@ -126,7 +126,7 @@ module OpenEHR
         end
 
         class Original_Version < Version
-          attr_reader :attestations
+          attr_reader :attestations, :other_input_version_uids
 
           def initialize(args = { })
             super(args)
@@ -286,6 +286,36 @@ module OpenEHR
                                                   :data => args[:data],
                                                   :attestations => args[:attestations],
                                                   :signature => args[:signature])
+          end
+
+          def commit_original_merged_version(args = { })
+            @all_versions << Original_Version.new(:uid => args[:uid],
+                                                  :contribution => args[:contribution],
+                                              :preceding_version_uid => args[:preceding_version_uid],
+                                              :commit_audit => args[:commit_audit],
+                                              :lifecycle_state => args[:lifecycle_state],
+                                              :data => args[:data],
+                                              :attestations => args[:attestations],
+                                              :other_input_version_uids => args[:other_input_version_uids],
+                                              :signature => args[:signature])
+          end
+
+          def commit_imported_version(args = { })
+            @all_versions << Imported_Version.new(:item => args[:item],
+                                                  :contribution => args[:contribution],
+                                                  :commit_audit => args[:commit_audit])
+          end
+
+          def commit_attestation(args = { })
+            if args[:attestation].nil?
+              raise ArgumentError, 'attestation is mandatory'
+            end
+            if self.has_version_id?(args[:uid]) && self.is_original_version?(args[:uid])
+              self.version_with_id(args[:uid]).attestations << args[:attestation]
+              self.version_with_id(args[:uid]).signature = args[:signature]
+            else
+              raise ArgumentError, 'uid invalid'
+            end
           end
         end
       end # of Change_Control
