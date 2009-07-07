@@ -350,12 +350,28 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
                                                :attestations => [attestation],
                                                :data => 'data',
                                                :lifecycle_state => dv_coded_text)}
+    audit_details = Audit_Details.new(:system_id => 'CASPER',
+                                      :committer => party_proxy,
+                                      :time_committed => dv_date_time,
+                                      :change_type => dv_coded_text,
+                                      :description => 'for contribution')
+    object_ref = Object_Ref.new('unknown', 'PARTY', object_id)
+    assert_nothing_raised(Exception){
+      @imported_version = Imported_Version.new(:item => @original_version,
+                                               :commit_audit => audit_details,
+                                               :contribution => object_ref,
+                                               :signature => 'import test')}
+    assert_nothing_raised(Exception){
+      @contribution = Contribution.new(:uid => hier_object_id,
+                                       :versions => Set[object_ref],
+                                       :audit => audit_details)}
   end
 
   def test_init
     assert_instance_of OpenEHR::RM::Common::Change_Control::Version, @version
     assert_instance_of Original_Version, @original_version
-#    assert_instance_of OpenEHR::RM::Common::Change_Control::Contribution @contribution
+    assert_instance_of Imported_Version, @imported_version
+    assert_instance_of OpenEHR::RM::Common::Change_Control::Contribution, @contribution
   end
 
   def test_version
@@ -376,7 +392,19 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
     assert_equal 'NERV', @original_version.attestations[0].system_id
   end
 
+  def test_imported_version
+    assert_equal 'import test', @imported_version.signature
+    assert_equal 'MNO::PQR::7.8.9', @imported_version.item.uid.value
+    assert_equal 'CASPER', @imported_version.commit_audit.system_id
+    assert_equal 'unknown', @imported_version.contribution.namespace
+    assert_equal 'STU::VWX::1.2.3', @imported_version.preceding_version_uid.value
+    assert_equal '532', @imported_version.lifecycle_state.defining_code.code_string
+    
+  end
+
   def test_contribution
-#    assert_equal @contribution.uid
+    assert_equal 'ABC', @contribution.uid.value
+    assert_equal 'PARTY', @contribution.versions.to_a[0].type
+    assert_equal 'for contribution', @contribution.audit.description
   end
 end

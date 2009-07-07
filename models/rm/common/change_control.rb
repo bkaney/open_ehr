@@ -9,10 +9,10 @@ module OpenEHR
         class Contribution
           attr_reader :uid, :versions, :audit
 
-          def initialize(uid, versions, audit)
-            self.uid = uid
-            self.versions = versions
-            self.audit = audit
+          def initialize(args = { })
+            self.uid = args[:uid]
+            self.versions = args[:versions]
+            self.audit = args[:audit]
           end
 
           def uid=(uid)
@@ -107,6 +107,24 @@ module OpenEHR
         end
 
         class Imported_Version < Version
+          attr_reader :item
+
+          def initialize(args = { })
+            self.item = args[:item]
+            super(:uid => @item.uid,
+                  :preceding_version_uid => @item.preceding_version_uid,
+                  :data => @item.data, :commit_audit=> args[:commit_audit],
+                  :commit_audit => args[:commit_audit],
+                  :contribution => args[:contribution],
+                  :lifecycle_state => @item.lifecycle_state,
+                  :signature => args[:signature])
+                  
+          end
+
+          def item=(item)
+            raise ArgumentError, 'item is mandatory' if item.nil?
+            @item = item
+          end
         end
 
         class Original_Version < Version
@@ -133,7 +151,8 @@ module OpenEHR
           end
 
           def is_merged?
-
+# Java implementation has is_merged attribute, Eiffel implementation does
+# nothing
           end
         end
       end # of Change_Control
