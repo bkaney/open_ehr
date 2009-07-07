@@ -341,6 +341,11 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
                                   :time_committed => dv_date_time,
                                   :change_type => dv_coded_text,
                                   :reason => DV_Text.new('signed'))
+    dv_date_time = DV_Date_Time.new('2009-07-07T21:10:12')
+    audit_details = Audit_Details.new(:system_id => 'MAGI',
+                                      :committer => party_proxy,
+                                      :time_committed => dv_date_time,
+                                      :change_type => dv_coded_text)
     assert_nothing_raised(Exception){
       @original_version = Original_Version.new(:uid => object_version_id3,
                                                :preceding_version_uid => object_version_id4,
@@ -350,6 +355,7 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
                                                :attestations => [attestation],
                                                :data => 'data',
                                                :lifecycle_state => dv_coded_text)}
+    dv_date_time = DV_Date_Time.new('2009-07-08T21:10:12')
     audit_details = Audit_Details.new(:system_id => 'CASPER',
                                       :committer => party_proxy,
                                       :time_committed => dv_date_time,
@@ -365,6 +371,21 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
       @contribution = Contribution.new(:uid => hier_object_id,
                                        :versions => Set[object_ref],
                                        :audit => audit_details)}
+    dv_date_time = DV_Date_Time.new('2009-07-08T18:10:12')
+    audit_details = Audit_Details.new(:system_id => 'MAGI',
+                                      :committer => party_proxy,
+                                      :time_committed => dv_date_time,
+                                      :change_type => dv_coded_text)
+    @trunk_version = Version.new(:uid => object_version_id4,
+                                :lifecycle_state => dv_coded_text,
+                                :commit_audit => audit_details,
+                                :contribution => object_ref,
+                                :change_type => dv_coded_text)
+    assert_nothing_raised(Exception){
+      @versioned_object = Versioned_Object.new(:uid => hier_object_id,
+                                               :owner_id => object_ref,
+                                               :time_created => dv_date_time,
+                                               :all_versions => [@version,@original_version,@imported_version,@trunk_version])}
   end
 
   def test_init
@@ -372,6 +393,7 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
     assert_instance_of Original_Version, @original_version
     assert_instance_of Imported_Version, @imported_version
     assert_instance_of OpenEHR::RM::Common::Change_Control::Contribution, @contribution
+    assert_instance_of Versioned_Object, @versioned_object
   end
 
   def test_version
@@ -399,12 +421,42 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
     assert_equal 'unknown', @imported_version.contribution.namespace
     assert_equal 'STU::VWX::1.2.3', @imported_version.preceding_version_uid.value
     assert_equal '532', @imported_version.lifecycle_state.defining_code.code_string
-    
   end
 
   def test_contribution
     assert_equal 'ABC', @contribution.uid.value
     assert_equal 'PARTY', @contribution.versions.to_a[0].type
     assert_equal 'for contribution', @contribution.audit.description
+  end
+
+  def test_versioned_object
+    assert_equal 'ABC', @versioned_object.uid.value
+    assert_equal 'unknown', @versioned_object.owner_id.namespace
+    assert_equal 18, @versioned_object.time_created.hour
+    assert_equal [@version, @original_version, @imported_version, @trunk_version],
+                    @versioned_object.all_versions
+    assert_equal 4, @versioned_object.version_count
+    assert_equal [@version.uid, @original_version.uid, @imported_version.uid, @trunk_version.uid],
+                   @versioned_object.all_version_ids
+    assert @versioned_object.has_version_id?(@version.uid)
+    assert !@versioned_object.is_original_version?(@version.uid)
+    assert @versioned_object.is_original_version?(@original_version.uid)
+    assert @versioned_object.has_version_at_time?(DV_Date_Time.new('2009-07-06T21:10:12'))
+    assert_equal @version, @versioned_object.version_with_id(@version.uid)
+    assert_equal @version, @versioned_object.version_at_time(@version.commit_audit.time_committed)
+    assert_equal @imported_version, @versioned_object.latest_version
+    assert_equal @trunk_version, @versioned_object.latest_trunk_version
+    assert_equal 'complete', @versioned_object.trunk_lifecycle_state.value
+    assert_equal '2009-07-08T18:10:12', @versioned_object.revision_history.most_recent_version_time_committed
+    assert_nothing_raised(Exception){
+      @versioned_object.commit_original_version(:contribution => @original_version.contribution,
+                                                :uid => @original_version.uid,
+                                                :preceding_version_uid => @original_version.preceding_version_uid,
+                                                :commit_audit => @original_version.commit_audit,
+                                                :attestations => @original_version.attestations,
+                                                :lifecycle_state => @original_version.lifecycle_state,
+                                                :data => 'commit original',
+                                                :signature => 'testtett')}
+    assert_equal 5, @versioned_object.version_count
   end
 end

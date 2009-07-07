@@ -42,9 +42,6 @@ module OpenEHR
           end
         end
 
-        class Versioned_Object
-        end
-
         class Version
           attr_reader :uid, :preceding_version_uid, :lifecycle_state,
                       :commit_audit, :contribution
@@ -72,6 +69,7 @@ module OpenEHR
             @preceding_version_uid = preceding_version_uid
           end
 
+# remove hard coding of lifecycle
           def lifcycle_state=(lifecycle_state)
             if lifecycle_state.nil? ||
                 !%w[532 553 523].include?(
@@ -153,6 +151,141 @@ module OpenEHR
           def is_merged?
 # Java implementation has is_merged attribute, Eiffel implementation does
 # nothing
+          end
+        end
+
+        class Versioned_Object
+          attr_reader :uid, :owner_id, :time_created, :all_versions
+
+          def initialize(args = { })
+            self.uid = args[:uid]
+            self.owner_id = args[:owner_id]
+            self.time_created = args[:time_created]
+            self.all_versions = args[:all_versions]
+          end
+
+          def uid=(uid)
+            raise ArgumentError, 'uid is mandatory' if uid.nil?
+            @uid = uid
+          end
+
+          def owner_id=(owner_id)
+            raise ArgumentError, 'owner_id is mandatory' if owner_id.nil?
+            @owner_id = owner_id
+          end
+
+          def time_created=(time_created)
+            if time_created.nil?
+              raise ArgumentError, 'time_created is mandatory'
+            end
+            @time_created = time_created
+          end
+
+          def all_versions=(all_versions)
+            if all_versions.nil? || all_versions.size < 0
+              raise ArgumentError, 'version count invalid'
+            end
+            @all_versions = all_versions
+          end
+
+          def all_version_ids
+            ids = []
+            @all_versions.each{|id| ids << id.uid}
+            return ids
+          end
+
+          def version_count
+            return all_versions.size
+          end
+
+          def has_version_id?(a_ver_id)
+            raise ArgumentError, 'argument is mandatory' if a_ver_id.nil?
+            return self.all_version_ids.include?(a_ver_id)
+          end
+
+          def is_original_version?(a_ver_id)
+            if a_ver_id.nil? || !self.has_version_id?(a_ver_id)
+              raise ArgumentError, 'invalid a_ver_id'
+            end
+            return @all_versions[self.all_version_ids.index(a_ver_id)].instance_of? Original_Version
+          end
+
+          def has_version_at_time?(a_time)
+            raise ArgumentError, 'argument mandatory' if a_time.nil?
+            @all_versions.each do |ver|
+              if ver.commit_audit.time_committed == a_time
+                return true
+              end
+            end
+            return false
+          end
+
+          def version_with_id(a_ver_id)
+            if a_ver_id.nil? || !self.has_version_id?(a_ver_id)
+              raise ArgumentError, 'argument invalid'
+            end
+            return @all_versions[self.all_version_ids.index(a_ver_id)]
+          end
+
+          def version_at_time(a_time)
+            if a_time.nil? || !self.has_version_at_time?(a_time)
+              raise ArgumentError, 'argument invalid'
+            end
+            @all_versions.each do |ver|
+              if ver.commit_audit.time_committed == a_time
+                return ver
+              end
+            end
+          end
+
+          def latest_version
+            time_sorted_version = @all_versions.sort do |a,b|
+              a.commit_audit.time_committed <=> b.commit_audit.time_committed
+            end
+            return time_sorted_version.last
+          end
+
+          def latest_trunk_version
+            trunk_versions = [ ]
+            @all_versions.each do |ver|
+              if ver.uid.version_tree_id.trunk_version == '1'
+                trunk_versions << ver
+              end
+            end
+            sorted_trunk_version = trunk_versions.sort do |a,b|
+              a.commit_audit.time_committed <=> b.commit_audit.time_committed
+            end
+            return sorted_trunk_version.last
+          end
+
+          def trunk_lifecycle_state
+            return self.latest_trunk_version.lifecycle_state
+          end
+
+          def revision_history
+            revision_history_items = [ ]
+            @all_versions.each do |ver|
+              audits = [ ]
+              if ver.instance_of? Original_Version
+                audits << ver.attestations
+              end
+              audits << ver.commit_audit
+              revision_history_items << Revision_History_Item.new(
+                                          :audits => audits,
+                                          :version_id => ver.uid)
+            end
+            return Revision_History.new(revision_history_items)
+          end
+
+          def commit_original_version(args={ })
+            @all_versions << Original_Version.new(:uid => args[:uid],
+                                                  :preceding_version_uid => args[:preceding_version_uid],
+                                                  :contribution => args[:contribution],
+                                                  :commit_audit => args[:commit_audit],
+                                                  :lifecycle_state => args[:lifecycle_state],
+                                                  :data => args[:data],
+                                                  :attestations => args[:attestations],
+                                                  :signature => args[:signature])
           end
         end
       end # of Change_Control
