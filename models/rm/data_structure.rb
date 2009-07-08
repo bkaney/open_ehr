@@ -7,6 +7,10 @@ module OpenEHR
   module RM
     module Data_Structures
       class Data_Structure < OpenEHR::RM::Common::Archetyped::Locatable
+        def initialize(args = { })
+          super(args)
+        end
+
         def as_hierarchy
           raise NotImplementedError, "as_hirarchy must be implemented"
         end

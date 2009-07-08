@@ -7,6 +7,7 @@ include OpenEHR::RM::Common::Resource
 include OpenEHR::RM::Common::Archetyped
 include OpenEHR::RM::Common::Generic
 include OpenEHR::RM::Common::Change_Control
+include OpenEHR::RM::Common::Directory
 include OpenEHR::RM::Support::Identification
 include OpenEHR::RM::Data_Types::Basic
 include OpenEHR::RM::Data_Types::Quantity
@@ -43,7 +44,9 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     name = OpenEHR::RM::Data_Types::Text::DV_Text.new('blood')
     links = Set.new([@uid_based_id])
     assert_nothing_raised(Exception){
-      @locatable = OpenEHR::RM::Common::Archetyped::Locatable.new('at0001',name,links)}
+      @locatable = Locatable.new(:archetype_node_id => 'at0001',
+                                 :name => name,
+                                 :links => links)}
     provider = Party_Identified.new(:name => 'NERV')
     location = Party_Identified.new(:name => 'GEOFRONT')
     object_version_id = Object_Version_ID.new('ABC::DEF::1.3.4')
@@ -290,8 +293,16 @@ end
 
 class RM_Common_Directory_Test < Test::Unit::TestCase
   def setup
-    dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new('root')
-    assert_nothing_raised(Exception){@folder = OpenEHR::RM::Common::Directory::Folder.new('at0000', dv_text, nil)}
+    archetype_node_id = 'at0001'
+    name = DV_Text.new('folder_test')
+    object_id = Object_ID.new('1.1.1')
+    object_ref = Object_Ref.new('local', 'PARTY', object_id)
+    assert_nothing_raised(Exception){
+      @folder = Folder.new(:archetype_node_id => archetype_node_id,
+                           :name => name,
+                           :items => [object_ref])}
+    
+
   end
   
   def test_init
@@ -299,8 +310,8 @@ class RM_Common_Directory_Test < Test::Unit::TestCase
   end
 
   def test_folder
-    assert_equal 'at0000', @folder.archetype_node_id
-    assert_equal 'root', @folder.name.value
+    assert_equal 'at0001', @folder.archetype_node_id
+    assert_equal 'local', @folder.items[0].namespace
   end
 end
 

@@ -12,7 +12,9 @@ class RmDataStructureTest < Test::Unit::TestCase
     uid = OpenEHR::RM::Support::Identification::UID_Based_ID.new('ehr::test-1')
     links = Set.new([uid])
     assert_nothing_raised(Exception){
-      @data_structure = OpenEHR::RM::Data_Structures::Data_Structure.new('test',name,links) }
+      @data_structure = OpenEHR::RM::Data_Structures::Data_Structure.new(:archetype_node_id => 'test',
+                                                                         :name => name,
+                                                                         :links => links) }
   end
 
   def test_init

@@ -1,6 +1,7 @@
 # This module is based on the UML,
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_5_1_76d0249_1140536622627_218703_7149Report.html
 # Ticket refs #63
+include OpenEHR::RM::Data_Types::Text
 module OpenEHR
   module RM
     module Common
@@ -9,9 +10,10 @@ module OpenEHR
           attr_accessor :items
           attr_reader :folders
 
-          def initialize(archetype_node_id, name, links, parent=nil, folders=nil, items=nil, uid = nil, archetype_details=nil, feeder_audit=nil)
-            super(archetype_node_id, name, links, parent, uid, archetype_details, feeder_audit)
-            self.folders = folders
+          def initialize(args = { })
+            super(args)
+            self.folders = args[:folders]
+            self.items = args[:items]
           end
 
           def folders=(folders)

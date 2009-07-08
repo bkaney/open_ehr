@@ -46,15 +46,14 @@ module OpenEHR
           attr_reader :archetype_node_id, :name, :links
           attr_accessor :uid, :archetype_details, :feeder_audit
 
-          def initialize(archetype_node_id, name, links, parent=nil, uid=nil, archetype_details=nil, feeder_audit=nil)
-            super(parent)
-            self.archetype_node_id = archetype_node_id
-            self.name = name
-            self.links = links
-            self.uid = uid
-            self.archetype_details = archetype_details
-            self.feeder_audit = feeder_audit
-            self.parent = parent
+          def initialize(args = { })
+            super(args[:parent])
+            self.archetype_node_id = args[:archetype_node_id]
+            self.name = args[:name]
+            self.links = args[:links]
+            self.uid = args[:uid]
+            self.archetype_details = args[:archetype_details]
+            self.feeder_audit = args[:feeder_audit]
           end
           
           def archetype_node_id=(archetype_node_id)
@@ -70,6 +69,7 @@ module OpenEHR
             raise ArgumentError, "links shoud not be empty" if !links.nil? and links.empty?
             @links = links
           end
+
           def item_at_path(path)
             if !@path.nil?
               if @path == ""
@@ -77,17 +77,22 @@ module OpenEHR
               end
             end
           end
+
           def items_at_path(path)
             raise NotImplementError, "items_at_path must be implemented"
           end
+
           def path_exists?
             raise NotImplementError, "path_exists? must be implemented"
           end
+
           def path_unique
             raise NotImplementError, "path_unique must be implemented"
           end
+
           def concept
           end
+
           def is_archetype_root?
             !archetype_details.nil?
           end
