@@ -9,7 +9,7 @@ module OpenEHR
         CURRENT_ADL_VERSION = "1.4"
       end
 
-      class ARCHETYPE < OpenEHR::RM::Common::Resource::AUTHORED_RESOURCE
+      class ARCHETYPE < OpenEHR::RM::Common::Resource::Authored_Resource
         include ADL_Definition
         attr_accessor :archetype_id, :concept_code, :is_controlled, :original_language, :parent_archtype_id, :uid
 

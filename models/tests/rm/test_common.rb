@@ -15,18 +15,70 @@ include OpenEHR::RM::Data_Types::URI
 
 class RM_Common_Resource_Test < Test::Unit::TestCase
   def setup
-    @authored_resource = OpenEHR::RM::Common::Resource::AUTHORED_RESOURCE.new(:original_language => "ja",
-                                                                              :translations => "en",
-                                                                              :description => "test")
-    @translation_details = OpenEHR::RM::Common::Resource::TRANSLATION_DETAILS.new(nil,nil,nil,nil,nil)
+    terminology_id = Terminology_ID.new('openehr')
+    code_phrase = Code_Phrase.new('ja', terminology_id)    
+    @translation_details = OpenEHR::RM::Common::Resource::Translation_Details.new(:language => code_phrase, :author => {'KOBAYASHI, Shinji', 'Ehime Univ'},
+  :accreditation => 'jp', :other_details => {'ruby', 'test'})
+    @authored_resource = OpenEHR::RM::Common::Resource::Authored_Resource.new(:original_language => code_phrase, :translations => {'ja', @translation_details}, :description => "test")
+    @resource_description_item = OpenEHR::RM::Common::Resource::Resource_Description_Item.new(:language => code_phrase,
+              :purpose => 'test',
+              :keywords => %w[test ruby],
+              :use => 'unit test',
+              :misuse => 'real use',
+              :copyright => 'openEHR.jp',
+              :original_resource_uri => {'issuer', 'http://openehr.jp/'},
+              :other_details => {'samos', 'icicth7'})
+    @resource_description = OpenEHR::RM::Common::Resource::Resource_Description.new(:original_author => {'KOBAYASHI, Shinji' => 'Ehime University'},
+    :lifecycle_state => 'experimental',
+    :details => {'ja', @resource_description_item},
+    :other_contributors => %w[aki tim hugh],
+    :resource_package_uri => 'http://openehr.jp/svn/ruby',
+    :other_details => {'ja', 'shikoku'},
+    :parent_resource => @authored_resource)
+    @authored_resource = OpenEHR::RM::Common::Resource::Authored_Resource.new(:original_language => code_phrase, :translations => {'ja', @translation_details}, :description => @resource_description)
   end
+
   def test_init
-    assert_instance_of OpenEHR::RM::Common::Resource::AUTHORED_RESOURCE, @authored_resource
-    assert_instance_of OpenEHR::RM::Common::Resource::TRANSLATION_DETAILS, @translation_details
+    assert_instance_of OpenEHR::RM::Common::Resource::Authored_Resource, @authored_resource
+    assert_instance_of OpenEHR::RM::Common::Resource::Translation_Details, @translation_details
+    assert_instance_of OpenEHR::RM::Common::Resource::Resource_Description_Item, @resource_description_item
+    assert_instance_of OpenEHR::RM::Common::Resource::Resource_Description, @resource_description
+  end
+
+  def test_translation_details
+    assert_equal 'ja', @translation_details.language.code_string
+    assert_equal 'Ehime Univ', @translation_details.author['KOBAYASHI, Shinji']
+    assert_equal 'jp', @translation_details.accreditation
+    assert_equal 'test', @translation_details.other_details['ruby']
   end
 
   def test_authoured_resource
-    assert_equal 'ja', @authored_resource.original_language
+    assert_equal 'ja', @authored_resource.original_language.code_string
+    assert_equal @translation_details, @authored_resource.translations['ja']
+    assert_equal 'experimental', @authored_resource.description.lifecycle_state
+    assert !@authored_resource.is_controlled?
+    assert_equal(Set['ja'], @authored_resource.languages_available)
+  end
+
+  def test_resource_description_item
+    assert_equal 'ja', @resource_description_item.language.code_string
+    assert_equal 'test', @resource_description_item.purpose
+    assert_equal %w[test ruby], @resource_description_item.keywords
+    assert_equal 'unit test', @resource_description_item.use
+    assert_equal 'real use', @resource_description_item.misuse
+    assert_equal 'openEHR.jp', @resource_description_item.copyright
+    assert_equal 'http://openehr.jp/', @resource_description_item.original_resource_uri['issuer']
+    assert_equal 'icicth7', @resource_description_item.other_details['samos']
+  end
+
+  def test_resource_description
+    assert_equal 'Ehime University', @resource_description.original_author['KOBAYASHI, Shinji']
+    assert_equal 'experimental', @resource_description.lifecycle_state
+    assert_equal 'test', @resource_description.details['ja'].purpose
+    assert_equal %w[aki tim hugh], @resource_description.other_contributors
+    assert_equal 'http://openehr.jp/svn/ruby', @resource_description.resource_package_uri
+    assert_equal 'shikoku', @resource_description.other_details['ja']
+    assert_equal 'ja', @resource_description.parent_resource.original_language.code_string
   end
 end
 

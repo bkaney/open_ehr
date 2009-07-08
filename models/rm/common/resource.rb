@@ -3,53 +3,152 @@ module OpenEHR
   module RM
     module Common
       module Resource
-        class AUTHORED_RESOURCE
-          attr_reader :is_controled,:revision_history, :translations
-          attr_accessor :description, :original_language
+        class Authored_Resource
+          attr_reader  :original_language, :translations
+          attr_accessor :description, :revision_history
 
           def initialize(args = { })
-            @original_language = args[:original_language] if args[:original_language]
-            @translations = args[:translations] if args[:translations]
-            @revision_history = args[:revision_history] ? args[:revision_history] : nil
+            self.original_language = args[:original_language]
+            self.translations = args[:translations]
+            self.revision_history = args[:revision_history]
+            self.description = args[:description]
+          end
 
-            unless @revision_history
-              @is_controled = false
-            else
-              @is_controled = true
+          def original_language=(original_language)
+            if original_language.nil?
+              raise ArgumentError, 'original language is mandatory'
             end
+            @original_language = original_language
+          end
 
-            @original_language = args[:original_language] if args[:original_language]
-            @translations = args[:translations] if args[:translations]
-            @description = args[:description] if args[:description]
+          def translations=(translations)
+            if !translations.nil? && translations.empty?
+              raise ArgumentError, 'translation is empty'
+            end
+            @translations = translations
           end
 
           def current_version
             @revision_history.most_recent_revision
           end
 
-          def language_available
-            languages = Set.new
-            if @translations != nil
-              languages << @translations.keys
-            end
-            languages << @original_language.code_string
+          def languages_available
+            return Set.new(@translations.keys)
+          end
+
+          def is_controlled?
+            return !@revision_history.nil?
           end
         end
 
-        class TRANSLATION_DETAILS
-          attr_accessor :language, :author, :accreditation
-          attr_accessor :other_details, :terminology_service
+        class Translation_Details
+          attr_reader :language, :author
+          attr_accessor :accreditation, :other_details
 
-          def initialize(language, author, accreditation, other_details,
-                         terminology_service)
+          def initialize(args = {})
+            self.language = args[:language]
+            self.author = args[:author]
+            self.accreditation = args[:accreditation]
+            self.other_details = args[:other_details]
+          end
+
+          def language=(language)
+            raise ArgumentError, 'language is mandatory' if language.nil?
             @language = language
+          end
+
+          def author=(author)
+            raise ArgumentError, 'author is mandatory' if author.nil?
             @author = author
-            @accreditation = accreditation
-            @other_details = other_details
-            @terminology_service = terminology_service
           end
         end
-      end
+
+        class Resource_Description
+          attr_reader :original_author, :lifecycle_state, :details
+          attr_accessor :other_contributors, :resource_package_uri,
+                        :other_details, :parent_resource
+
+          def initialize(args = {})
+            self.original_author = args[:original_author]
+            self.lifecycle_state = args[:lifecycle_state]
+            self.details = args[:details]
+            self.other_contributors = args[:other_contributors]
+            self.resource_package_uri = args[:resource_package_uri]
+            self.other_details = args[:other_details]
+            self.parent_resource = args[:parent_resource]
+          end
+
+          def original_author=(original_author)
+            if original_author.nil? || original_author.empty?
+              raise ArgumentError, 'original_author is mandatory'
+            end
+            @original_author = original_author
+          end
+
+          def lifecycle_state=(lifecycle_state)
+            if lifecycle_state.nil? || lifecycle_state.empty?
+              raise ArgumentError, 'lifecycle_state is malformatted'
+            end
+            @lifecycle_state = lifecycle_state
+          end
+
+          def details=(details)
+            if details.nil? || details.empty?
+              raise ArgumentError, 'nil or empty details'
+            end
+            @details = details
+          end
+        end
+
+        class Resource_Description_Item
+          attr_reader :language, :purpose, :use, :misuse, :copyright
+          attr_accessor :keywords, :original_resource_uri, :other_details
+
+          def initialize(args = { })
+            self.language = args[:language]
+            self.purpose = args[:purpose]
+            self.keywords = args[:keywords]
+            self.use = args[:use]
+            self.misuse = args[:misuse]
+            self.copyright = args[:copyright]
+            self.original_resource_uri = args[:original_resource_uri]
+            self.other_details = args[:other_details]
+          end
+
+          def language=(language)
+            raise ArgumentError, 'language is mandatory' if language.nil?
+            @language = language
+          end
+
+          def purpose=(purpose)
+            if purpose.nil? || purpose.empty?
+              raise ArgumentError, 'purpose is mandatory'
+            end
+            @purpose = purpose
+          end
+
+          def use=(use)
+            if !use.nil? && use.empty?
+              raise ArgumentError, 'use is invalid'
+            end
+            @use = use
+          end
+
+          def misuse=(misuse)
+            if !misuse.nil? && misuse.empty?
+              raise ArgumentError, 'misuse is invalid'
+            end
+            @misuse = misuse
+          end
+
+          def copyright=(copyright)
+            if !copyright.nil? && copyright.empty?
+              raise ArgumentError, 'copyright is invalid'
+            end
+            @copyright = copyright
+          end
+        end
+      end # end of Resouce
     end # end of module Common
   end # end of module RM
 end # end of module OpenEHR
