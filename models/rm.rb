@@ -41,6 +41,7 @@ module OpenEHR
 
     module Data_Structures
       autoload :Data_Structure, "rm/data_structure.rb"
+      autoload :
     end
 
     module Security

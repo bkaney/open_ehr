@@ -6,7 +6,7 @@
 module OpenEHR
   module RM
     module Data_Structures
-      class Data_Structure < OpenEHR::RM::Common::Archetyped::Locatable
+      class Data_Structure < OpenEHR::RM::Common::Archetyped::Locatable        
         def initialize(args = { })
           super(args)
         end
