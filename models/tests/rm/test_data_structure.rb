@@ -1,10 +1,9 @@
-# This module is implemented from this UML:
-#http://www.openehr.org/svn/specification/TAGS/Release-1.0.2/publishing/architecture/computable/UML/uml_start_view.html
-# Ticket refs #59
 require 'test/unit'
 require 'set'
 require 'rm'
 
+include OpenEHR::RM::Data_Structures
+include OpenEHR::RM::Data_Structures::Item_Structure
 
 class RmDataStructureTest < Test::Unit::TestCase
   def setup
@@ -23,5 +22,15 @@ class RmDataStructureTest < Test::Unit::TestCase
 
   def test_data_structure
     assert_raise(NotImplementedError){@data_structure.as_hierarchy}
+  end
+end
+
+class RmDataStructureItemStructureTest < Test::Unit::TestCase
+  def setup
+    assert_nothing_raised(Exception){
+      
+  end
+
+  def test_init
   end
 end
