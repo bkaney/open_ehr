@@ -15,6 +15,7 @@ require 'rubygems'
 require 'adl_parser.rb'
 require 'am.rb'
 require 'rm.rb'
+$DEBUG = true
 
 
 
@@ -22,7 +23,7 @@ module OpenEHR
   module ADL
     class Parser < Racc::Parser
 
-module_eval(<<'...end parser.y/module_eval...', 'parser.y', 1187)
+module_eval(<<'...end parser.y/module_eval...', 'parser.y', 1188)
 
 def assert_at(file,line, message = "")
   unless yield

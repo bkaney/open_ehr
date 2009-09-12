@@ -1180,6 +1180,7 @@ require 'rubygems'
 require 'adl_parser.rb'
 require 'am.rb'
 require 'rm.rb'
+$DEBUG = true
 
 
 
