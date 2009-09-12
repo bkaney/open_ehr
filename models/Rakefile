@@ -40,6 +40,7 @@ gem_spec = Gem::Specification.new do |s|
   s.summary = 'OpenEHR models'
   s.email = 'openehr-jp@openehr.jp'
   s.test_files = FileList['tests/test_*.rb', '*.adl']
+
   candidates = Dir.glob("{am,rm,docs,tests}/**/*") + FileList['COPYING', 'Rakefile','am.rb','assumed_library_types.rb','rm.rb']
   s.files = candidates.delete_if do |item|
     item.include?(".svn") || item.include?("rdoc")

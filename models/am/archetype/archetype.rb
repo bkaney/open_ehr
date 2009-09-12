@@ -20,7 +20,7 @@ module OpenEHR
         def initialize(args = {})
           @adl_version = args[:adl_version] if args[:adl_version]
           @archetype_id = args[:archetype_id] ? args[:archetype_id] : nil
-          @parent_id = args[:parent_id] if args[:parent_id]
+          @parent_archtype_id = args[:parent_archtype_id] if args[:parent_archtype_id]
           @concept = args[:concept] if args[:concept]
           @is_controled = args[:is_controled] if args[:is_controled]
           @definition = args[:definition] if args[:definition]

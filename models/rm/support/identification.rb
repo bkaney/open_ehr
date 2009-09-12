@@ -81,7 +81,7 @@ module OpenEHR
           end
 
           def specialisation=(specialisation)
-            raise ArgumentError, "rm_specialisation not valid" if specialisation.nil? or specialisation.empty?
+#            raise ArgumentError, "rm_specialisation not valid" if specialisation.nil? or specialisation.empty?
             @specialisation = specialisation
           end
           def version_id=(version_id)

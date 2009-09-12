@@ -10,12 +10,11 @@ require 'racc/parser.rb'
 
 $:.unshift File.join(File.dirname(__FILE__))
 require 'logger'
-#require 'lib/util.rb'
-#require 'lib/scanner.rb'
-require 'lib/adl_parser.rb'
+#require 'lib/adl_parser.rb'
 require 'rubygems'
+require 'adl_parser.rb'
 require 'am.rb'
-$DEBUG = false
+require 'rm.rb'
 
 
 
@@ -23,7 +22,7 @@ module OpenEHR
   module ADL
     class Parser < Racc::Parser
 
-module_eval(<<'...end parser.y/module_eval...', 'parser.y', 1183)
+module_eval(<<'...end parser.y/module_eval...', 'parser.y', 1187)
 
 def assert_at(file,line, message = "")
   unless yield
@@ -151,8 +150,12 @@ def scan_adl(data)
         ###----------/* symbols */ ------------------------------------------------- 
       when /\A[A-Z][a-zA-Z0-9_]*/
         yield :V_TYPE_IDENTIFIER, $&
-      when /\A[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+/   #V_ARCHETYPE_ID
-        yield :V_ARCHETYPE_ID, $&
+#      when /\A[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+/   #V_ARCHETYPE_ID
+      when /\A(\w+)-(\w+)-(\w+)\.(\w+)(-\w+)?\.(v[0-9]+)/   #V_ARCHETYPE_ID
+        object_id, rm_originator, rm_name, rm_entity, concept_name, specialisation, version_id = $&, $1, $2, $3, $4, $5, $6
+        archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new(object_id, concept_name, rm_name, rm_entity, rm_originator, specialisation, version_id)
+#        yield :V_ARCHETYPE_ID, $&
+        yield :V_ARCHETYPE_ID, archetype_id
       when /\A[a-z][a-zA-Z0-9_]*/
 #        word = $&.downcase
         word = $&
@@ -234,7 +237,7 @@ def scan_adl(data)
       when /\A\?/   # ?
         yield :Question_mark_code, :Question_mark_code
       when /\A[0-9]+\.[0-9]+(\.[0-9]+)*/   # ?
-        yield :V_VERSION_STRING, :V_VERSION_STRING
+        yield :V_VERSION_STRING, $&
       when /\A\|/   # |
         if @in_interval
           @in_interval = false
@@ -252,6 +255,8 @@ def scan_adl(data)
       when /\A\]/   # ]
         yield :Right_bracket_code, :Right_bracket_code
 
+      when /\A"([^"]*)"/m #V_STRING
+        yield :V_STRING, $1
       when /\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/   #ERR_V_QUALIFIED_TERM_CODE_REF
         yield :ERR_V_QUALIFIED_TERM_CODE_REF, $&
       when /\Aa[ct][0-9.]+/   #V_LOCAL_CODE
@@ -269,8 +274,6 @@ def scan_adl(data)
       when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
         yield :V_REAL, $&
         #    when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
-      when /\A"([^"]*)"/m #V_STRING
-        yield :V_STRING, $1
       when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
         yield :V_URI, $&
       when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
@@ -1305,7 +1308,7 @@ racc_reduce_table = [
   3, 109, :_reduce_11,
   1, 109, :_reduce_12,
   0, 99, :_reduce_none,
-  2, 99, :_reduce_none,
+  2, 99, :_reduce_14,
   2, 99, :_reduce_none,
   2, 100, :_reduce_16,
   2, 100, :_reduce_none,
@@ -2039,11 +2042,13 @@ module_eval(<<'.,.,', 'parser.y', 36)
     end
     
     archetype_id = val[0][:archetype_id]
+    parent_archtype_id = val[1][:parent_archtype_id] if val[1]
     adl_version = val[0][:arch_head][:arch_meta_data][:adl_version]
     concept = val[2]
     language = val[3][:arch_language]
     archetype = OpenEHR::AM::Archetype::ARCHETYPE.create(
                                                          :archetype_id => archetype_id,
+                                                         :parent_archtype_id => parent_archtype_id,
                                                          :adl_version => adl_version,
                                                          :concept => concept,
                                                          :description => val[4],
@@ -2059,7 +2064,7 @@ module_eval(<<'.,.,', 'parser.y', 36)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 61)
+module_eval(<<'.,.,', 'parser.y', 63)
   def _reduce_4(val, _values, result)
         result = {:arch_head => val[0], :archetype_id => val[1] }
   
@@ -2067,7 +2072,7 @@ module_eval(<<'.,.,', 'parser.y', 61)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 65)
+module_eval(<<'.,.,', 'parser.y', 67)
   def _reduce_5(val, _values, result)
         raise
   
@@ -2075,7 +2080,7 @@ module_eval(<<'.,.,', 'parser.y', 65)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 70)
+module_eval(<<'.,.,', 'parser.y', 72)
   def _reduce_6(val, _values, result)
         result = {:arch_meta_data => nil }
   
@@ -2083,7 +2088,7 @@ module_eval(<<'.,.,', 'parser.y', 70)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 74)
+module_eval(<<'.,.,', 'parser.y', 76)
   def _reduce_7(val, _values, result)
         result = val[1]
   
@@ -2091,7 +2096,7 @@ module_eval(<<'.,.,', 'parser.y', 74)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 79)
+module_eval(<<'.,.,', 'parser.y', 81)
   def _reduce_8(val, _values, result)
         result = {:arch_meta_data => val[1] }
   
@@ -2099,7 +2104,7 @@ module_eval(<<'.,.,', 'parser.y', 79)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 84)
+module_eval(<<'.,.,', 'parser.y', 86)
   def _reduce_9(val, _values, result)
         result = val[0]
   
@@ -2107,7 +2112,7 @@ module_eval(<<'.,.,', 'parser.y', 84)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 88)
+module_eval(<<'.,.,', 'parser.y', 90)
   def _reduce_10(val, _values, result)
         result = val[0].merge(val[2])
   
@@ -2115,7 +2120,7 @@ module_eval(<<'.,.,', 'parser.y', 88)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 94)
+module_eval(<<'.,.,', 'parser.y', 96)
   def _reduce_11(val, _values, result)
         result = {:adl_version => val[2], :is_controlled => false }
   
@@ -2123,7 +2128,7 @@ module_eval(<<'.,.,', 'parser.y', 94)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 98)
+module_eval(<<'.,.,', 'parser.y', 100)
   def _reduce_12(val, _values, result)
         result = {:is_controlled => true }
   
@@ -2133,11 +2138,17 @@ module_eval(<<'.,.,', 'parser.y', 98)
 
 # reduce 13 omitted
 
-# reduce 14 omitted
+module_eval(<<'.,.,', 'parser.y', 108)
+  def _reduce_14(val, _values, result)
+        result = {:parent_archtype_id => val[1]}
+  
+    result
+  end
+.,.,
 
 # reduce 15 omitted
 
-module_eval(<<'.,.,', 'parser.y', 109)
+module_eval(<<'.,.,', 'parser.y', 114)
   def _reduce_16(val, _values, result)
         result = {:arch_concept => val[1] }
   
@@ -2147,7 +2158,7 @@ module_eval(<<'.,.,', 'parser.y', 109)
 
 # reduce 17 omitted
 
-module_eval(<<'.,.,', 'parser.y', 119)
+module_eval(<<'.,.,', 'parser.y', 124)
   def _reduce_18(val, _values, result)
         result = {:arch_language => nil}
   
@@ -2155,7 +2166,7 @@ module_eval(<<'.,.,', 'parser.y', 119)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 123)
+module_eval(<<'.,.,', 'parser.y', 128)
   def _reduce_19(val, _values, result)
         result = {:arch_language => val[1]}
   
@@ -2167,7 +2178,7 @@ module_eval(<<'.,.,', 'parser.y', 123)
 
 # reduce 21 omitted
 
-module_eval(<<'.,.,', 'parser.y', 134)
+module_eval(<<'.,.,', 'parser.y', 139)
   def _reduce_22(val, _values, result)
         result = OpenEHR::AM::Archetype::Archetype_Description::ARCHETYPE_DESCRIPTION.new(:details => val[1])
   
@@ -2177,7 +2188,7 @@ module_eval(<<'.,.,', 'parser.y', 134)
 
 # reduce 23 omitted
 
-module_eval(<<'.,.,', 'parser.y', 142)
+module_eval(<<'.,.,', 'parser.y', 147)
   def _reduce_24(val, _values, result)
         result = val[1]
   
@@ -2187,7 +2198,7 @@ module_eval(<<'.,.,', 'parser.y', 142)
 
 # reduce 25 omitted
 
-module_eval(<<'.,.,', 'parser.y', 150)
+module_eval(<<'.,.,', 'parser.y', 155)
   def _reduce_26(val, _values, result)
         assert_at(__FILE__,__LINE__){val[0].instance_of?(OpenEHR::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT)}
     @@log.info("#{__FILE__}:#{__LINE__}: c_complex_object = #{val[0]} at #{@filename}:#{@lineno}")
@@ -2197,7 +2208,7 @@ module_eval(<<'.,.,', 'parser.y', 150)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 156)
+module_eval(<<'.,.,', 'parser.y', 161)
   def _reduce_27(val, _values, result)
         result = val[0]
   
@@ -2205,7 +2216,7 @@ module_eval(<<'.,.,', 'parser.y', 156)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 163)
+module_eval(<<'.,.,', 'parser.y', 168)
   def _reduce_28(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
       c_complex_object.node_id = val[0][:c_complex_object_id][:local_term_code_ref]
@@ -2217,7 +2228,7 @@ module_eval(<<'.,.,', 'parser.y', 163)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 171)
+module_eval(<<'.,.,', 'parser.y', 176)
   def _reduce_29(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
       c_complex_object.node_id = val[0][:c_complex_object_id][:local_term_code_ref]
@@ -2229,7 +2240,7 @@ module_eval(<<'.,.,', 'parser.y', 171)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 182)
+module_eval(<<'.,.,', 'parser.y', 187)
   def _reduce_30(val, _values, result)
         result = {:c_complex_object_id => val[0], :c_occurrences => val[1]}
   
@@ -2237,7 +2248,7 @@ module_eval(<<'.,.,', 'parser.y', 182)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 187)
+module_eval(<<'.,.,', 'parser.y', 192)
   def _reduce_31(val, _values, result)
         result = {:type_identifier => val[0]}
   
@@ -2245,7 +2256,7 @@ module_eval(<<'.,.,', 'parser.y', 187)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 191)
+module_eval(<<'.,.,', 'parser.y', 196)
   def _reduce_32(val, _values, result)
         result = {:type_identifier => val[0], :local_term_code_ref => val[1]}
   
@@ -2255,7 +2266,7 @@ module_eval(<<'.,.,', 'parser.y', 191)
 
 # reduce 33 omitted
 
-module_eval(<<'.,.,', 'parser.y', 197)
+module_eval(<<'.,.,', 'parser.y', 202)
   def _reduce_34(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT.new(:attributes => val[0])
   
@@ -2263,7 +2274,7 @@ module_eval(<<'.,.,', 'parser.y', 197)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 205)
+module_eval(<<'.,.,', 'parser.y', 210)
   def _reduce_35(val, _values, result)
         result = val[0]
   
@@ -2271,7 +2282,7 @@ module_eval(<<'.,.,', 'parser.y', 205)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 209)
+module_eval(<<'.,.,', 'parser.y', 214)
   def _reduce_36(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: c_complex_object = #{val[0].inspect} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2280,7 +2291,7 @@ module_eval(<<'.,.,', 'parser.y', 209)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 214)
+module_eval(<<'.,.,', 'parser.y', 219)
   def _reduce_37(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::ARCHETYPE_INTERNAL_REF.create do |archetype_internal_ref|
       archetype_internal_ref.target_path = val[0][:absolute_path]
@@ -2292,7 +2303,7 @@ module_eval(<<'.,.,', 'parser.y', 214)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 222)
+module_eval(<<'.,.,', 'parser.y', 227)
   def _reduce_38(val, _values, result)
         result = val[0]
   
@@ -2300,7 +2311,7 @@ module_eval(<<'.,.,', 'parser.y', 222)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 226)
+module_eval(<<'.,.,', 'parser.y', 231)
   def _reduce_39(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::CONSTRAINT_REF.create do |constraint_ref|
       constraint_ref.reference = val[0]
@@ -2310,7 +2321,7 @@ module_eval(<<'.,.,', 'parser.y', 226)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 232)
+module_eval(<<'.,.,', 'parser.y', 237)
   def _reduce_40(val, _values, result)
         result = val[0]
   
@@ -2318,7 +2329,7 @@ module_eval(<<'.,.,', 'parser.y', 232)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 236)
+module_eval(<<'.,.,', 'parser.y', 241)
   def _reduce_41(val, _values, result)
         result = val[0]
   
@@ -2326,7 +2337,7 @@ module_eval(<<'.,.,', 'parser.y', 236)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 240)
+module_eval(<<'.,.,', 'parser.y', 245)
   def _reduce_42(val, _values, result)
         result = val[0]
   
@@ -2338,7 +2349,7 @@ module_eval(<<'.,.,', 'parser.y', 240)
 
 # reduce 44 omitted
 
-module_eval(<<'.,.,', 'parser.y', 255)
+module_eval(<<'.,.,', 'parser.y', 260)
   def _reduce_45(val, _values, result)
         result = val[1]
   
@@ -2346,7 +2357,7 @@ module_eval(<<'.,.,', 'parser.y', 255)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 261)
+module_eval(<<'.,.,', 'parser.y', 266)
   def _reduce_46(val, _values, result)
         result = {:type_identifier => val[1], :c_occurrences => val[2], :absolute_path => val[3] }
   
@@ -2356,7 +2367,7 @@ module_eval(<<'.,.,', 'parser.y', 261)
 
 # reduce 47 omitted
 
-module_eval(<<'.,.,', 'parser.y', 268)
+module_eval(<<'.,.,', 'parser.y', 273)
   def _reduce_48(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::ARCHETYPE_SLOT.create do |archetype_slot|
       archetype_slot.includes = val[3]
@@ -2369,7 +2380,7 @@ module_eval(<<'.,.,', 'parser.y', 268)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 277)
+module_eval(<<'.,.,', 'parser.y', 282)
   def _reduce_49(val, _values, result)
         result = {:c_archetype_slot_id => val[0],:c_occurrences => val[1]}
   
@@ -2377,7 +2388,7 @@ module_eval(<<'.,.,', 'parser.y', 277)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 282)
+module_eval(<<'.,.,', 'parser.y', 287)
   def _reduce_50(val, _values, result)
         result = val[1]
   
@@ -2389,7 +2400,7 @@ module_eval(<<'.,.,', 'parser.y', 282)
 
 # reduce 52 omitted
 
-module_eval(<<'.,.,', 'parser.y', 290)
+module_eval(<<'.,.,', 'parser.y', 295)
   def _reduce_53(val, _values, result)
         assert_at(__FILE__,__LINE__){val[0].kind_of?(OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_PRIMITIVE)}
     result = OpenEHR::AM::Archetype::Constraint_Model::C_PRIMITIVE_OBJECT.create do |c_primitive_object|
@@ -2400,7 +2411,7 @@ module_eval(<<'.,.,', 'parser.y', 290)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 298)
+module_eval(<<'.,.,', 'parser.y', 303)
   def _reduce_54(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: c_integer = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_INTEGER.create do |c_integer|
@@ -2413,7 +2424,7 @@ module_eval(<<'.,.,', 'parser.y', 298)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 307)
+module_eval(<<'.,.,', 'parser.y', 312)
   def _reduce_55(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: c_real = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_REAL.new
@@ -2422,7 +2433,7 @@ module_eval(<<'.,.,', 'parser.y', 307)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 312)
+module_eval(<<'.,.,', 'parser.y', 317)
   def _reduce_56(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: c_date = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_DATE.new
@@ -2431,7 +2442,7 @@ module_eval(<<'.,.,', 'parser.y', 312)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 317)
+module_eval(<<'.,.,', 'parser.y', 322)
   def _reduce_57(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: c_time = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_TIME.new
@@ -2440,7 +2451,7 @@ module_eval(<<'.,.,', 'parser.y', 317)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 322)
+module_eval(<<'.,.,', 'parser.y', 327)
   def _reduce_58(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: c_date_time = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_DATE_TIME.new
@@ -2449,7 +2460,7 @@ module_eval(<<'.,.,', 'parser.y', 322)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 327)
+module_eval(<<'.,.,', 'parser.y', 332)
   def _reduce_59(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: c_duration = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_DURATION.new
@@ -2458,7 +2469,7 @@ module_eval(<<'.,.,', 'parser.y', 327)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 332)
+module_eval(<<'.,.,', 'parser.y', 337)
   def _reduce_60(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: c_string = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_STRING.new
@@ -2467,7 +2478,7 @@ module_eval(<<'.,.,', 'parser.y', 332)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 337)
+module_eval(<<'.,.,', 'parser.y', 342)
   def _reduce_61(val, _values, result)
         assert_at(__FILE__,__LINE__){val[0].instance_of?(OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN)}
     @@log.info("#{__FILE__}:#{__LINE__}: c_boolean = #{val[0]} at #{@filename}:#{@lineno}")
@@ -2479,7 +2490,7 @@ module_eval(<<'.,.,', 'parser.y', 337)
 
 # reduce 62 omitted
 
-module_eval(<<'.,.,', 'parser.y', 349)
+module_eval(<<'.,.,', 'parser.y', 354)
   def _reduce_63(val, _values, result)
         result = [val[0]]
   
@@ -2487,7 +2498,7 @@ module_eval(<<'.,.,', 'parser.y', 349)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 353)
+module_eval(<<'.,.,', 'parser.y', 358)
   def _reduce_64(val, _values, result)
         result = (val[0] << val[1])
   
@@ -2495,7 +2506,7 @@ module_eval(<<'.,.,', 'parser.y', 353)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 359)
+module_eval(<<'.,.,', 'parser.y', 364)
   def _reduce_65(val, _values, result)
         assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEHR::AM::Archetype::Constraint_Model::C_ATTRIBUTE)}
     c_attribute = val[0]
@@ -2506,7 +2517,7 @@ module_eval(<<'.,.,', 'parser.y', 359)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 366)
+module_eval(<<'.,.,', 'parser.y', 371)
   def _reduce_66(val, _values, result)
         assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEHR::AM::Archetype::Constraint_Model::C_ATTRIBUTE)}
     result = val[0]
@@ -2515,7 +2526,7 @@ module_eval(<<'.,.,', 'parser.y', 366)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 371)
+module_eval(<<'.,.,', 'parser.y', 376)
   def _reduce_67(val, _values, result)
         assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEHR::AM::Archetype::Constraint_Model::C_ATTRIBUTE)}
     result = val[0]
@@ -2524,7 +2535,7 @@ module_eval(<<'.,.,', 'parser.y', 371)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 378)
+module_eval(<<'.,.,', 'parser.y', 383)
   def _reduce_68(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER = #{val[0]}, c_existence = #{val[1]} at #{@filename}")
     result = OpenEHR::AM::Archetype::Constraint_Model::C_SINGLE_ATTRIBUTE.new(
@@ -2537,7 +2548,7 @@ module_eval(<<'.,.,', 'parser.y', 378)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 387)
+module_eval(<<'.,.,', 'parser.y', 392)
   def _reduce_69(val, _values, result)
         assert_at(__FILE__,__LINE__){ val[2].instance_of?(OpenEHR::AM::Archetype::Constraint_Model::CARDINALITY) }
     @@log.info("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER: #{val[0]}, c_existence = #{val[1]}, c_cardinality = #{val[2]} at #{@filename}") 
@@ -2551,7 +2562,7 @@ module_eval(<<'.,.,', 'parser.y', 387)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 398)
+module_eval(<<'.,.,', 'parser.y', 403)
   def _reduce_70(val, _values, result)
         result = Array[val[0]]
   
@@ -2559,7 +2570,7 @@ module_eval(<<'.,.,', 'parser.y', 398)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 402)
+module_eval(<<'.,.,', 'parser.y', 407)
   def _reduce_71(val, _values, result)
         result = (val[0] << val[1])
   
@@ -2567,7 +2578,7 @@ module_eval(<<'.,.,', 'parser.y', 402)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 406)
+module_eval(<<'.,.,', 'parser.y', 411)
   def _reduce_72(val, _values, result)
         result = Array[val[0]]
   
@@ -2577,7 +2588,7 @@ module_eval(<<'.,.,', 'parser.y', 406)
 
 # reduce 73 omitted
 
-module_eval(<<'.,.,', 'parser.y', 414)
+module_eval(<<'.,.,', 'parser.y', 419)
   def _reduce_74(val, _values, result)
         result = val[1]
 
@@ -2587,7 +2598,7 @@ module_eval(<<'.,.,', 'parser.y', 414)
 
 # reduce 75 omitted
 
-module_eval(<<'.,.,', 'parser.y', 422)
+module_eval(<<'.,.,', 'parser.y', 427)
   def _reduce_76(val, _values, result)
         result = val[1]
 
@@ -2611,7 +2622,7 @@ module_eval(<<'.,.,', 'parser.y', 422)
 
 # reduce 84 omitted
 
-module_eval(<<'.,.,', 'parser.y', 442)
+module_eval(<<'.,.,', 'parser.y', 447)
   def _reduce_85(val, _values, result)
         dadl_section = val[1]
     result = OpenEHR::AM::Archetype::Ontology::ARCHETYPE_ONTOLOGY.new
@@ -2628,7 +2639,7 @@ module_eval(<<'.,.,', 'parser.y', 442)
 
 # reduce 89 omitted
 
-module_eval(<<'.,.,', 'parser.y', 457)
+module_eval(<<'.,.,', 'parser.y', 462)
   def _reduce_90(val, _values, result)
         result = Array[val[0]]
   
@@ -2636,7 +2647,7 @@ module_eval(<<'.,.,', 'parser.y', 457)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 461)
+module_eval(<<'.,.,', 'parser.y', 466)
   def _reduce_91(val, _values, result)
         result = (val[0] << val[1])
   
@@ -2644,7 +2655,7 @@ module_eval(<<'.,.,', 'parser.y', 461)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 465)
+module_eval(<<'.,.,', 'parser.y', 470)
   def _reduce_92(val, _values, result)
         result = (val[0] << val[2])
   
@@ -2652,7 +2663,7 @@ module_eval(<<'.,.,', 'parser.y', 465)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 470)
+module_eval(<<'.,.,', 'parser.y', 475)
   def _reduce_93(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: attr_id = #{val[0]}, object_block = #{val[2]} at #{@filename}:#{@lineno}")
     result = {:attr_id => val[0], :object_block => val[2]}
@@ -2661,7 +2672,7 @@ module_eval(<<'.,.,', 'parser.y', 470)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 476)
+module_eval(<<'.,.,', 'parser.y', 481)
   def _reduce_94(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2672,7 +2683,7 @@ module_eval(<<'.,.,', 'parser.y', 476)
 
 # reduce 95 omitted
 
-module_eval(<<'.,.,', 'parser.y', 483)
+module_eval(<<'.,.,', 'parser.y', 488)
   def _reduce_96(val, _values, result)
         result = val[0]
   
@@ -2680,7 +2691,7 @@ module_eval(<<'.,.,', 'parser.y', 483)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 487)
+module_eval(<<'.,.,', 'parser.y', 492)
   def _reduce_97(val, _values, result)
         result = val[0]
   
@@ -2688,7 +2699,7 @@ module_eval(<<'.,.,', 'parser.y', 487)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 492)
+module_eval(<<'.,.,', 'parser.y', 497)
   def _reduce_98(val, _values, result)
         result = val[0]
   
@@ -2696,7 +2707,7 @@ module_eval(<<'.,.,', 'parser.y', 492)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 496)
+module_eval(<<'.,.,', 'parser.y', 501)
   def _reduce_99(val, _values, result)
         result = val[0]
   
@@ -2704,7 +2715,7 @@ module_eval(<<'.,.,', 'parser.y', 496)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 501)
+module_eval(<<'.,.,', 'parser.y', 506)
   def _reduce_100(val, _values, result)
         result = {:untyped_multiple_attr_object_block => val[0]}
   
@@ -2712,7 +2723,7 @@ module_eval(<<'.,.,', 'parser.y', 501)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 505)
+module_eval(<<'.,.,', 'parser.y', 510)
   def _reduce_101(val, _values, result)
         result = {:type_identifier => val[0], :untyped_multiple_attr_object_block => val[1]}
   
@@ -2720,7 +2731,7 @@ module_eval(<<'.,.,', 'parser.y', 505)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 510)
+module_eval(<<'.,.,', 'parser.y', 515)
   def _reduce_102(val, _values, result)
         result = {:multiple_attr_object_block_head => val[0], :keyed_objects => val[1]}
   
@@ -2728,7 +2739,7 @@ module_eval(<<'.,.,', 'parser.y', 510)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 515)
+module_eval(<<'.,.,', 'parser.y', 520)
   def _reduce_103(val, _values, result)
         @@log.info("SYM_START_DBLOCK: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2737,7 +2748,7 @@ module_eval(<<'.,.,', 'parser.y', 515)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 521)
+module_eval(<<'.,.,', 'parser.y', 526)
   def _reduce_104(val, _values, result)
         result = Array[val[0]]
   
@@ -2745,7 +2756,7 @@ module_eval(<<'.,.,', 'parser.y', 521)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 525)
+module_eval(<<'.,.,', 'parser.y', 530)
   def _reduce_105(val, _values, result)
         result = (val[0] << val[1])
   
@@ -2753,7 +2764,7 @@ module_eval(<<'.,.,', 'parser.y', 525)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 530)
+module_eval(<<'.,.,', 'parser.y', 535)
   def _reduce_106(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: keyed_object = #{val[0]}, object_block = #{val[2]} at #{@filename}:#{@lineno}")
     result = {:object_key => val[0], :object_block => val[1]}
@@ -2762,7 +2773,7 @@ module_eval(<<'.,.,', 'parser.y', 530)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 536)
+module_eval(<<'.,.,', 'parser.y', 541)
   def _reduce_107(val, _values, result)
         @@log.info("object_key: [#{val[1]}] at #{@filename}:#{@lineno}")
     result = val[1]
@@ -2771,7 +2782,7 @@ module_eval(<<'.,.,', 'parser.y', 536)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 542)
+module_eval(<<'.,.,', 'parser.y', 547)
   def _reduce_108(val, _values, result)
         result = {:untyped_single_attr_object_block => val[0]}
   
@@ -2779,7 +2790,7 @@ module_eval(<<'.,.,', 'parser.y', 542)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 546)
+module_eval(<<'.,.,', 'parser.y', 551)
   def _reduce_109(val, _values, result)
         result = {:type_identifier => val[0], :untyped_single_attr_object_block => val[1]}
   
@@ -2787,7 +2798,7 @@ module_eval(<<'.,.,', 'parser.y', 546)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 551)
+module_eval(<<'.,.,', 'parser.y', 556)
   def _reduce_110(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: single_attr_object_complex_head = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:single_attr_object_complex_head => val[0]}
@@ -2796,7 +2807,7 @@ module_eval(<<'.,.,', 'parser.y', 551)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 556)
+module_eval(<<'.,.,', 'parser.y', 561)
   def _reduce_111(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: single_attr_object_complex_head = #{val[0]}, attr_vals = #{val[1]} at #{@filename}:#{@lineno}")
     result = {:single_attr_object_complex_head => val[0], :attr_vals => val[1]}
@@ -2807,7 +2818,7 @@ module_eval(<<'.,.,', 'parser.y', 556)
 
 # reduce 112 omitted
 
-module_eval(<<'.,.,', 'parser.y', 562)
+module_eval(<<'.,.,', 'parser.y', 567)
   def _reduce_113(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: untyped_primitive_object_block = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:untyped_primitive_object_block => val[0]}
@@ -2816,7 +2827,7 @@ module_eval(<<'.,.,', 'parser.y', 562)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 567)
+module_eval(<<'.,.,', 'parser.y', 572)
   def _reduce_114(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: type_identifier = #{val[0]}, untyped_primitive_object_block = #{val[1]} at #{@filename}:#{@lineno}")
     result = {:type_identifier => val[0], :untyped_primitive_object_block => val[1]}
@@ -2825,7 +2836,7 @@ module_eval(<<'.,.,', 'parser.y', 567)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 572)
+module_eval(<<'.,.,', 'parser.y', 577)
   def _reduce_115(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: primitive_object_block = <#{val[1]}> at #{@filename}:#{@lineno}")
     result = val[1]
@@ -2834,7 +2845,7 @@ module_eval(<<'.,.,', 'parser.y', 572)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 577)
+module_eval(<<'.,.,', 'parser.y', 582)
   def _reduce_116(val, _values, result)
         result = val[0]
   
@@ -2842,7 +2853,7 @@ module_eval(<<'.,.,', 'parser.y', 577)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 581)
+module_eval(<<'.,.,', 'parser.y', 586)
   def _reduce_117(val, _values, result)
         result = val[0]
   
@@ -2850,7 +2861,7 @@ module_eval(<<'.,.,', 'parser.y', 581)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 585)
+module_eval(<<'.,.,', 'parser.y', 590)
   def _reduce_118(val, _values, result)
         result = val[0]
   
@@ -2858,7 +2869,7 @@ module_eval(<<'.,.,', 'parser.y', 585)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 589)
+module_eval(<<'.,.,', 'parser.y', 594)
   def _reduce_119(val, _values, result)
         result = val[0]
   
@@ -2866,7 +2877,7 @@ module_eval(<<'.,.,', 'parser.y', 589)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 593)
+module_eval(<<'.,.,', 'parser.y', 598)
   def _reduce_120(val, _values, result)
         result = val[0]
   
@@ -2874,7 +2885,7 @@ module_eval(<<'.,.,', 'parser.y', 593)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 597)
+module_eval(<<'.,.,', 'parser.y', 602)
   def _reduce_121(val, _values, result)
         @@log.info("string_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2883,7 +2894,7 @@ module_eval(<<'.,.,', 'parser.y', 597)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 602)
+module_eval(<<'.,.,', 'parser.y', 607)
   def _reduce_122(val, _values, result)
         @@log.info("integer_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2892,7 +2903,7 @@ module_eval(<<'.,.,', 'parser.y', 602)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 607)
+module_eval(<<'.,.,', 'parser.y', 612)
   def _reduce_123(val, _values, result)
         @@log.info("real_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2901,7 +2912,7 @@ module_eval(<<'.,.,', 'parser.y', 607)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 612)
+module_eval(<<'.,.,', 'parser.y', 617)
   def _reduce_124(val, _values, result)
         @@log.info("boolean_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2910,7 +2921,7 @@ module_eval(<<'.,.,', 'parser.y', 612)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 617)
+module_eval(<<'.,.,', 'parser.y', 622)
   def _reduce_125(val, _values, result)
         @@log.info("character_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2919,7 +2930,7 @@ module_eval(<<'.,.,', 'parser.y', 617)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 622)
+module_eval(<<'.,.,', 'parser.y', 627)
   def _reduce_126(val, _values, result)
         @@log.info("date_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2928,7 +2939,7 @@ module_eval(<<'.,.,', 'parser.y', 622)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 627)
+module_eval(<<'.,.,', 'parser.y', 632)
   def _reduce_127(val, _values, result)
         @@log.info("time_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2937,7 +2948,7 @@ module_eval(<<'.,.,', 'parser.y', 627)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 632)
+module_eval(<<'.,.,', 'parser.y', 637)
   def _reduce_128(val, _values, result)
         @@log.info("date_time_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2946,7 +2957,7 @@ module_eval(<<'.,.,', 'parser.y', 632)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 637)
+module_eval(<<'.,.,', 'parser.y', 642)
   def _reduce_129(val, _values, result)
         @@log.info("duration_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2955,7 +2966,7 @@ module_eval(<<'.,.,', 'parser.y', 637)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 642)
+module_eval(<<'.,.,', 'parser.y', 647)
   def _reduce_130(val, _values, result)
         @@log.info("uri_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2994,7 +3005,7 @@ module_eval(<<'.,.,', 'parser.y', 642)
 
 # reduce 145 omitted
 
-module_eval(<<'.,.,', 'parser.y', 665)
+module_eval(<<'.,.,', 'parser.y', 670)
   def _reduce_146(val, _values, result)
         @@log.info("V_TYPE_IDENTIFIER: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3003,7 +3014,7 @@ module_eval(<<'.,.,', 'parser.y', 665)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 670)
+module_eval(<<'.,.,', 'parser.y', 675)
   def _reduce_147(val, _values, result)
         @@log.info("V_GENERIC_TYPE_IDENTIFIER: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3012,7 +3023,7 @@ module_eval(<<'.,.,', 'parser.y', 670)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 676)
+module_eval(<<'.,.,', 'parser.y', 681)
   def _reduce_148(val, _values, result)
         @@log.info("V_STRING: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3027,7 +3038,7 @@ module_eval(<<'.,.,', 'parser.y', 676)
 
 # reduce 151 omitted
 
-module_eval(<<'.,.,', 'parser.y', 686)
+module_eval(<<'.,.,', 'parser.y', 691)
   def _reduce_152(val, _values, result)
         begin
       integer = Integer(val[0])
@@ -3040,7 +3051,7 @@ module_eval(<<'.,.,', 'parser.y', 686)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 695)
+module_eval(<<'.,.,', 'parser.y', 700)
   def _reduce_153(val, _values, result)
         begin
       integer = Integer(val[0])
@@ -3053,7 +3064,7 @@ module_eval(<<'.,.,', 'parser.y', 695)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 704)
+module_eval(<<'.,.,', 'parser.y', 709)
   def _reduce_154(val, _values, result)
         begin
       integer = Integer(val[0])
@@ -3090,7 +3101,7 @@ module_eval(<<'.,.,', 'parser.y', 704)
 
 # reduce 166 omitted
 
-module_eval(<<'.,.,', 'parser.y', 730)
+module_eval(<<'.,.,', 'parser.y', 735)
   def _reduce_167(val, _values, result)
         begin
       real = Float(val[0])
@@ -3103,7 +3114,7 @@ module_eval(<<'.,.,', 'parser.y', 730)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 739)
+module_eval(<<'.,.,', 'parser.y', 744)
   def _reduce_168(val, _values, result)
         begin
       real = Float(val[1])
@@ -3116,7 +3127,7 @@ module_eval(<<'.,.,', 'parser.y', 739)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 748)
+module_eval(<<'.,.,', 'parser.y', 753)
   def _reduce_169(val, _values, result)
         begin
       real = Float(val[1])
@@ -3153,7 +3164,7 @@ module_eval(<<'.,.,', 'parser.y', 748)
 
 # reduce 181 omitted
 
-module_eval(<<'.,.,', 'parser.y', 773)
+module_eval(<<'.,.,', 'parser.y', 778)
   def _reduce_182(val, _values, result)
         result = true
   
@@ -3161,7 +3172,7 @@ module_eval(<<'.,.,', 'parser.y', 773)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 777)
+module_eval(<<'.,.,', 'parser.y', 782)
   def _reduce_183(val, _values, result)
         result = false
   
@@ -3261,7 +3272,7 @@ module_eval(<<'.,.,', 'parser.y', 777)
 
 # reduce 229 omitted
 
-module_eval(<<'.,.,', 'parser.y', 840)
+module_eval(<<'.,.,', 'parser.y', 845)
   def _reduce_230(val, _values, result)
         @@log.info("V_ISO8601_DURATION: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3294,7 +3305,7 @@ module_eval(<<'.,.,', 'parser.y', 840)
 
 # reduce 242 omitted
 
-module_eval(<<'.,.,', 'parser.y', 860)
+module_eval(<<'.,.,', 'parser.y', 865)
   def _reduce_243(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: V_QUALIFIED_TERM_CODE_REF = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3309,7 +3320,7 @@ module_eval(<<'.,.,', 'parser.y', 860)
 
 # reduce 246 omitted
 
-module_eval(<<'.,.,', 'parser.y', 870)
+module_eval(<<'.,.,', 'parser.y', 875)
   def _reduce_247(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}: V_URI = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3398,7 +3409,7 @@ module_eval(<<'.,.,', 'parser.y', 870)
 
 # reduce 287 omitted
 
-module_eval(<<'.,.,', 'parser.y', 940)
+module_eval(<<'.,.,', 'parser.y', 945)
   def _reduce_288(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
   
@@ -3406,7 +3417,7 @@ module_eval(<<'.,.,', 'parser.y', 940)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 944)
+module_eval(<<'.,.,', 'parser.y', 949)
   def _reduce_289(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
   
@@ -3414,7 +3425,7 @@ module_eval(<<'.,.,', 'parser.y', 944)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 955)
+module_eval(<<'.,.,', 'parser.y', 960)
   def _reduce_290(val, _values, result)
         result = Range.new(1,1)
   
@@ -3422,7 +3433,7 @@ module_eval(<<'.,.,', 'parser.y', 955)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 959)
+module_eval(<<'.,.,', 'parser.y', 964)
   def _reduce_291(val, _values, result)
         result = val[3]
   
@@ -3430,7 +3441,7 @@ module_eval(<<'.,.,', 'parser.y', 959)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 964)
+module_eval(<<'.,.,', 'parser.y', 969)
   def _reduce_292(val, _values, result)
         begin
       integer = Integer(val[0])
@@ -3443,7 +3454,7 @@ module_eval(<<'.,.,', 'parser.y', 964)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 973)
+module_eval(<<'.,.,', 'parser.y', 978)
   def _reduce_293(val, _values, result)
         begin
       from_integer = Integer(val[0])
@@ -3457,7 +3468,7 @@ module_eval(<<'.,.,', 'parser.y', 973)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 984)
+module_eval(<<'.,.,', 'parser.y', 989)
   def _reduce_294(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::CARDINALITY.new
   
@@ -3481,7 +3492,7 @@ module_eval(<<'.,.,', 'parser.y', 984)
 
 # reduce 302 omitted
 
-module_eval(<<'.,.,', 'parser.y', 998)
+module_eval(<<'.,.,', 'parser.y', 1003)
   def _reduce_303(val, _values, result)
         result = val[0]
   
@@ -3489,7 +3500,7 @@ module_eval(<<'.,.,', 'parser.y', 998)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1002)
+module_eval(<<'.,.,', 'parser.y', 1007)
   def _reduce_304(val, _values, result)
         result = val[0]
   
@@ -3499,7 +3510,7 @@ module_eval(<<'.,.,', 'parser.y', 1002)
 
 # reduce 305 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1009)
+module_eval(<<'.,.,', 'parser.y', 1014)
   def _reduce_306(val, _values, result)
         result = val[3]
   
@@ -3599,7 +3610,7 @@ module_eval(<<'.,.,', 'parser.y', 1009)
 
 # reduce 352 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1079)
+module_eval(<<'.,.,', 'parser.y', 1084)
   def _reduce_353(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => true)
   
@@ -3607,7 +3618,7 @@ module_eval(<<'.,.,', 'parser.y', 1079)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1083)
+module_eval(<<'.,.,', 'parser.y', 1088)
   def _reduce_354(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => false)
   
@@ -3615,7 +3626,7 @@ module_eval(<<'.,.,', 'parser.y', 1083)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1087)
+module_eval(<<'.,.,', 'parser.y', 1092)
   def _reduce_355(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => true,:false_valid => false)
   
@@ -3623,7 +3634,7 @@ module_eval(<<'.,.,', 'parser.y', 1087)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1091)
+module_eval(<<'.,.,', 'parser.y', 1096)
   def _reduce_356(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => false,:false_valid => true)
   
@@ -3631,7 +3642,7 @@ module_eval(<<'.,.,', 'parser.y', 1091)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1096)
+module_eval(<<'.,.,', 'parser.y', 1101)
   def _reduce_357(val, _values, result)
         result = val[0]
   
@@ -3639,7 +3650,7 @@ module_eval(<<'.,.,', 'parser.y', 1096)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1100)
+module_eval(<<'.,.,', 'parser.y', 1105)
   def _reduce_358(val, _values, result)
         raise 'Not implemented yet'
   
@@ -3647,7 +3658,7 @@ module_eval(<<'.,.,', 'parser.y', 1100)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1104)
+module_eval(<<'.,.,', 'parser.y', 1109)
   def _reduce_359(val, _values, result)
         raise 'Not implemented yet'
   
@@ -3665,7 +3676,7 @@ module_eval(<<'.,.,', 'parser.y', 1104)
 
 # reduce 364 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1116)
+module_eval(<<'.,.,', 'parser.y', 1121)
   def _reduce_365(val, _values, result)
         @in_interval = false
     @@log.info("#{__FILE__}:#{__LINE__}, #{val[0]}|#{val[2]} at #{@filename}") 
@@ -3674,7 +3685,7 @@ module_eval(<<'.,.,', 'parser.y', 1116)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1123)
+module_eval(<<'.,.,', 'parser.y', 1128)
   def _reduce_366(val, _values, result)
           result = val[0]
   
@@ -3682,7 +3693,7 @@ module_eval(<<'.,.,', 'parser.y', 1123)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1127)
+module_eval(<<'.,.,', 'parser.y', 1132)
   def _reduce_367(val, _values, result)
           result = val[0]
   
@@ -3698,7 +3709,7 @@ module_eval(<<'.,.,', 'parser.y', 1127)
 
 # reduce 371 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1142)
+module_eval(<<'.,.,', 'parser.y', 1147)
   def _reduce_372(val, _values, result)
           result = val[0]
   
@@ -3706,7 +3717,7 @@ module_eval(<<'.,.,', 'parser.y', 1142)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1147)
+module_eval(<<'.,.,', 'parser.y', 1152)
   def _reduce_373(val, _values, result)
           result = val[0]
   
@@ -3714,7 +3725,7 @@ module_eval(<<'.,.,', 'parser.y', 1147)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1151)
+module_eval(<<'.,.,', 'parser.y', 1156)
   def _reduce_374(val, _values, result)
         @@log.info("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}")
       result = val[0]
@@ -3723,7 +3734,7 @@ module_eval(<<'.,.,', 'parser.y', 1151)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1162)
+module_eval(<<'.,.,', 'parser.y', 1167)
   def _reduce_375(val, _values, result)
         result = val[0]
   

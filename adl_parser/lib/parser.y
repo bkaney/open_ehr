@@ -39,11 +39,13 @@ archetype: arch_identification arch_specialisation arch_concept arch_language ar
     end
     
     archetype_id = val[0][:archetype_id]
+    parent_archtype_id = val[1][:parent_archtype_id] if val[1]
     adl_version = val[0][:arch_head][:arch_meta_data][:adl_version]
     concept = val[2]
     language = val[3][:arch_language]
     archetype = OpenEHR::AM::Archetype::ARCHETYPE.create(
                                                          :archetype_id => archetype_id,
+                                                         :parent_archtype_id => parent_archtype_id,
                                                          :adl_version => adl_version,
                                                          :concept => concept,
                                                          :description => val[4],
@@ -103,6 +105,9 @@ arch_meta_data_item: SYM_ADL_VERSION SYM_EQ V_VERSION_STRING
 # Any data created via the use of the specialized archetype shall be conformant both to it and its parent.
 arch_specialisation: #-- empty is ok
   | SYM_SPECIALIZE V_ARCHETYPE_ID
+  {
+    result = {:parent_archtype_id => val[1]}
+  }
   | SYM_SPECIALIZE error
 
 arch_concept: SYM_CONCEPT V_LOCAL_TERM_CODE_REF
@@ -547,7 +552,7 @@ single_attr_object_block: untyped_single_attr_object_block
     result = {:type_identifier => val[0], :untyped_single_attr_object_block => val[1]}
   }
 
-untyped_single_attr_object_block: single_attr_object_complex_head SYM_END_DBLOCK # <>
+untyped_single_attr_object_block: single_attr_object_complex_head SYM_END_DBLOCK # >
   {
     @@log.info("#{__FILE__}:#{__LINE__}: single_attr_object_complex_head = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:single_attr_object_complex_head => val[0]}
@@ -1170,12 +1175,11 @@ duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
 
 $:.unshift File.join(File.dirname(__FILE__))
 require 'logger'
-#require 'lib/util.rb'
-#require 'lib/scanner.rb'
-require 'lib/adl_parser.rb'
+#require 'lib/adl_parser.rb'
 require 'rubygems'
+require 'adl_parser.rb'
 require 'am.rb'
-$DEBUG = false
+require 'rm.rb'
 
 
 
@@ -1307,8 +1311,12 @@ def scan_adl(data)
         ###----------/* symbols */ ------------------------------------------------- 
       when /\A[A-Z][a-zA-Z0-9_]*/
         yield :V_TYPE_IDENTIFIER, $&
-      when /\A[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+/   #V_ARCHETYPE_ID
-        yield :V_ARCHETYPE_ID, $&
+#      when /\A[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+/   #V_ARCHETYPE_ID
+      when /\A(\w+)-(\w+)-(\w+)\.(\w+)(-\w+)?\.(v[0-9]+)/   #V_ARCHETYPE_ID
+        object_id, rm_originator, rm_name, rm_entity, concept_name, specialisation, version_id = $&, $1, $2, $3, $4, $5, $6
+        archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new(object_id, concept_name, rm_name, rm_entity, rm_originator, specialisation, version_id)
+#        yield :V_ARCHETYPE_ID, $&
+        yield :V_ARCHETYPE_ID, archetype_id
       when /\A[a-z][a-zA-Z0-9_]*/
 #        word = $&.downcase
         word = $&
@@ -1390,7 +1398,7 @@ def scan_adl(data)
       when /\A\?/   # ?
         yield :Question_mark_code, :Question_mark_code
       when /\A[0-9]+\.[0-9]+(\.[0-9]+)*/   # ?
-        yield :V_VERSION_STRING, :V_VERSION_STRING
+        yield :V_VERSION_STRING, $&
       when /\A\|/   # |
         if @in_interval
           @in_interval = false
@@ -1408,6 +1416,8 @@ def scan_adl(data)
       when /\A\]/   # ]
         yield :Right_bracket_code, :Right_bracket_code
 
+      when /\A"([^"]*)"/m #V_STRING
+        yield :V_STRING, $1
       when /\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/   #ERR_V_QUALIFIED_TERM_CODE_REF
         yield :ERR_V_QUALIFIED_TERM_CODE_REF, $&
       when /\Aa[ct][0-9.]+/   #V_LOCAL_CODE
@@ -1425,8 +1435,6 @@ def scan_adl(data)
       when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
         yield :V_REAL, $&
         #    when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
-      when /\A"([^"]*)"/m #V_STRING
-        yield :V_STRING, $1
       when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
         yield :V_URI, $&
       when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
