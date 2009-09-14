@@ -7,6 +7,7 @@
 
 $:.unshift File.join(File.dirname(__FILE__))
 require 'logger'
+require 'adl_scanner.rb'
 
 module OpenEHR
 
@@ -17,17 +18,18 @@ module OpenEHR
     LOG = Logger.new(STDOUT)
     LOG.level = Logger::WARN
   end
-  
-  
 
 
   module ADL
     autoload :Parser, "parser.rb"
     autoload :Validator, "validator.rb"
-    
+
     module Scanner
       module DADL
-        autoload :RootScanner, "scanner.rb"
+        autoload :RootScanner, "adl_scanner.rb"
+      end
+      module CADL
+        autoload :RootScanner, "adl_scanner.rb"
       end
     end
   end

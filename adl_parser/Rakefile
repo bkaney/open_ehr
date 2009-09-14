@@ -1,5 +1,4 @@
 require 'rubygems'
-#Gem::manage_gems
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
@@ -25,8 +24,6 @@ rule '.rb' => '.y' do |target|
     sh "racc #{target.source} -o #{target.name}"
   end
 end
-
-
 
 desc "Generate TAGS by rtags."
 task :tags => TAGS
@@ -84,14 +81,14 @@ gem_spec = Gem::Specification.new do |s|
   s.test_files = FileList['test/*_test.rb', '*.adl']
   candidates = Dir.glob("{bin,docs,lib,test,ext}/**/*")
   s.files = candidates.delete_if do |item|
-    item.include?(".svn") || item.include?("rdoc")
+    item.include?(".svn") || item.include?("rdoc") || item.include?("log")
   end
   s.files = FileList['README', 'COPYING', 'Rakefile']
   s.require_path = "lib"
   s.has_rdoc = true
   s.extra_rdoc_files = ["README"]
   s.add_dependency("yaparc", ">= 0.2.3")
-  s.add_dependency("openehr_models", ">= 0.0.1")
+  s.add_dependency("openehr_models", ">= 0.0.3")
 end
 
 Rake::GemPackageTask.new(gem_spec) do |pkg|
@@ -102,8 +99,6 @@ end
 
 CLOBBER.include('rdoc')
 CLEAN.include('lib/*.output', 'log/*.log')
-
-
 
 
 ### Local Variables:

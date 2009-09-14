@@ -54,7 +54,7 @@ archetype: arch_identification arch_specialisation arch_concept arch_language ar
                                                          ) do |archetype|
       archetype.original_language = language
     end
-    @@log.info("#{__FILE__}:#{__LINE__}: archetype = #{archetype} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: archetype = #{archetype} at #{@filename}:#{@lineno}")
     result = archetype
   }
 
@@ -154,7 +154,7 @@ arch_definition: SYM_DEFINITION cadl_section
 cadl_section: c_complex_object
   {
     assert_at(__FILE__,__LINE__){val[0].instance_of?(OpenEHR::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT)}
-    @@log.info("#{__FILE__}:#{__LINE__}: c_complex_object = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_complex_object = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | assertions
@@ -205,14 +205,20 @@ c_complex_object_body: c_any #-- used to indicate that any value of a type is ok
 
 
 #------------------------- node types -----------------------
-
-c_object: v_c_domain_type
+### http://www.openehr.org/svn/ref_impl_eiffel/TRUNK/components/adl_parser/src/syntax/cadl/parser/cadl_validator.html
+### c_object:  c_complex_object
+### | archetype_internal_ref
+### | archetype_slot
+### | constraint_ref
+### | c_code_phrase
+### | c_ordinal
+### | c_primitive_object
+### | V_C_DOMAIN_TYPE
+### | ERR_C_DOMAIN_TYPE
+### | error
+c_object: c_complex_object
   {
-    result = val[0]
-  }
-  | c_complex_object
-  {
-    @@log.info("#{__FILE__}:#{__LINE__}: c_complex_object = #{val[0].inspect} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_complex_object = #{val[0].inspect} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | archetype_internal_ref
@@ -245,6 +251,11 @@ c_object: v_c_domain_type
   {
     result = val[0]
   }
+  | v_c_domain_type
+  {
+    result = val[0]
+  }
+
 #  | v_c_domain_type
 #  | V_C_DOMAIN_TYPE
   #   this is an attempt to match a dADL section inside cADL. It will
@@ -301,7 +312,7 @@ c_primitive_object: c_primitive
 
 c_primitive: c_integer
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: c_integer = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_integer = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_INTEGER.create do |c_integer|
       c_integer.list
       c_integer.range
@@ -310,38 +321,38 @@ c_primitive: c_integer
   }
   | c_real
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: c_real = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_real = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_REAL.new
   }
   | c_date
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: c_date = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_date = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_DATE.new
   }
   | c_time
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: c_time = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_time = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_TIME.new
   }
   | c_date_time
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: c_date_time = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_date_time = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_DATE_TIME.new
   }
   | c_duration
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: c_duration = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_duration = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_DURATION.new
   }
   | c_string
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: c_string = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_string = #{val[0]} at #{@filename}:#{@lineno}")
     result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_STRING.new
   }
   | c_boolean
   {
     assert_at(__FILE__,__LINE__){val[0].instance_of?(OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN)}
-    @@log.info("#{__FILE__}:#{__LINE__}: c_boolean = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_boolean = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
 
@@ -381,7 +392,7 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 
 c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER = #{val[0]}, c_existence = #{val[1]} at #{@filename}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER = #{val[0]}, c_existence = #{val[1]} at #{@filename}")
     result = OpenEHR::AM::Archetype::Constraint_Model::C_SINGLE_ATTRIBUTE.new(
                                                                               :rm_attribute_name => val[0],
                                                                               :existence => val[1]
@@ -391,7 +402,7 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
   | V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
   {
     assert_at(__FILE__,__LINE__){ val[2].instance_of?(OpenEHR::AM::Archetype::Constraint_Model::CARDINALITY) }
-    @@log.info("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER: #{val[0]}, c_existence = #{val[1]}, c_cardinality = #{val[2]} at #{@filename}") 
+    @@logger.debug("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER: #{val[0]}, c_existence = #{val[1]}, c_cardinality = #{val[2]} at #{@filename}") 
     result = OpenEHR::AM::Archetype::Constraint_Model::C_MULTIPLE_ATTRIBUTE.new(
                                                                                 :rm_attribute_name => val[0],
                                                                                 :existence => val[1],
@@ -473,13 +484,13 @@ attr_vals: attr_val
 
 attr_val: attr_id SYM_EQ object_block
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: attr_id = #{val[0]}, object_block = #{val[2]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: attr_id = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:attr_id => val[0], :object_block => val[2]}
   }
 
 attr_id: V_ATTRIBUTE_IDENTIFIER
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | V_ATTRIBUTE_IDENTIFIER error
@@ -518,7 +529,7 @@ untyped_multiple_attr_object_block: multiple_attr_object_block_head keyed_object
 
 multiple_attr_object_block_head: SYM_START_DBLOCK
   { 
-    @@log.info("SYM_START_DBLOCK: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("SYM_START_DBLOCK: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
 
@@ -533,13 +544,13 @@ keyed_objects: keyed_object
 
 keyed_object: object_key SYM_EQ object_block
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: keyed_object = #{val[0]}, object_block = #{val[2]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: keyed_object = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:object_key => val[0], :object_block => val[1]}
   }
 
 object_key: Left_bracket_code simple_value Right_bracket_code
   {
-    @@log.info("object_key: [#{val[1]}] at #{@filename}:#{@lineno}")
+    @@logger.debug("object_key: [#{val[1]}] at #{@filename}:#{@lineno}")
     result = val[1]
   }
 
@@ -554,28 +565,28 @@ single_attr_object_block: untyped_single_attr_object_block
 
 untyped_single_attr_object_block: single_attr_object_complex_head SYM_END_DBLOCK # >
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: single_attr_object_complex_head = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: single_attr_object_complex_head = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:single_attr_object_complex_head => val[0]}
   }
   | single_attr_object_complex_head attr_vals SYM_END_DBLOCK
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: single_attr_object_complex_head = #{val[0]}, attr_vals = #{val[1]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: attr_vals = #{val[1]} at #{@filename}:#{@lineno}")
     result = {:single_attr_object_complex_head => val[0], :attr_vals => val[1]}
   }
 single_attr_object_complex_head: SYM_START_DBLOCK
 primitive_object_block: untyped_primitive_object_block
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: untyped_primitive_object_block = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: untyped_primitive_object_block = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:untyped_primitive_object_block => val[0]}
   }
   | type_identifier untyped_primitive_object_block
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: type_identifier = #{val[0]}, untyped_primitive_object_block = #{val[1]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: type_identifier = #{val[0]}, untyped_primitive_object_block = #{val[1]} at #{@filename}:#{@lineno}")
     result = {:type_identifier => val[0], :untyped_primitive_object_block => val[1]}
   }
 untyped_primitive_object_block: SYM_START_DBLOCK primitive_object_value SYM_END_DBLOCK
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: primitive_object_block = <#{val[1]}> at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: primitive_object_block = <#{val[1]}> at #{@filename}:#{@lineno}")
     result = val[1]
   }
 primitive_object_value: simple_value
@@ -600,52 +611,52 @@ primitive_object_value: simple_value
   }
 simple_value: string_value
   {
-    @@log.info("string_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("string_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | integer_value
   {
-    @@log.info("integer_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("integer_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | real_value
   {
-    @@log.info("real_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("real_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | boolean_value
   {
-    @@log.info("boolean_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("boolean_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | character_value
   {
-    @@log.info("character_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("character_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | date_value
   {
-    @@log.info("date_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("date_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | time_value
   {
-    @@log.info("time_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("time_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | date_time_value
   {
-    @@log.info("date_time_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("date_time_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | duration_value
   {
-    @@log.info("duration_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("duration_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | uri_value
   {
-    @@log.info("uri_value: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("uri_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
 
@@ -668,18 +679,18 @@ simple_interval_value: integer_interval_value
 
 type_identifier: V_TYPE_IDENTIFIER
   {
-    @@log.info("V_TYPE_IDENTIFIER: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("V_TYPE_IDENTIFIER: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
   | V_GENERIC_TYPE_IDENTIFIER
   {
-    @@log.info("V_GENERIC_TYPE_IDENTIFIER: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("V_GENERIC_TYPE_IDENTIFIER: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
 
 string_value: V_STRING
   {
-    @@log.info("V_STRING: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("V_STRING: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
 
@@ -843,7 +854,7 @@ date_time_interval_value: SYM_INTERVAL_DELIM date_time_value SYM_ELLIPSIS date_t
 
 duration_value: V_ISO8601_DURATION
   {
-    @@log.info("V_ISO8601_DURATION: #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("V_ISO8601_DURATION: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
 
@@ -863,7 +874,7 @@ duration_interval_value: SYM_INTERVAL_DELIM duration_value SYM_ELLIPSIS duration
 
 term_code: V_QUALIFIED_TERM_CODE_REF
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: V_QUALIFIED_TERM_CODE_REF = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: V_QUALIFIED_TERM_CODE_REF = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
 
@@ -873,7 +884,7 @@ term_code_list_value: term_code Comma_code term_code
 
 uri_value: V_URI
   {
-    @@log.info("#{__FILE__}:#{__LINE__}: V_URI = #{val[0]} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: V_URI = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
 
@@ -943,11 +954,11 @@ relative_path: path_segment
 
 path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
   {
-    @@log.info("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
+    @@logger.debug("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
   }
   | V_ATTRIBUTE_IDENTIFIER
   {
-    @@log.info("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
+    @@logger.debug("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
   }
 
 
@@ -1120,7 +1131,7 @@ c_ordinal_spec: ordinal
 ordinal: integer_value SYM_INTERVAL_DELIM V_QUALIFIED_TERM_CODE_REF
   {
     @in_interval = false
-    @@log.info("#{__FILE__}:#{__LINE__}, #{val[0]}|#{val[2]} at #{@filename}") 
+    @@logger.debug("#{__FILE__}:#{__LINE__}, #{val[0]}|#{val[2]} at #{@filename}") 
   }
 
 #c_code_phrase: V_TERM_CODE_CONSTRAINT #-- e.g. "[local::at0040, at0041; at0040]"
@@ -1133,12 +1144,19 @@ c_code_phrase: term_code_constraint_section #-- e.g. "[local::at0040, at0041; at
       result = val[0]
   }
 
-#term_code_constraint_section: START_TERM_CODE_CONSTRAINT term_code_body Right_bracket_code
+#                             [[a-zA-Z0-9\(\)\._\-]+::[ \t\n]*          [[a-zA-Z0-9\._\-]*[ \t]*]
 term_code_constraint_section: START_TERM_CODE_CONSTRAINT term_code_body END_TERM_CODE_CONSTRAINT
+  {
+    @@logger.debug("#{__FILE__}:#{__LINE__}, START_TERM_CODE_CONSTRAINT = #{val[0]} at #{@filename}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}, term_code_body = #{val[1]}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}, END_TERM_CODE_CONSTRAINT = #{val[2]}")
+    result = val[1]
+  }
+
+
 term_code_body: # empty
   | TERM_CODE
   | term_code_body TERM_CODE
-### term_code_constraint_section: START_TERM_CODE_CONSTRAINT term_code_body END_TERM_CODE_CONSTRAINT
 ### term_code_body: TERM_CODE
 ###   | term_code_body TERM_CODE
 
@@ -1154,7 +1172,7 @@ any_identifier: type_identifier
   }
   | V_ATTRIBUTE_IDENTIFIER
   {
-    @@log.info("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}")
       result = val[0]
   }
 
@@ -1193,11 +1211,11 @@ def assert_at(file,line, message = "")
 end
 
 if $DEBUG
-  @@log = Logger.new('log/parser.log','daily')
-  @@log.level = Logger::INFO
+  @@logger = Logger.new('log/parser.log','daily')
+  @@logger.level = Logger::INFO
 else
-  @@log = Logger.new(STDOUT)
-  @@log.level = Logger::WARN
+  @@logger = Logger.new(STDOUT)
+  @@logger.level = Logger::WARN
 end
 
 @@dadl_scanner = OpenEHR::ADL::Scanner::DADL::RootScanner.new
@@ -1262,6 +1280,7 @@ end
 ###----------/* Scanner */ ----------------------------------------------- 
 
 def scan
+  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan at #{@filename}:#{@lineno}:")
   until @data.nil?  do
     case @adl_type.last
     when :adl
@@ -1280,6 +1299,11 @@ def scan
       @data = scan_regexp(@data) do |sym, val|
         yield sym, val
       end
+    when :term_constraint
+      @@logger.debug("#{__FILE__}:#{__LINE__}: scan: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
+      @data = scan_term_constraint(@data) do |sym, val|
+        yield sym, val
+      end
     else
       raise
     end
@@ -1290,10 +1314,10 @@ def scan
 end # of scan
 
 def scan_adl(data)
+  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_adl at #{@filename}:#{@lineno}: data = #{data.inspect}")
   until data.nil?  do
     case @adl_type.last
     when :adl
-#      puts "Entering scan_adl"
       case data
       when /\A\n/ # carriage return
         @lineno += 1
@@ -1302,18 +1326,17 @@ def scan_adl(data)
         ;
       when /\A--.*\n/ # single line comment
         @lineno += 1
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_adl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_adl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
         ;
       when /\Adescription/   # description
         yield :SYM_DESCRIPTION, :SYM_DESCRIPTION
       when /\Adefinition/   # definition
         yield :SYM_DEFINITION, :SYM_DEFINITION
-#        @adl_type.push(:cadl)
         ###----------/* symbols */ ------------------------------------------------- 
       when /\A[A-Z][a-zA-Z0-9_]*/
         yield :V_TYPE_IDENTIFIER, $&
 #      when /\A[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+/   #V_ARCHETYPE_ID
-      when /\A(\w+)-(\w+)-(\w+)\.(\w+)(-\w+)?\.(v[0-9]+)/   #V_ARCHETYPE_ID
+      when /\A(\w+)-(\w+)-(\w+)\.(\w+)(-\w+)?\.(v\w+)/   #V_ARCHETYPE_ID
         object_id, rm_originator, rm_name, rm_entity, concept_name, specialisation, version_id = $&, $1, $2, $3, $4, $5, $6
         archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new(object_id, concept_name, rm_name, rm_entity, rm_originator, specialisation, version_id)
 #        yield :V_ARCHETYPE_ID, $&
@@ -1322,10 +1345,10 @@ def scan_adl(data)
 #        word = $&.downcase
         word = $&
         if @@adl_reserved[word]
-          @@log.info("#{__FILE__}:#{__LINE__}: scan_adl: @@adl_reserved = #{@@adl_reserved[word]} at #{@filename}:#{@lineno}")
+          @@logger.debug("#{__FILE__}:#{__LINE__}: scan_adl: @@adl_reserved = #{@@adl_reserved[word]} at #{@filename}:#{@lineno}")
           yield @@adl_reserved[word], @@adl_reserved[word]
         elsif #/\A[A-Z][a-zA-Z0-9_]*/
-          @@log.info("#{__FILE__}:#{__LINE__}: scan_adl: V_ATTRIBUTE_IDENTIFIER = #{$&} at #{@filename}:#{@lineno}")
+          @@logger.debug("#{__FILE__}:#{__LINE__}: scan_adl: V_ATTRIBUTE_IDENTIFIER = #{$&} at #{@filename}:#{@lineno}")
           yield :V_ATTRIBUTE_IDENTIFIER, $&
         end
       when /\A\=/   # =
@@ -1348,19 +1371,18 @@ def scan_adl(data)
           yield :SYM_GT, :SYM_GT
         else
           adl_type = @adl_type.pop
-#          puts "Escaping #{adl_type}"
           assert_at(__FILE__,__LINE__){adl_type == :dadl}
           yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
         end
       when /\A\{/   # {
         @adl_type.push(:cadl)
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_cadl: entering cADL at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: entering cADL at #{@filename}:#{@lineno}")
         yield :SYM_START_CBLOCK, :SYM_START_CBLOCK
       when /\A\}/   # }
         adl_type = @adl_type.pop
 #        puts "Escaping #{adl_type}"
         assert_at(__FILE__,__LINE__){adl_type == :cadl}
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_cadl: exiting cADL at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: exiting cADL at #{@filename}:#{@lineno}")
         yield :SYM_END_CBLOCK, $&
       when /\A\-/   # -
         yield :Minus_code, :Minus_code
@@ -1445,22 +1467,20 @@ def scan_adl(data)
       end
       data = $' # variable $' receives the string after the match
     when :dadl
-#      puts "Entering scan_dadl"
       data = scan_dadl(data) do |sym, val|
         yield sym, val
       end
     when :cadl
-#      puts "Entering scan_cadl"
       data = scan_cadl(data) do |sym, val|
         yield sym, val
       end
     when :regexp
-#      puts "Entering scan_regexp"
       data = scan_regexp(data) do |sym, val|
         yield sym, val
       end
     when :term_constraint
-#      puts "Entering scan_term_constraint"
+      @@logger.debug("#{__FILE__}:#{__LINE__}: scan_adl: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
+
       data = scan_term_constraint(data) do |sym, val|
         yield sym, val
       end
@@ -1472,10 +1492,10 @@ end # scan_adl
 
 
 def scan_cadl(data)
+  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_cadl at #{@filename}:#{@lineno}: data = #{data.inspect}")
   until data.nil?  do
     case @adl_type.last
     when :cadl
-#      puts "Entering scan_cadl"
       case scanned = @@cadl_scanner.parse(data)
       when Yaparc::Result::OK
         if scanned.value[0] == :START_V_C_DOMAIN_TYPE_BLOCK
@@ -1496,7 +1516,7 @@ def scan_cadl(data)
         ;
       when /\A--.*\n/ # single line comment
         @lineno += 1
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_cadl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
         ;
         ###----------/* symbols */ ------------------------------------------------- 
       when /\A\=/   # =
@@ -1564,13 +1584,13 @@ def scan_cadl(data)
 #        yield :V_REGEXP, :V_REGEXP
       when /\A\{/   # {
         @adl_type.push(:cadl)
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_cadl: entering cADL at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: entering cADL at #{@filename}:#{@lineno}")
         yield :SYM_START_CBLOCK, :SYM_START_CBLOCK
       when /\A\}/   # }
         adl_type = @adl_type.pop
 #        puts "Escaping #{adl_type}"
         assert_at(__FILE__,__LINE__){adl_type == :cadl}
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_cadl: exiting cADL at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: exiting cADL at #{@filename}:#{@lineno}")
         yield :SYM_END_CBLOCK, :SYM_END_CBLOCK
       when /\A\$/   # $
         yield :Dollar_code, :Dollar_code
@@ -1579,25 +1599,24 @@ def scan_cadl(data)
       when /\A\?/   # ?
         yield :Question_mark_code, :Question_mark_code
       when /\A\|/   # |
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_cadl: @in_interval = #{@in_interval} at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: @in_interval = #{@in_interval} at #{@filename}:#{@lineno}")
         if @in_interval
           @in_interval = false
         else
 #          @in_interval = false
           @in_interval = true
         end
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_cadl: SYM_INTERVAL_DELIM at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: SYM_INTERVAL_DELIM at #{@filename}:#{@lineno}")
         yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
 
-      when /\A\[[a-zA-Z0-9._\-]+::[a-zA-Z0-9._\-]+\]/   #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
+      when /\A\[[a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+\]/  #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
+#      when /\A\[[a-zA-Z0-9._\-]+::[a-zA-Z0-9._\-]+\]/   #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
         yield :V_QUALIFIED_TERM_CODE_REF, $&
       when /\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/   #ERR_V_QUALIFIED_TERM_CODE_REF
         yield :ERR_V_QUALIFIED_TERM_CODE_REF, $&
-      when /\A\[([a-zA-Z0-9()._\-]+::[a-zA-Z0-9._\_-]+)\]/
-        yield :V_TERM_CODE_CONSTRAINT, :V_TERM_CODE_CONSTRAINT
-      when /\A\[[a-zA-Z0-9\(\)\._\-]+::[ \t\n]*/
+      when /\A\[([a-zA-Z0-9\(\)\._\-]+)::[ \t\n]*/
         @adl_type.push(:term_constraint)
-        yield :START_TERM_CODE_CONSTRAINT, $&
+        yield :START_TERM_CODE_CONSTRAINT, $1
       when /\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/   #V_LOCAL_TERM_CODE_REF
         yield :V_LOCAL_TERM_CODE_REF, $&
       when /\A\[/   # [
@@ -1617,7 +1636,7 @@ def scan_cadl(data)
         if @@cadl_reserved[word.downcase]
           yield @@cadl_reserved[word.downcase], @@cadl_reserved[word.downcase]
         else
-          @@log.info("#{__FILE__}:#{__LINE__}: scan_cadl: V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}:#{@lineno}")
+          @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}:#{@lineno}")
           yield :V_ATTRIBUTE_IDENTIFIER, word #V_ATTRIBUTE_IDENTIFIER /\A[a-z][a-zA-Z0-9_]*/
         end
       when /\A[A-Z][a-zA-Z0-9_]*/
@@ -1653,22 +1672,20 @@ def scan_cadl(data)
       end
       data = $' # variable $' receives the string after the match
     when :adl
-#      puts "Entering scan_adl"
       data = scan_adl(data) do |sym, val|
         yield sym, val
       end
     when :dadl
-#      puts "Entering scan_dadl"
       data = scan_dadl(data) do |sym, val|
         yield sym, val
       end
     when :regexp
-#      puts "Entering scan_regexp"
       data = scan_regexp(data) do |sym, val|
         yield sym, val
       end
     when :term_constraint
-#      puts "Entering scan_term_constraint"
+      @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
+      
       data = scan_term_constraint(data) do |sym, val|
         yield sym, val
       end
@@ -1679,10 +1696,10 @@ def scan_cadl(data)
 end # of scan_cadl
 
 def scan_dadl(data)
+  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_dadl at #{@filename}:#{@lineno}: data = #{data.inspect}")
   until data.nil?  do
     case @adl_type.last
     when :dadl
-#      puts "Entering scan_dadl"
       case scanned = @@dadl_scanner.parse(data)
       when Yaparc::Result::OK
         yield scanned.value
@@ -1698,7 +1715,7 @@ def scan_dadl(data)
         ;
       when /\A--.*\n/ # single line comment
         @lineno += 1
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_dadl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
         ;
         ###----------/* symbols */ ------------------------------------------------- 
       when /\A\=/   # =
@@ -1729,7 +1746,6 @@ def scan_dadl(data)
           end
         elsif @in_c_domain_type == false
           adl_type = @adl_type.pop
-#          puts "Escaping #{adl_type}"
           assert_at(__FILE__,__LINE__){adl_type == :dadl}
           yield :SYM_END_DBLOCK, $&
         else
@@ -1770,14 +1786,14 @@ def scan_dadl(data)
       when /\A\?/   # ?
         yield :Question_mark_code, :Question_mark_code
       when /\A\|/   # |
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_dadl: @in_interval = #{@in_interval} at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: @in_interval = #{@in_interval} at #{@filename}:#{@lineno}")
         if @in_interval
           @in_interval = false
         else
 #          @in_interval = false
           @in_interval = true
         end
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_dadl: SYM_INTERVAL_DELIM at #{@filename}:#{@lineno}")
+        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: SYM_INTERVAL_DELIM at #{@filename}:#{@lineno}")
         yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
 ###       when /\A\[[a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+\]/   #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
 ###         yield :V_QUALIFIED_TERM_CODE_REF, $&
@@ -1826,12 +1842,10 @@ def scan_dadl(data)
       end
       data = $' # variable $' receives the string after the match
     when :adl
-#      puts "Entering scan_adl"
       data = scan_adl(data) do |sym, val|
         yield sym, val
       end
     when :cadl
-#      puts "Entering scan_cadl"
       data = scan_cadl(data) do |sym, val|
         yield sym, val
       end
@@ -1841,7 +1855,8 @@ def scan_dadl(data)
         yield sym, val
       end
     when :term_constraint
-#      puts "Entering scan_term_constraint"
+      @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
+
       data = scan_term_constraint(data) do |sym, val|
         yield sym, val
       end
@@ -1852,10 +1867,10 @@ def scan_dadl(data)
 end # of scan_dadl
 
 def scan_regexp(data)
+  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_regexp at #{@filename}:#{@lineno}: data = #{data.inspect}")
   until data.nil?  do
     case @adl_type.last
     when :regexp
-#      puts "Entering scan_regexp"
       case data
       when /\A\/\}/ #V_REGEXP
         if @adl_type.last == :regexp
@@ -1879,22 +1894,19 @@ def scan_regexp(data)
       end
       data = $' # variable $' receives the string after the match
     when :adl
-#      puts "Entering scan_adl"
       data = scan_adl(data) do |sym, val|
         yield sym, val
       end
     when :dadl
-#      puts "Entering scan_dadl"
       data = scan_dadl(data) do |sym, val|
         yield sym, val
       end
     when :cadl
-#      puts "Entering scan_cadl"
       data = scan_cadl(data) do |sym, val|
         yield sym, val
       end
     when :term_constraint
-#      puts "Entering scan_term_constraint"
+      @@logger.debug("#{__FILE__}:#{__LINE__}: scan_regexp: Entering scan_term_constraint at #{@filename}:#{@lineno}")
       data = scan_term_constraint(data) do |sym, val|
         yield sym, val
       end
@@ -1905,10 +1917,10 @@ def scan_regexp(data)
 end # of scan_regexp
 
 def scan_term_constraint(data)
+  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_term_constraint")
   until data.nil?  do
     case @adl_type.last
     when :term_constraint
-#      puts "Entering scan_term_constraint"
       case data
       when /\A\n/ # carriage return
         @lineno += 1
@@ -1917,33 +1929,29 @@ def scan_term_constraint(data)
         ;
       when /\A--.*$/ # single line comment
         @lineno += 1
-        @@log.info("#{__FILE__}:#{__LINE__}: scan_term_constraint: COMMENT = #{$&} at #{@filename}:#{@lineno}")
+        #@@logger.debug("#{__FILE__}:#{__LINE__}: scan_term_constraint: COMMENT = #{$&} at #{@filename}:#{@lineno}")
         ;
-      when /\A[a-zA-Z0-9\._\-]+[ \t]*,/ # match any line, with ',' termination
-        yield :TERM_CODE, $&
-      when /\A[a-zA-Z0-9\._\-]+[ \t]*;/ #match second last line with ';' termination (assumed value)
-        yield :TERM_CODE, $&
-#      when /\A[a-zA-Z0-9\._\-]+[ \t]*\]/ # match final line, terminating in ']'
-      when /\A[a-zA-Z0-9\._\-]*[ \t]*\]/ # match final line, terminating in ']'
+      when /\A([a-zA-Z0-9\._\-])+[ \t]*,/ # match any line, with ',' termination
+        yield :TERM_CODE, $1
+      when /\A([a-zA-Z0-9\._\-])+[ \t]*;/ # match second last line with ';' termination (assumed value)
+        yield :TERM_CODE, $1
+      when /\A([a-zA-Z0-9\._\-])*[ \t]*\]/ # match final line, terminating in ']'
         adl_type = @adl_type.pop
         assert_at(__FILE__,__LINE__){adl_type == :term_constraint}
-        yield :END_TERM_CODE_CONSTRAINT, $&
+        yield :END_TERM_CODE_CONSTRAINT, $1
       else
         raise "data = #{data}"
       end
       data = $' # variable $' receives the string after the match
     when :adl
-#      puts "Entering scan_adl"
       data = scan_adl(data) do |sym, val|
         yield sym, val
       end
     when :dadl
-#      puts "Entering scan_dadl"
       data = scan_dadl(data) do |sym, val|
         yield sym, val
       end
     when :cadl
-#      puts "Entering scan_cadl"
       data = scan_cadl(data) do |sym, val|
         yield sym, val
       end

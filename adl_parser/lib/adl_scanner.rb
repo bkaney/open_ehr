@@ -7,12 +7,25 @@ module OpenEHR
   module ADL
     module Scanner
       module Common
+        class START_TERM_CODE_CONSTRAINT
+          include Yaparc::Parsable
+          def initialize
+            @parser = lambda do |input|
+              Yaparc::Apply.new(Yaparc::Regex.new(/[ \t\n]*\[([a-zA-Z0-9\(\)\._\-]+)::[ \t\n]*/)) do |match|
+                OpenEHR::LOG.info("START_TERM_CODE_CONSTRAINT: #{match}")
+                [:START_TERM_CODE_CONSTRAINT, match]
+              end
+            end
+          end
+        end
+
+        # /\A\[[a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+\]/  #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
         class V_QUALIFIED_TERM_CODE_REF
           include Yaparc::Parsable
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A\[[a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+\]/)) do |match|
-                OpenEHR::LOG.debug("V_QUALIFIED_TERM_CODE_REF: #{match}")
+                OpenEHR::LOG.info("V_QUALIFIED_TERM_CODE_REF: #{match}")
                 [:V_QUALIFIED_TERM_CODE_REF, match]
               end
             end
@@ -24,7 +37,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/)) do |match|
-                OpenEHR::LOG.debug("V_TERM_CODE_REF: #{match}")
+                OpenEHR::LOG.info("V_TERM_CODE_REF: #{match}")
                 [:V_LOCAL_TERM_CODE_REF, match]
               end
             end
@@ -36,7 +49,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/)) do |match|
-                OpenEHR::LOG.debug("ERR_V_QUALIFIED_TERM_CODE_REF: #{match}")
+                OpenEHR::LOG.info("ERR_V_QUALIFIED_TERM_CODE_REF: #{match}")
                 [:ERR_V_QUALIFIED_TERM_CODE_REF, match]
               end
             end
@@ -48,7 +61,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A[A-Z][a-zA-Z0-9_]*/)) do |match|
-                OpenEHR::LOG.debug("V_TYPE_IDENTIFIER: #{match}")
+                OpenEHR::LOG.info("V_TYPE_IDENTIFIER: #{match}")
                 [:V_TYPE_IDENTIFIER, match]
               end
             end
@@ -60,7 +73,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/)) do |match|
-                OpenEHR::LOG.debug("V_GENERIC_TYPE_IDENTIFIER: #{match}")
+                OpenEHR::LOG.info("V_GENERIC_TYPE_IDENTIFIER: #{match}")
                 [:V_GENERIC_TYPE_IDENTIFIER, match]
               end
             end
@@ -73,7 +86,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\Aa[ct][0-9.]+/)) do |match|
-                OpenEHR::LOG.debug("V_LOCAL_CODE: #{match}")
+                OpenEHR::LOG.info("V_LOCAL_CODE: #{match}")
                 [:V_LOCAL_CODE, match]
               end
             end
@@ -85,7 +98,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A"([^"]*)"/m)) do |match|
-                OpenEHR::LOG.debug("V_STRING: #{match}")
+                OpenEHR::LOG.info("V_STRING: #{match}")
                 [:V_STRING, match]
               end
             end
@@ -97,7 +110,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+/)) do |match|
-                OpenEHR::LOG.debug("V_REAL: #{match}")
+                OpenEHR::LOG.info("V_REAL: #{match}")
                 [:V_REAL, match]
               end
             end
@@ -112,7 +125,7 @@ module OpenEHR
               Yaparc::Apply.new(
                                 Yaparc::Alt.new(Yaparc::Regex.new(/\AP([0-9]+|[yY])?([0-9]+|[mM])?([0-9]+|[wW])?([0-9]+|[dD])?T([0-9]+|[hH])?([0-9]+|[mM])?([0-9]+|[sS])?/),
                                                 Yaparc::Regex.new(/\AP([0-9]+|[yY])?([0-9]+|[mM])?([0-9]+|[wW])?([0-9]+|[dD])?/))) do |match|
-                OpenEHR::LOG.debug("V_ISO8601_DURATION: #{match}")
+                OpenEHR::LOG.info("V_ISO8601_DURATION: #{match}")
                 [:V_ISO8601_DURATION, match]
               end
             end
@@ -128,7 +141,9 @@ module OpenEHR
           'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
           'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
         }
-
+        #
+        # DADL::RootScanner
+        #
         class RootScanner
           include Yaparc::Parsable
           def initialize
@@ -142,13 +157,14 @@ module OpenEHR
                               OpenEHR::ADL::Scanner::Common::V_STRING.new,
                               OpenEHR::ADL::Scanner::Common::V_LOCAL_CODE.new,
                               OpenEHR::ADL::Scanner::Common::V_REAL.new,
-                              OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION.new
+                              OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION.new#,
+                              #OpenEHR::ADL::Scanner::Common::START_TERM_CODE_CONSTRAINT.new
                               )
             end
           end
         end
-=begin <DADL::Reserved class>
-=end
+
+        #  <DADL::Reserved class>
         class Reserved
           include Yaparc::Parsable
           
@@ -160,19 +176,16 @@ module OpenEHR
                                      )
               end
               Yaparc::Alt.new(Yaparc::Apply.new(Yaparc::Alt.new(*reserved_parsers)) do |match|
-                                OpenEHR::LOG.debug("Reserved: #{match}")
+                                OpenEHR::LOG.info("Reserved: #{match}")
                                 [OpenEHR::ADL::Scanner::DADL::RESERVED[match], OpenEHR::ADL::Scanner::DADL::RESERVED[match]]
                               end,
                               Yaparc::Apply.new(Yaparc::Regex.new(/\A[a-z][a-zA-Z0-9_]*/)) do |match|
-                                OpenEHR::LOG.debug("V_ATTRIBUTE_IDENTIFIER: #{match}")
+                                OpenEHR::LOG.info("V_ATTRIBUTE_IDENTIFIER: #{match}")
                                 [:V_ATTRIBUTE_IDENTIFIER, match]
                               end)
             end
           end
         end
-
-
-
       end # of DADL
 
       module CADL
@@ -212,7 +225,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X][T\t][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]/)) do |match|
-                OpenEHR::LOG.debug("V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN: #{match}")
+                OpenEHR::LOG.info("V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN: #{match}")
                 [:V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN, match]
               end
             end
@@ -225,7 +238,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X]/)) do |match|
-                OpenEHR::LOG.debug("V_ISO8601_DATE_CONSTRAINT_PATTERN: #{match}")
+                OpenEHR::LOG.info("V_ISO8601_DATE_CONSTRAINT_PATTERN: #{match}")
                 [:V_ISO8601_DATE_CONSTRAINT_PATTERN, match]
               end
             end
@@ -238,7 +251,7 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]/)) do |match|
-                OpenEHR::LOG.debug("V_ISO8601_TIME_CONSTRAINT_PATTERN: #{match}")
+                OpenEHR::LOG.info("V_ISO8601_TIME_CONSTRAINT_PATTERN: #{match}")
                 [:V_ISO8601_TIME_CONSTRAINT_PATTERN, match]
               end
             end
@@ -252,7 +265,7 @@ module OpenEHR
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Alt.new(Yaparc::Regex.new(/\AP[yY]?[mM]?[wW]?[dD]?T[hH]?[mM]?[sS]?/),
                                                 Yaparc::Regex.new(/\AP[yY]?[mM]?[wW]?[dD]?/))) do |match|
-                OpenEHR::LOG.debug("V_ISO8601_DURATION_CONSTRAINT_PATTERN: #{match}")
+                OpenEHR::LOG.info("V_ISO8601_DURATION_CONSTRAINT_PATTERN: #{match}")
                 [:V_ISO8601_DURATION_CONSTRAINT_PATTERN, match]
               end
             end
@@ -265,13 +278,16 @@ module OpenEHR
           def initialize
             @parser = lambda do |input|
               Yaparc::Apply.new(Yaparc::Regex.new(/\A[A-Z][a-zA-Z0-9_]*[ \n]*\</)) do |match|
-                OpenEHR::LOG.debug("V_C_DOMAIN_TYPE: #{match}")
+                OpenEHR::LOG.info("V_C_DOMAIN_TYPE: #{match}")
                 [:START_V_C_DOMAIN_TYPE_BLOCK, match]
               end
             end
           end
         end
 
+        #
+        # CADL::RootScanner
+        #
         class RootScanner
           include Yaparc::Parsable
           def initialize
@@ -291,7 +307,8 @@ module OpenEHR
                               OpenEHR::ADL::Scanner::Common::V_STRING.new,
                               OpenEHR::ADL::Scanner::Common::V_LOCAL_CODE.new,
                               OpenEHR::ADL::Scanner::Common::V_REAL.new,
-                              OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION.new
+                              OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION.new#,
+                              #OpenEHR::ADL::Scanner::Common::START_TERM_CODE_CONSTRAINT.new
                               )
             end
           end
@@ -309,11 +326,11 @@ module OpenEHR
                 Yaparc::Literal.new(keyword,false)
               end
               Yaparc::Alt.new(Yaparc::Apply.new(Yaparc::Alt.new(*reserved_parsers)) do |match|
-                                OpenEHR::LOG.debug("Reserved: #{match}")
+                                OpenEHR::LOG.info("Reserved: #{match}")
                                 [OpenEHR::ADL::Scanner::CADL::RESERVED[match], OpenEHR::ADL::Scanner::CADL::RESERVED[match]]
                               end,
                               Yaparc::Apply.new(Yaparc::Regex.new(/\A[a-z][a-zA-Z0-9_]*/)) do |match|
-                                OpenEHR::LOG.debug("V_ATTRIBUTE_IDENTIFIER: #{match}")
+                                OpenEHR::LOG.info("V_ATTRIBUTE_IDENTIFIER: #{match}")
                                 [:V_ATTRIBUTE_IDENTIFIER, match]
                               end)
             end

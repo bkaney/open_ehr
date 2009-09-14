@@ -1,26 +1,25 @@
-require 'lib/adl_parser.rb'
-require 'test/unit'
+require File.dirname(__FILE__) + '/test_helper.rb'
 
 class ShellADLValidatorTest < Test::Unit::TestCase
   def setup
     @adl_validator = ::OpenEHR::Application::ADLValidator.new(::OpenEHR::ADL::Validator.new(::OpenEHR::ADL::Parser.new))
   end
 
-  def test_init
+  must "assert application validator instance" do
     assert_instance_of ::OpenEHR::Application::ADLValidator,@adl_validator
   end
 
-  def test_run
+
+  must "validating openEHR-EHR-CLUSTER.exam-nervous_system.v1 using File.open not raised" do
     assert_nothing_raised do
-      adl_file = File.open('test/adl/openEHR-EHR-CLUSTER.exam-nervous_system.v1.adl')
+      adl_file = File.open("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-nervous_system.v1.adl")
       @adl_validator.run(adl_file)
     end
+  end
+
+  must "validating openEHR-EHR-CLUSTER.exam-nervous_system.v1 using File.read not raised" do
     assert_nothing_raised do
-      adl_string = File.open('test/adl/openEHR-EHR-CLUSTER.exam-nervous_system.v1.adl')
-      @adl_validator.run(adl_string)
-    end
-    assert_nothing_raised do
-      adl_string = File.read('test/adl/openEHR-EHR-CLUSTER.exam-nervous_system.v1.adl')
+      adl_string = File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-nervous_system.v1.adl")
       stringio = StringIO.new(adl_string)
       @adl_validator.run(stringio)
     end
