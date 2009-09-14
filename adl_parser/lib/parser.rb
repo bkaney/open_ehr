@@ -10,7 +10,6 @@ require 'racc/parser.rb'
 
 $:.unshift File.join(File.dirname(__FILE__))
 require 'logger'
-#require 'lib/adl_parser.rb'
 require 'rubygems'
 require 'adl_parser.rb'
 require 'am.rb'
@@ -23,7 +22,7 @@ module OpenEHR
   module ADL
     class Parser < Racc::Parser
 
-module_eval(<<'...end parser.y/module_eval...', 'parser.y', 1206)
+module_eval(<<'...end parser.y/module_eval...', 'parser.y', 1205)
 
 def assert_at(file,line, message = "")
   unless yield
@@ -100,29 +99,36 @@ end
 
 ###----------/* Scanner */ ----------------------------------------------- 
 
+
 def scan
   @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan at #{@filename}:#{@lineno}:")
+  adl_scanner = OpenEHR::ADL::Scanner::ADLScanner.new(@adl_type, @filename)
+  cadl_scanner = OpenEHR::ADL::Scanner::CADLScanner.new(@adl_type, @filename)
+  dadl_scanner = OpenEHR::ADL::Scanner::DADLScanner.new(@adl_type, @filename)
+  regex_scanner = OpenEHR::ADL::Scanner::RegexScanner.new(@adl_type, @filename)
+  term_constraint_scanner = OpenEHR::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename)
+
   until @data.nil?  do
     case @adl_type.last
     when :adl
-      @data = scan_adl(@data) do |sym, val|
+      @data = adl_scanner.scan(@data) do |sym, val|
         yield sym, val
       end
     when :dadl
-      @data = scan_dadl(@data) do |sym, val|
+      @data = dadl_scanner.scan(@data) do |sym, val|
         yield sym, val
       end
     when :cadl
-      @data = scan_cadl(@data) do |sym, val|
+      @data = cadl_scanner.scan(@data) do |sym, val|
         yield sym, val
       end
     when :regexp
-      @data = scan_regexp(@data) do |sym, val|
+      @data = regex_scanner.scan(@data) do |sym, val|
         yield sym, val
       end
     when :term_constraint
-      @@logger.debug("#{__FILE__}:#{__LINE__}: scan: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
-      @data = scan_term_constraint(@data) do |sym, val|
+      @@logger.debug("#{__FILE__}:#{__LINE__}: scan: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{@data.inspect}")
+      @data = term_constraint_scanner.scan(@data) do |sym, val|
         yield sym, val
       end
     else
@@ -133,6 +139,41 @@ def scan
   yield :EOF, nil
   yield false, '$'
 end # of scan
+
+### def scan
+###   @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan at #{@filename}:#{@lineno}:")
+  
+###   until @data.nil?  do
+###     case @adl_type.last
+###     when :adl
+###       @data = scan_adl(@data) do |sym, val|
+###         yield sym, val
+###       end
+###     when :dadl
+###       @data = scan_dadl(@data) do |sym, val|
+###         yield sym, val
+###       end
+###     when :cadl
+###       @data = scan_cadl(@data) do |sym, val|
+###         yield sym, val
+###       end
+###     when :regexp
+###       @data = scan_regexp(@data) do |sym, val|
+###         yield sym, val
+###       end
+###     when :term_constraint
+###       @@logger.debug("#{__FILE__}:#{__LINE__}: scan: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
+###       @data = scan_term_constraint(@data) do |sym, val|
+###         yield sym, val
+###       end
+###     else
+###       raise
+###     end
+###     @data = $' # variable $' receives the string after the match
+###   end
+###   yield :EOF, nil
+###   yield false, '$'
+### end # of scan
 
 def scan_adl(data)
   @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_adl at #{@filename}:#{@lineno}: data = #{data.inspect}")
