@@ -33,7 +33,7 @@ end
 
 if $DEBUG
   @@logger = Logger.new('log/parser.log','daily')
-  @@logger.level = Logger::INFO
+  @@logger.level = Logger::DEBUG
 else
   @@logger = Logger.new(STDOUT)
   @@logger.level = Logger::WARN
