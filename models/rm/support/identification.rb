@@ -50,19 +50,61 @@ module OpenEHR
         class Archetype_ID < Object_ID
           attr_reader :domain_concept, :rm_name, :rm_entity, :rm_originator, :specialisation, :version_id
 
-          def initialize(value, domain_concept, rm_name, rm_entity, rm_originator, specialisation, version_id)
+          def initialize(value)
             super(value)
-            self.domain_concept = domain_concept
-            self.rm_name = rm_name
-            self.rm_entity = rm_entity
-            self.rm_originator = rm_originator
-            self.specialisation = specialisation
-            self.version_id = version_id
-          end
 
+          end
           def domain_concept=(domain_concept)
             raise ArgumentError, "domain concept not valid" if domain_concept.nil? or domain_concept.empty?
             @domain_concept = domain_concept
+          end
+
+          def value=(value)
+            if /([a-zA-Z]\w+)-([a-zA-Z]\w+)-([a-zA-Z]\w+)\.([a-zA-Z]\w+)(-([a-zA-Z]\w+))?\.(v[1-9]\d*)/ =~ value
+              self.rm_originator = $1
+              self.rm_name = $2
+              self.rm_entity = $3
+              self.concept_name = $4
+              self.specialisation = $6
+              self.version_id = $7
+            else
+              raise ArgumentError, 'invalid archetype id form'
+            end
+          end
+
+          def qualified_rm_entity
+            return @rm_originator + '-' + @rm_name + '-' + @rm_entity
+          end
+
+          def domain_concept
+            if @specialisation.nil?
+              return @concept_name
+            else
+              return @concept_name + '-' + @specialisation
+            end
+          end
+
+          def value
+            return self.qualified_rm_entity + self.domain_concept + '.' + @version_id
+          end
+
+          def concept_name=(concept_name)
+            if concept_name.nil? or concept_name.empty?
+              raise ArgumentError, 'concept_name is mandatory'
+            end
+            @concept_name = concept_name
+          end
+
+          def domain_concept=(domain_concept)
+            if domain_concept.nil? or domain_concept.empty?
+              raise ArgumentError, "domain concept not valid"
+            end
+            if /([a-zA-Z]\w+)(-([a-zA-Z]\w))?/ =~ domain_concept
+              self.concept_name = $1
+              self.specialisation = $3
+            else
+              raise ArgumentError, 'invalid domain concept form'
+            end
           end
 
           def rm_name=(rm_name)
@@ -71,19 +113,26 @@ module OpenEHR
           end
 
           def rm_entity=(rm_entity)
-            raise ArgumentError, "rm_entity not valid" if rm_entity.nil? or rm_entity.empty?
+            if rm_entity.nil? or rm_entity.empty?
+              raise ArgumentError, "rm_entity is mandatory"
+            end
             @rm_entity = rm_entity
           end
 
           def rm_originator=(rm_originator)
-            raise ArgumentError, "rm_originator not valid" if rm_originator.nil? or rm_originator.empty?
+            if rm_originator.nil? or rm_originator.empty?
+              raise ArgumentError, "rm_originator not valid"
+            end
             @rm_originator = rm_originator
           end
 
           def specialisation=(specialisation)
-#            raise ArgumentError, "rm_specialisation not valid" if specialisation.nil? or specialisation.empty?
+            if !specialisation.nil? and specialisation.empty?
+              raise ArgumentError, "rm_specialisation not valid" 
+            end
             @specialisation = specialisation
           end
+
           def version_id=(version_id)
             raise ArgumentError, "version_id not valid" if version_id.nil? or version_id.empty?
             @version_id = version_id
