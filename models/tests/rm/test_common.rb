@@ -87,7 +87,7 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
   def setup
     @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new('Test')
     @uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.5')
-    @archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
+    @archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new('openEHR-EHR-SECTION.physical_examination-prenatal.v2')
     @template_id = OpenEHR::RM::Support::Identification::Template_ID.new('1.0.1')
     assert_nothing_raised(Exception){@archetyped = OpenEHR::RM::Common::Archetyped::Archetyped.new(@archetype_id, '1.0.1')}
     assert_nothing_raised(Exception){@link = OpenEHR::RM::Common::Archetyped::Link.new(OpenEHR::RM::Data_Types::Text::DV_Text.new("generic"), OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://test/"),OpenEHR::RM::Data_Types::Text::DV_Text.new("problem"))}
@@ -143,7 +143,7 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_raise(ArgumentError){@archetyped.rm_version = ''}
     assert_nothing_raised(Exception){@archetyped.template_id = @template_id}
     assert_equal @template_id, @archetyped.template_id
-    archetype_id2 = OpenEHR::RM::Support::Identification::Archetype_ID.new("1.0.2", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
+    archetype_id2 = OpenEHR::RM::Support::Identification::Archetype_ID.new('openEHR-EHR-SECTION.physical_examination-prenatal.v2')
     assert_nothing_raised(ArgumentError){@archetyped.archetype_id = archetype_id2}
     assert_equal archetype_id2, @archetyped.archetype_id
     assert_nothing_raised(ArgumentError){@archetyped.rm_version = '1.0.2'}

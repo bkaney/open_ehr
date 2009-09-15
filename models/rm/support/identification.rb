@@ -18,7 +18,7 @@ module OpenEHR
             @value = value            
           end
           def ==(object_id)
-            @value == object_id.value
+            self.value == object_id.value
           end
         end # of ObjectID
 
@@ -48,15 +48,10 @@ module OpenEHR
         end
 
         class Archetype_ID < Object_ID
-          attr_reader :domain_concept, :rm_name, :rm_entity, :rm_originator, :specialisation, :version_id
+          attr_reader :rm_name, :rm_entity, :rm_originator, :concept_name, :specialisation, :version_id
 
           def initialize(value)
             super(value)
-
-          end
-          def domain_concept=(domain_concept)
-            raise ArgumentError, "domain concept not valid" if domain_concept.nil? or domain_concept.empty?
-            @domain_concept = domain_concept
           end
 
           def value=(value)
@@ -85,7 +80,8 @@ module OpenEHR
           end
 
           def value
-            return self.qualified_rm_entity + self.domain_concept + '.' + @version_id
+            return self.qualified_rm_entity + '.' +
+              self.domain_concept + '.' + @version_id
           end
 
           def concept_name=(concept_name)

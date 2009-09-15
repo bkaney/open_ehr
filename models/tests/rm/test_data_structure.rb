@@ -3,7 +3,6 @@ require 'set'
 require 'rm'
 
 include OpenEHR::RM::Data_Structures
-include OpenEHR::RM::Data_Structures::Item_Structure
 
 class RmDataStructureTest < Test::Unit::TestCase
   def setup
@@ -22,15 +21,5 @@ class RmDataStructureTest < Test::Unit::TestCase
 
   def test_data_structure
     assert_raise(NotImplementedError){@data_structure.as_hierarchy}
-  end
-end
-
-class RmDataStructureItemStructureTest < Test::Unit::TestCase
-  def setup
-    assert_nothing_raised(Exception){
-      
-  end
-
-  def test_init
   end
 end
