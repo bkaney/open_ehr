@@ -75,7 +75,7 @@ end
 gem_spec = Gem::Specification.new do |s|
   s.name = 'adl_parser'
   s.author = 'Akimichi Tatsukawa'
-  s.version = '0.0.3'
+  s.version = '0.0.4'
   s.summary = 'ADL parser'
   s.email = 'akimichi.tatsukawa@gmail.com'
   s.test_files = FileList['test/*_test.rb', '*.adl']
@@ -87,7 +87,7 @@ gem_spec = Gem::Specification.new do |s|
   s.require_path = "lib"
   s.has_rdoc = true
   s.extra_rdoc_files = ["README"]
-  s.add_dependency("yaparc", ">= 0.2.3")
+#  s.add_dependency("yaparc", ">= 0.2.3")
   s.add_dependency("openehr_models", ">= 0.0.3")
 end
 

@@ -1,110 +1,105 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
-class YaparcParserTest < Test::Unit::TestCase
-  must "assert root scanner instance" do
-    parser = OpenEHR::ADL::Scanner::DADL::RootScanner.new
-    assert_instance_of OpenEHR::ADL::Scanner::DADL::RootScanner,parser
-    result = parser.parse('')
+class ADLScannerTest < Test::Unit::TestCase
+  def setup
+    @scanner = OpenEHR::ADL::Scanner::ADLScanner.new([:adl], "filename")
   end
 
-  # \[{ALPHANUM}{NAMECHAR}*\]
-  must "assert V_LOCAL_TERM_CODE_REF scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::Common::V_LOCAL_TERM_CODE_REF.new
-    assert_instance_of OpenEHR::ADL::Scanner::Common::V_LOCAL_TERM_CODE_REF,parser
-    result = parser.parse('[en-us]')
-    assert_instance_of Yaparc::Result::OK, result
+  must "assert OpenEHR::ADL::Scanner::ADLScanner scanner instance" do
+    assert_instance_of OpenEHR::ADL::Scanner::ADLScanner, @scanner
   end
 
-  must "assert V_QUALIFIED_TERM_CODE_REF scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::Common::V_QUALIFIED_TERM_CODE_REF.new
-    assert_instance_of OpenEHR::ADL::Scanner::Common::V_QUALIFIED_TERM_CODE_REF,parser
-    result = parser.parse('[ISO_639::en]')
-    assert_instance_of Yaparc::Result::OK, result
-    result = parser.parse('[ISO_639::en-us]')
-    assert_instance_of Yaparc::Result::OK, result
+  must "assert ADLScanner scanner scan CR and lineno incremented" do
+    lineno = @scanner.lineno
+    @scanner.scan("\n")
+    assert_equal lineno+1, @scanner.lineno
   end
 
-  must "assert V_STRING scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::Common::V_STRING.new
-    assert_instance_of OpenEHR::ADL::Scanner::Common::V_STRING,parser
-    result = parser.parse('"this is a string"')
-    assert_instance_of Yaparc::Result::OK, result
-    result = parser.parse('"en-us"')
-    assert_instance_of Yaparc::Result::OK, result
+  must "assert ADLScanner scanner scan ARCHETYPE_ID" do
+    lineno = @scanner.lineno
+    @scanner.scan("openEHR-EHR-OBSERVATION.body_mass_index.v1") do |sym, val|
+      assert_equal :V_ARCHETYPE_ID,sym
+      assert_instance_of OpenEHR::RM::Support::Identification::Archetype_ID,val
+    end
   end
 
-  must "assert V_REAL scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::Common::V_REAL.new
-    assert_instance_of OpenEHR::ADL::Scanner::Common::V_REAL,parser
-    result = parser.parse('0.1')
-    assert_instance_of Yaparc::Result::OK, result
-    result = parser.parse('0.0..20000.0')
-    assert_instance_of Yaparc::Result::OK, result
-    assert_equal [:V_REAL, "0.0"], result.value
-    assert_equal "..20000.0", result.input
+  must "assert ADLScanner scanner scan white space and lineno unchanged" do
+    lineno = @scanner.lineno
+    @scanner.scan(" ")
+    assert_equal lineno, @scanner.lineno
   end
 
-  must "assert V_ISO8601_DURATION scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION.new
-    assert_instance_of OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION,parser
-    result = parser.parse('PT1M')
-    assert_instance_of Yaparc::Result::OK, result
-    result = parser.parse('PYMWDTHMS')
-    assert_instance_of Yaparc::Result::OK, result
-    assert_equal [:V_ISO8601_DURATION, "PYMWDTHMS"], result.value
+  must "assert ADLScanner scanner scan V_QUALIFIED_TERM_CODE_REF" do
+    @scanner.scan("[ICD10AM(1998)::F23]") do |sym, val|
+      assert_equal :V_QUALIFIED_TERM_CODE_REF,sym
+      assert_equal "ICD10AM(1998)::F23",val
+    end
+  end
+end
+
+class CADLScannerTest < Test::Unit::TestCase
+  def setup
+    @scanner = OpenEHR::ADL::Scanner::CADLScanner.new([:cadl], "filename")
   end
 
-  must "assert V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::CADL::V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN.new
-    assert_instance_of OpenEHR::ADL::Scanner::CADL::V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN,parser
-    result = parser.parse('yyyy-??-??T??:??:??')
-    assert_instance_of Yaparc::Result::OK, result
+  must "assert OpenEHR::ADL::Scanner::CADLScanner scanner instance" do
+    assert_instance_of OpenEHR::ADL::Scanner::CADLScanner, @scanner
   end
 
-  must "assert V_ISO8601_DATE_CONSTRAINT_PATTERN scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::CADL::V_ISO8601_DATE_CONSTRAINT_PATTERN.new
-    assert_instance_of OpenEHR::ADL::Scanner::CADL::V_ISO8601_DATE_CONSTRAINT_PATTERN,parser
-    result = parser.parse('yyyy-mm-XX-dd')
-    assert_instance_of Yaparc::Result::OK, result
+  must "assert CADLScanner scanner scan V_ATTRIBUTE_IDENTIFIER" do
+    lineno = @scanner.lineno
+    @scanner.scan("identifier") do |sym, val|
+      assert_equal :V_ATTRIBUTE_IDENTIFIER, sym
+      assert_equal "identifier", val
+    end
+    assert_equal lineno, @scanner.lineno
   end
 
-  must "assert V_ISO8601_TIME_CONSTRAINT_PATTERN scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::CADL::V_ISO8601_TIME_CONSTRAINT_PATTERN.new
-    assert_instance_of OpenEHR::ADL::Scanner::CADL::V_ISO8601_TIME_CONSTRAINT_PATTERN,parser
-    result = parser.parse('hh:mm:ss:??')
-    assert_instance_of Yaparc::Result::OK, result
+  must "assert CADLScanner scanner scan reserved words" do
+    lineno = @scanner.lineno
+    @scanner.scan("then") do |sym, val|
+      assert_equal :SYM_THEN, sym
+    end
   end
 
-  must "assert reserved words in dADL scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::DADL::RootScanner.new
-    result = parser.parse('then')
-    assert_instance_of Yaparc::Result::OK, result
-    result = parser.parse('infinity')
-    assert_instance_of Yaparc::Result::OK, result
-    assert_equal [:SYM_INFINITY, :SYM_INFINITY], result.value
+  must "assert CADLScanner scanner scan V_QUALIFIED_TERM_CODE_REF" do
+    @scanner.scan("[ICD10AM(1998)::F23]") do |sym, val|
+      assert_equal :V_QUALIFIED_TERM_CODE_REF,sym
+      assert_equal "ICD10AM(1998)::F23",val
+    end
   end
 
-  must "assert reserved words in cADL scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::CADL::RootScanner.new
-    assert_instance_of OpenEHR::ADL::Scanner::CADL::RootScanner,parser
-    result = parser.parse('PT1M')
-    assert_instance_of Yaparc::Result::OK, result
-    assert_equal [:V_ISO8601_DURATION, "PT1M"], result.value
-    result = parser.parse('PYMWDTHMS')
-    assert_instance_of Yaparc::Result::OK, result
-    assert_equal [:V_ISO8601_DURATION, "PYMWDTHMS"], result.value
+  must "assert CADLScanner scanner scan V_ISO8601_DURATION" do
+    @scanner.scan("PT1M") do |sym, val|
+      assert_equal :V_ISO8601_DURATION,sym
+      assert_equal "PT1M",val
+    end
+  end
+end
+
+class DADLScannerTest < Test::Unit::TestCase
+  def setup
+    @scanner = OpenEHR::ADL::Scanner::DADLScanner.new([:dadl], "filename")
   end
 
-  must "assert other reserved words in cADL scanner is properly working" do
-    parser = OpenEHR::ADL::Scanner::CADL::RootScanner.new
-    result = parser.parse('then')
-    assert_instance_of Yaparc::Result::OK, result
-    result = parser.parse('cardinality')
-    assert_instance_of Yaparc::Result::OK, result
-    assert_equal [:SYM_CARDINALITY, :SYM_CARDINALITY], result.value
-    result = parser.parse('ordered')
-    assert_instance_of Yaparc::Result::OK, result
-    assert_equal "", result.input
-    assert_equal [:SYM_ORDERED, :SYM_ORDERED], result.value
+  must "assert DADLScanner scanner scan V_QUALIFIED_TERM_CODE_REF" do
+    @scanner.scan("[ICD10AM(1998)::F23]") do |sym, val|
+      assert_equal :V_QUALIFIED_TERM_CODE_REF,sym
+      assert_equal "ICD10AM(1998)::F23",val
+    end
+  end
+
+  must "assert DADLScanner scanner scan V_ISO8601_EXTENDED_DATE" do
+    @scanner.scan("2005-10-10") do |sym, val|
+      assert_equal :V_ISO8601_EXTENDED_DATE,sym
+      assert_equal "2005-10-10",val
+    end
+  end
+
+  must "assert DADLScanner scanner scan V_STRING" do
+    @scanner.scan("\"string\"") do |sym, val|
+      assert_equal :V_STRING,sym
+      assert_equal "string",val
+    end
   end
 end

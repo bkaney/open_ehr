@@ -24,7 +24,7 @@ description
     original_author = <
         ["name"] = <"Sam Heard">
         ["organisation"] = <"Ocean Informatics">
-        ["date"] = <"2004-05-18">
+        ["date"] = <"18/05/2004">
         ["email"] = <"sam.heard@oceaninformatics.biz">
     >
     details = <
@@ -44,10 +44,10 @@ description
         >
         ["de"] = <
             language = <[ISO_639-1::de]>
-            purpose = <"Zur Dokumentation des Apgar Wertes oder Beurteilung f%Gï¿½%@r Neugeborene. Der zu Grunde liegende Zeitpunkt der Ereignisreihe ist immer die Geburt.">
-            use = <"Erm%Gï¿½%@glicht die Dokumentation des Wohlergehens des S%Gï¿½%@uglings 1, 2, 5 und/ oder 10 Minuten nach der Geburt. Die Summe kann einzeln dokumentiert werden - falls nur diese verf%Gï¿½%@gbar ist - es sollten aber alle f%Gï¿½%@nf Zahlenwerte vervollst%Gï¿½%@ndigt werden, damit die Summe errechnet werden kann. Die Gesamtsumme ist die Summe der f%Gï¿½%@nf Zahlenwerte (minimal 0, maximal 10).">
+            purpose = <"Zur Dokumentation des Apgar Wertes oder Beurteilung f%G�%@r Neugeborene. Der zu Grunde liegende Zeitpunkt der Ereignisreihe ist immer die Geburt.">
+            use = <"Erm%G�%@glicht die Dokumentation des Wohlergehens des S%G�%@uglings 1, 2, 5 und/ oder 10 Minuten nach der Geburt. Die Summe kann einzeln dokumentiert werden - falls nur diese verf%G�%@gbar ist - es sollten aber alle f%G�%@nf Zahlenwerte vervollst%G�%@ndigt werden, damit die Summe errechnet werden kann. Die Gesamtsumme ist die Summe der f%G�%@nf Zahlenwerte (minimal 0, maximal 10).">
             keywords = <"Apgar", "Neugeborenes", "Index", "Wert">
-            misuse = <"Nur teilweise Vervollst%Gï¿½%@ndigung der Werte und Addieren von weniger als f%Gï¿½%@nf Werten zur Gesamtsumme.">
+            misuse = <"Nur teilweise Vervollst%G�%@ndigung der Werte und Addieren von weniger als f%G�%@nf Werten zur Gesamtsumme.">
         >
     >
     lifecycle_state = <"AuthorDraft">
@@ -413,7 +413,7 @@ ontology
         ["de"] = <
             items = <
                 ["at0000"] = <
-                    description = <"Klinischer Wert, abgeleitet von der Beurteilung der Atmung, der Hautfarbe, dem Muskeltonus, der Herzfrequenz und der Reaktion von Reflexen, %Gï¿½%@blicherweise 1, 5 und 10 Minuten nach der Geburt erhoben">
+                    description = <"Klinischer Wert, abgeleitet von der Beurteilung der Atmung, der Hautfarbe, dem Muskeltonus, der Herzfrequenz und der Reaktion von Reflexen, %G�%@blicherweise 1, 5 und 10 Minuten nach der Geburt erhoben">
                     text = <"Apgar Wert">
                 >
                 ["at0001"] = <
@@ -437,12 +437,12 @@ ontology
                     text = <"Kein Herzschlag">
                 >
                 ["at0007"] = <
-                    description = <"Herzfrequenz von weniger als 100 Schl%Gï¿½%@gen pro Minute">
-                    text = <"Weniger als 100 Schl%Gï¿½%@ge pro Minute">
+                    description = <"Herzfrequenz von weniger als 100 Schl%G�%@gen pro Minute">
+                    text = <"Weniger als 100 Schl%G�%@ge pro Minute">
                 >
                 ["at0008"] = <
-                    description = <"Herzfrequenz von mehr als oder genau 100 Schl%Gï¿½%@gen pro Minute">
-                    text = <"Mehr als oder genau 100 Schl%Gï¿½%@ge pro Minute">
+                    description = <"Herzfrequenz von mehr als oder genau 100 Schl%G�%@gen pro Minute">
+                    text = <"Mehr als oder genau 100 Schl%G�%@ge pro Minute">
                 >
                 ["at0009"] = <
                     description = <"Beurteilung des Atmungsbestreben des Neugeborenen">
@@ -477,36 +477,36 @@ ontology
                     text = <"Lebhafte Bewegung">
                 >
                 ["at0017"] = <
-                    description = <"Beurteilung der Reaktion des Neugeborenen auf die Absaugung der Nasenl%Gï¿½%@cher">
+                    description = <"Beurteilung der Reaktion des Neugeborenen auf die Absaugung der Nasenl%G�%@cher">
                     text = <"Reflexantwort">
                 >
                 ["at0018"] = <
-                    description = <"kein W%Gï¿½%@rgen oder keine Reaktion auf das Absaugen der Atemwege">
+                    description = <"kein W%G�%@rgen oder keine Reaktion auf das Absaugen der Atemwege">
                     text = <"Keine Reaktion auf die Absaugung der Atemwege">
                 >
                 ["at0019"] = <
                     description = <"Grimasse als einzige Reaktion auf das Absaugen der Atemwege">
-                    text = <"Grimasse w%Gï¿½%@hrend der Absaugung der Atemwege">
+                    text = <"Grimasse w%G�%@hrend der Absaugung der Atemwege">
                 >
                 ["at0020"] = <
-                    description = <"Grimasse und husten, niesen oder w%Gï¿½%@rgen als Reaktion auf die Absaugung der Atemwege">
-                    text = <"Grimasse und Husten/Niesen w%Gï¿½%@hrend der Absaugung der Atemwege ">
+                    description = <"Grimasse und husten, niesen oder w%G�%@rgen als Reaktion auf die Absaugung der Atemwege">
+                    text = <"Grimasse und Husten/Niesen w%G�%@hrend der Absaugung der Atemwege ">
                 >
                 ["at0021"] = <
-                    description = <"Die Farbe der Haut am K%Gï¿½%@rper, am Rumpf und an den Gliedern">
+                    description = <"Die Farbe der Haut am K%G�%@rper, am Rumpf und an den Gliedern">
                     text = <"Hautfarbe">
                 >
                 ["at0022"] = <
-                    description = <"Der K%Gï¿½%@rper ist blass oder blau gef%Gï¿½%@rbt">
-                    text = <"Gesamter K%Gï¿½%@rper ist blau oder blass">
+                    description = <"Der K%G�%@rper ist blass oder blau gef%G�%@rbt">
+                    text = <"Gesamter K%G�%@rper ist blau oder blass">
                 >
                 ["at0023"] = <
-                    description = <"Der K%Gï¿½%@rper ist rosig, H%Gï¿½%@nde und F%Gï¿½ï¿½%@e sind blass oder blau">
-                    text = <"Gesunde K%Gï¿½%@rperfarbe, blaue H%Gï¿½%@nde oder F%Gï¿½ï¿½%@e">
+                    description = <"Der K%G�%@rper ist rosig, H%G�%@nde und F%G��%@e sind blass oder blau">
+                    text = <"Gesunde K%G�%@rperfarbe, blaue H%G�%@nde oder F%G��%@e">
                 >
                 ["at0024"] = <
-                    description = <"Rosige oder gesunde F%Gï¿½%@rbung des gesamten K%Gï¿½%@rpers">
-                    text = <"Vollst%Gï¿½%@ndig gesunde oder rosige Farbe">
+                    description = <"Rosige oder gesunde F%G�%@rbung des gesamten K%G�%@rpers">
+                    text = <"Vollst%G�%@ndig gesunde oder rosige Farbe">
                 >
                 ["at0025"] = <
                     description = <"Die Summe der Zahlenwerte aller Parameter">

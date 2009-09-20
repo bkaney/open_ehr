@@ -10,11 +10,12 @@ require 'racc/parser.rb'
 
 $:.unshift File.join(File.dirname(__FILE__))
 require 'logger'
+require 'yaml'
 require 'rubygems'
 require 'adl_parser.rb'
 require 'am.rb'
 require 'rm.rb'
-$DEBUG = true
+$DEBUG = false
 
 
 
@@ -22,7 +23,7 @@ module OpenEHR
   module ADL
     class Parser < Racc::Parser
 
-module_eval(<<'...end parser.y/module_eval...', 'parser.y', 1205)
+module_eval(<<'...end parser.y/module_eval...', 'parser.y', 1208)
 
 def assert_at(file,line, message = "")
   unless yield
@@ -38,8 +39,6 @@ else
   @@logger.level = Logger::WARN
 end
 
-@@dadl_scanner = OpenEHR::ADL::Scanner::DADL::RootScanner.new
-@@cadl_scanner = OpenEHR::ADL::Scanner::CADL::RootScanner.new
 
 ###----------/* keywords */ --------------------------------------------- 
 @@adl_reserved = {
@@ -102,726 +101,17 @@ end
 
 def scan
   @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan at #{@filename}:#{@lineno}:")
-  adl_scanner = OpenEHR::ADL::Scanner::ADLScanner.new(@adl_type, @filename)
-  cadl_scanner = OpenEHR::ADL::Scanner::CADLScanner.new(@adl_type, @filename)
-  dadl_scanner = OpenEHR::ADL::Scanner::DADLScanner.new(@adl_type, @filename)
-  regex_scanner = OpenEHR::ADL::Scanner::RegexScanner.new(@adl_type, @filename)
-  term_constraint_scanner = OpenEHR::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename)
+  scanner = OpenEHR::ADL::Scanner::ADLScanner.new(@adl_type, @filename)
 
   until @data.nil?  do
-    case @adl_type.last
-    when :adl
-      @data = adl_scanner.scan(@data) do |sym, val|
+    @data = scanner.scan(@data) do |sym, val|
         yield sym, val
-      end
-    when :dadl
-      @data = dadl_scanner.scan(@data) do |sym, val|
-        yield sym, val
-      end
-    when :cadl
-      @data = cadl_scanner.scan(@data) do |sym, val|
-        yield sym, val
-      end
-    when :regexp
-      @data = regex_scanner.scan(@data) do |sym, val|
-        yield sym, val
-      end
-    when :term_constraint
-      @@logger.debug("#{__FILE__}:#{__LINE__}: scan: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{@data.inspect}")
-      @data = term_constraint_scanner.scan(@data) do |sym, val|
-        yield sym, val
-      end
-    else
-      raise
     end
     @data = $' # variable $' receives the string after the match
   end
   yield :EOF, nil
   yield false, '$'
 end # of scan
-
-### def scan
-###   @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan at #{@filename}:#{@lineno}:")
-  
-###   until @data.nil?  do
-###     case @adl_type.last
-###     when :adl
-###       @data = scan_adl(@data) do |sym, val|
-###         yield sym, val
-###       end
-###     when :dadl
-###       @data = scan_dadl(@data) do |sym, val|
-###         yield sym, val
-###       end
-###     when :cadl
-###       @data = scan_cadl(@data) do |sym, val|
-###         yield sym, val
-###       end
-###     when :regexp
-###       @data = scan_regexp(@data) do |sym, val|
-###         yield sym, val
-###       end
-###     when :term_constraint
-###       @@logger.debug("#{__FILE__}:#{__LINE__}: scan: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
-###       @data = scan_term_constraint(@data) do |sym, val|
-###         yield sym, val
-###       end
-###     else
-###       raise
-###     end
-###     @data = $' # variable $' receives the string after the match
-###   end
-###   yield :EOF, nil
-###   yield false, '$'
-### end # of scan
-
-def scan_adl(data)
-  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_adl at #{@filename}:#{@lineno}: data = #{data.inspect}")
-  until data.nil?  do
-    case @adl_type.last
-    when :adl
-      case data
-      when /\A\n/ # carriage return
-        @lineno += 1
-        ;
-      when /\A[ \t\r\f]+/ #just drop it
-        ;
-      when /\A--.*\n/ # single line comment
-        @lineno += 1
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_adl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
-        ;
-      when /\Adescription/   # description
-        yield :SYM_DESCRIPTION, :SYM_DESCRIPTION
-      when /\Adefinition/   # definition
-        yield :SYM_DEFINITION, :SYM_DEFINITION
-        ###----------/* symbols */ ------------------------------------------------- 
-      when /\A[A-Z][a-zA-Z0-9_]*/
-        yield :V_TYPE_IDENTIFIER, $&
-#      when /\A[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z][a-zA-Z0-9_-]+\.[a-zA-Z0-9]+/   #V_ARCHETYPE_ID
-      when /\A(\w+)-(\w+)-(\w+)\.(\w+)(-\w+)?\.(v\w+)/   #V_ARCHETYPE_ID
-        object_id, rm_originator, rm_name, rm_entity, concept_name, specialisation, version_id = $&, $1, $2, $3, $4, $5, $6
-        archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new(object_id, concept_name, rm_name, rm_entity, rm_originator, specialisation, version_id)
-#        yield :V_ARCHETYPE_ID, $&
-        yield :V_ARCHETYPE_ID, archetype_id
-      when /\A[a-z][a-zA-Z0-9_]*/
-#        word = $&.downcase
-        word = $&
-        if @@adl_reserved[word]
-          @@logger.debug("#{__FILE__}:#{__LINE__}: scan_adl: @@adl_reserved = #{@@adl_reserved[word]} at #{@filename}:#{@lineno}")
-          yield @@adl_reserved[word], @@adl_reserved[word]
-        elsif #/\A[A-Z][a-zA-Z0-9_]*/
-          @@logger.debug("#{__FILE__}:#{__LINE__}: scan_adl: V_ATTRIBUTE_IDENTIFIER = #{$&} at #{@filename}:#{@lineno}")
-          yield :V_ATTRIBUTE_IDENTIFIER, $&
-        end
-      when /\A\=/   # =
-        yield :SYM_EQ, :SYM_EQ
-      when /\A\>=/   # >=
-        yield :SYM_GE, :SYM_GE
-      when /\A\<=/   # <=
-        yield :SYM_LE, :SYM_LE
-      when /\A\</   # <
-        if @in_interval
-#          @start_block_received = false
-          yield :SYM_LT, :SYM_LT
-        else
-#          @start_block_received = true
-          @adl_type.push(:dadl)
-          yield :SYM_START_DBLOCK,  $&
-        end
-      when /\A\>/   # >
-        if @in_interval
-          yield :SYM_GT, :SYM_GT
-        else
-          adl_type = @adl_type.pop
-          assert_at(__FILE__,__LINE__){adl_type == :dadl}
-          yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
-        end
-      when /\A\{/   # {
-        @adl_type.push(:cadl)
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: entering cADL at #{@filename}:#{@lineno}")
-        yield :SYM_START_CBLOCK, :SYM_START_CBLOCK
-      when /\A\}/   # }
-        adl_type = @adl_type.pop
-#        puts "Escaping #{adl_type}"
-        assert_at(__FILE__,__LINE__){adl_type == :cadl}
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: exiting cADL at #{@filename}:#{@lineno}")
-        yield :SYM_END_CBLOCK, $&
-      when /\A\-/   # -
-        yield :Minus_code, :Minus_code
-      when /\A\+/   # +
-        yield :Plus_code, :Plus_code
-      when /\A\*/   # *
-        yield :Star_code, :Star_code
-      when /\A\//   # /
-        yield :Slash_code, :Slash_code
-      when /\A\^/   # ^
-        yield :Caret_code, :Caret_code
-      when /\A\=/   # =
-        yield :Equal_code, :Equal_code
-      when /\A\.\.\./   # ...
-        yield :SYM_LIST_CONTINUE, :SYM_LIST_CONTINUE
-      when /\A\.\./   # ..
-        yield :SYM_ELLIPSIS, :SYM_ELLIPSIS
-      when /\A\./   # .
-        yield :Dot_code, :Dot_code
-      when /\A\;/   # ;
-        yield :Semicolon_code, :Semicolon_code
-      when /\A\,/   # ,
-        yield :Comma_code, :Comma_code
-      when /\A\:/   # :
-        yield :Colon_code, :Colon_code
-      when /\A\!/   # !
-        yield :Exclamation_code, :Exclamation_code
-      when /\A\(/   # (
-        yield :Left_parenthesis_code, :Left_parenthesis_code
-      when /\A\)/   # )
-        yield :Right_parenthesis_code, :Right_parenthesis_code
-      when /\A\$/   # $
-        yield :Dollar_code, :Dollar_code
-      when /\A\?\?/   # ??
-        yield :SYM_DT_UNKNOWN, :SYM_DT_UNKNOWN
-      when /\A\?/   # ?
-        yield :Question_mark_code, :Question_mark_code
-      when /\A[0-9]+\.[0-9]+(\.[0-9]+)*/   # ?
-        yield :V_VERSION_STRING, $&
-      when /\A\|/   # |
-        if @in_interval
-          @in_interval = false
-        else
-          @in_interval = true
-        end
-        yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
-      when /\A\[[a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+\]/
-#      when /\A\[[a-zA-Z0-9()\._-]+\:\:[a-zA-Z0-9\._-]+\]/   #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
-        yield :V_QUALIFIED_TERM_CODE_REF, $&
-      when /\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/   #V_LOCAL_TERM_CODE_REF
-        yield :V_LOCAL_TERM_CODE_REF, $&
-      when /\A\[/   # [
-        yield :Left_bracket_code, :Left_bracket_code
-      when /\A\]/   # ]
-        yield :Right_bracket_code, :Right_bracket_code
-
-      when /\A"([^"]*)"/m #V_STRING
-        yield :V_STRING, $1
-      when /\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/   #ERR_V_QUALIFIED_TERM_CODE_REF
-        yield :ERR_V_QUALIFIED_TERM_CODE_REF, $&
-      when /\Aa[ct][0-9.]+/   #V_LOCAL_CODE
-        yield :V_LOCAL_CODE, $&
-      when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/- -n-n-n-n-]-
-        yield :V_ISO8601_EXTENDED_DATE_TIME, $&
-      when /\A[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? /   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
-        yield :V_ISO8601_EXTENDED_TIME, $&
-      when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
-        yield :V_ISO8601_EXTENDED_DATE, $&
-      when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
-        yield :V_GENERIC_TYPE_IDENTIFIER, $&
-      when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
-        yield :V_INTEGER, $&
-      when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
-        yield :V_REAL, $&
-        #    when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
-      when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
-        yield :V_URI, $&
-      when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
-        yield :V_ISO8601_DURATION, $&
-      when /\A\S/ #UTF8CHAR
-        yield :UTF8CHAR, $&
-      end
-      data = $' # variable $' receives the string after the match
-    when :dadl
-      data = scan_dadl(data) do |sym, val|
-        yield sym, val
-      end
-    when :cadl
-      data = scan_cadl(data) do |sym, val|
-        yield sym, val
-      end
-    when :regexp
-      data = scan_regexp(data) do |sym, val|
-        yield sym, val
-      end
-    when :term_constraint
-      @@logger.debug("#{__FILE__}:#{__LINE__}: scan_adl: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
-
-      data = scan_term_constraint(data) do |sym, val|
-        yield sym, val
-      end
-    else
-      raise
-    end
-  end
-end # scan_adl
-
-
-def scan_cadl(data)
-  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_cadl at #{@filename}:#{@lineno}: data = #{data.inspect}")
-  until data.nil?  do
-    case @adl_type.last
-    when :cadl
-      case scanned = @@cadl_scanner.parse(data)
-      when Yaparc::Result::OK
-        if scanned.value[0] == :START_V_C_DOMAIN_TYPE_BLOCK
-          @in_c_domain_type = true
-          @adl_type.push(:dadl)
-          yield scanned.value
-        else
-          yield scanned.value
-        end
-        data = scanned.input
-      end
-
-      case data
-      when /\A\n/ # carriage return
-        @lineno += 1
-        ;
-      when /\A[ \t\r\f]+/ #just drop it
-        ;
-      when /\A--.*\n/ # single line comment
-        @lineno += 1
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
-        ;
-        ###----------/* symbols */ ------------------------------------------------- 
-      when /\A\=/   # =
-        yield :SYM_EQ, :SYM_EQ
-      when /\A\>=/   # >=
-        yield :SYM_GE, :SYM_GE
-      when /\A\<=/   # <=
-        yield :SYM_LE, :SYM_LE
-###       when /\A[A-Z][a-zA-Z0-9_]*[ \n]*\</   # V_C_DOMAIN_TYPE
-###         @in_c_domain_type = true
-###         @adl_type.push(:dadl)
-###         yield :START_V_C_DOMAIN_TYPE_BLOCK, $&
-      when /\A\</   # <
-        if @in_interval
-          yield :SYM_LT, :SYM_LT
-        else
-          @adl_type.push(:dadl)
-          yield :SYM_START_DBLOCK,  $&
-        end
-      when /\A\>/   # >
-        if @in_interval
-          yield :SYM_GT, :SYM_GT
-        else
-          adl_type = @adl_type.pop
-#          puts "Escaping #{adl_type}"
-          assert_at(__FILE__,__LINE__){adl_type == :dadl}
-          yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
-        end
-      when /\A\-/   # -
-        yield :Minus_code, :Minus_code
-      when /\A\+/   # +
-        yield :Plus_code, :Plus_code
-      when /\A\*/   # *
-        yield :Star_code, :Star_code
-      when /\A\//   # /
-        yield :Slash_code, :Slash_code
-      when /\A\^/   # ^
-        yield :Caret_code, :Caret_code
-      when /\A\.\.\./   # ...
-        yield :SYM_LIST_CONTINUE, :SYM_LIST_CONTINUE
-      when /\A\.\./   # ..
-        yield :SYM_ELLIPSIS, :SYM_ELLIPSIS
-      when /\A\./   # .
-        yield :Dot_code, :Dot_code
-      when /\A\;/   # ;
-        yield :Semicolon_code, :Semicolon_code
-      when /\A\,/   # ,
-        yield :Comma_code, :Comma_code
-      when /\A\:/   # :
-        yield :Colon_code, :Colon_code
-      when /\A\!/   # !
-        yield :Exclamation_code, :Exclamation_code
-      when /\A\(/   # (
-        yield :Left_parenthesis_code, :Left_parenthesis_code
-      when /\A\)/   # )
-        yield :Right_parenthesis_code, :Right_parenthesis_code
-      when /\A\{\// #V_REGEXP
-        if @adl_type.last != :regexp
-          @in_regexp = true
-          @adl_type.push(:regexp)
-          yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
-        else
-          raise
-        end
-#        yield :V_REGEXP, :V_REGEXP
-      when /\A\{/   # {
-        @adl_type.push(:cadl)
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: entering cADL at #{@filename}:#{@lineno}")
-        yield :SYM_START_CBLOCK, :SYM_START_CBLOCK
-      when /\A\}/   # }
-        adl_type = @adl_type.pop
-#        puts "Escaping #{adl_type}"
-        assert_at(__FILE__,__LINE__){adl_type == :cadl}
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: exiting cADL at #{@filename}:#{@lineno}")
-        yield :SYM_END_CBLOCK, :SYM_END_CBLOCK
-      when /\A\$/   # $
-        yield :Dollar_code, :Dollar_code
-      when /\A\?\?/   # ??
-        yield :SYM_DT_UNKNOWN, :SYM_DT_UNKNOWN
-      when /\A\?/   # ?
-        yield :Question_mark_code, :Question_mark_code
-      when /\A\|/   # |
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: @in_interval = #{@in_interval} at #{@filename}:#{@lineno}")
-        if @in_interval
-          @in_interval = false
-        else
-#          @in_interval = false
-          @in_interval = true
-        end
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: SYM_INTERVAL_DELIM at #{@filename}:#{@lineno}")
-        yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
-
-      when /\A\[[a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+\]/  #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
-#      when /\A\[[a-zA-Z0-9._\-]+::[a-zA-Z0-9._\-]+\]/   #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
-        yield :V_QUALIFIED_TERM_CODE_REF, $&
-      when /\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/   #ERR_V_QUALIFIED_TERM_CODE_REF
-        yield :ERR_V_QUALIFIED_TERM_CODE_REF, $&
-      when /\A\[([a-zA-Z0-9\(\)\._\-]+)::[ \t\n]*/
-        @adl_type.push(:term_constraint)
-        yield :START_TERM_CODE_CONSTRAINT, $1
-      when /\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/   #V_LOCAL_TERM_CODE_REF
-        yield :V_LOCAL_TERM_CODE_REF, $&
-      when /\A\[/   # [
-        yield :Left_bracket_code, :Left_bracket_code
-      when /\A\]/   # ]
-        yield :Right_bracket_code, :Right_bracket_code
-      when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
-        yield :V_GENERIC_TYPE_IDENTIFIER, $&
-      when /\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X][T\t][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]/
-        yield :V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN, $&
-      when /\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X]/
-        yield :V_ISO8601_DATE_CONSTRAINT_PATTERN, $&
-      when /\A[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]/
-        yield :V_ISO8601_TIME_CONSTRAINT_PATTERN, $&
-      when /\A[a-z][a-zA-Z0-9_]*/
-        word = $&.dup
-        if @@cadl_reserved[word.downcase]
-          yield @@cadl_reserved[word.downcase], @@cadl_reserved[word.downcase]
-        else
-          @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}:#{@lineno}")
-          yield :V_ATTRIBUTE_IDENTIFIER, word #V_ATTRIBUTE_IDENTIFIER /\A[a-z][a-zA-Z0-9_]*/
-        end
-      when /\A[A-Z][a-zA-Z0-9_]*/
-        word = $&.dup
-        if @@cadl_reserved[word.downcase]
-          yield @@cadl_reserved[word.downcase], @@cadl_reserved[word.downcase]
-        else
-          yield :V_TYPE_IDENTIFIER, $&
-        end
-      when /\Aa[ct][0-9.]+/   #V_LOCAL_CODE
-        yield :V_LOCAL_CODE, $&
-      when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/- -n-n-n-n-]-
-        yield :V_ISO8601_EXTENDED_DATE_TIME, $&
-      when /\A[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? /   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
-        yield :V_ISO8601_EXTENDED_TIME, $&
-      when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
-        yield :V_ISO8601_EXTENDED_DATE, $&
-      when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
-        yield :V_INTEGER, $&
-      when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
-        yield :V_REAL, $&
-           when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
-      when /\A"([^"]*)"/m #V_STRING
-        yield :V_STRING, $1
-      when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
-        yield :V_URI, $&
-###       when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
-###         yield :V_ISO8601_DURATION, $&
-      when /\A\S/ #UTF8CHAR
-        yield :UTF8CHAR, $&
-      else
-        raise
-      end
-      data = $' # variable $' receives the string after the match
-    when :adl
-      data = scan_adl(data) do |sym, val|
-        yield sym, val
-      end
-    when :dadl
-      data = scan_dadl(data) do |sym, val|
-        yield sym, val
-      end
-    when :regexp
-      data = scan_regexp(data) do |sym, val|
-        yield sym, val
-      end
-    when :term_constraint
-      @@logger.debug("#{__FILE__}:#{__LINE__}: scan_cadl: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
-      
-      data = scan_term_constraint(data) do |sym, val|
-        yield sym, val
-      end
-    else
-      raise
-    end
-  end # of until
-end # of scan_cadl
-
-def scan_dadl(data)
-  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_dadl at #{@filename}:#{@lineno}: data = #{data.inspect}")
-  until data.nil?  do
-    case @adl_type.last
-    when :dadl
-      case scanned = @@dadl_scanner.parse(data)
-      when Yaparc::Result::OK
-        yield scanned.value
-        data = scanned.input
-      else
-      end
-
-      case data
-      when /\A\n/ # carriage return
-        @lineno += 1
-        ;
-      when /\A[ \t\r\f]+/ #just drop it
-        ;
-      when /\A--.*\n/ # single line comment
-        @lineno += 1
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: COMMENT = #{$&} at #{@filename}:#{@lineno}")
-        ;
-        ###----------/* symbols */ ------------------------------------------------- 
-      when /\A\=/   # =
-        yield :SYM_EQ, :SYM_EQ
-      when /\A\>\=/   # >=
-        yield :SYM_GE, :SYM_GE
-      when /\A\<\=/   # <=
-        yield :SYM_LE, :SYM_LE
-      when /\A\</   # <
-        if @in_interval
-          yield :SYM_LT, :SYM_LT
-        else
-          @adl_type.push(:dadl)
-          yield :SYM_START_DBLOCK, :SYM_START_DBLOCK
-        end
-      when /\A\>/   # >
-        if @in_interval
-#          @in_interval = false
-          yield :SYM_GT, :SYM_GT
-        elsif @in_c_domain_type == true
-          assert_at(__FILE__,__LINE__){@adl_type.last == :dadl}
-          adl_type = @adl_type.pop
-          if @adl_type.last == :cadl
-            @in_c_domain_type = false
-            yield :END_V_C_DOMAIN_TYPE_BLOCK, $&
-          else
-            yield :SYM_END_DBLOCK, $&
-          end
-        elsif @in_c_domain_type == false
-          adl_type = @adl_type.pop
-          assert_at(__FILE__,__LINE__){adl_type == :dadl}
-          yield :SYM_END_DBLOCK, $&
-        else
-          raise
-        end
-      when /\A\-/   # -
-        yield :Minus_code, :Minus_code
-      when /\A\+/   # +
-        yield :Plus_code, :Plus_code
-      when /\A\*/   # *
-        yield :Star_code, :Star_code
-      when /\A\//   # /
-        yield :Slash_code, :Slash_code
-      when /\A\^/   # ^
-        yield :Caret_code, :Caret_code
-      when /\A\.\.\./   # ...
-        yield :SYM_LIST_CONTINUE, :SYM_LIST_CONTINUE
-      when /\A\.\./   # ..
-        yield :SYM_ELLIPSIS, :SYM_ELLIPSIS
-      when /\A\./   # .
-        yield :Dot_code, :Dot_code
-      when /\A\;/   # ;
-        yield :Semicolon_code, :Semicolon_code
-      when /\A\,/   # ,
-        yield :Comma_code, :Comma_code
-      when /\A\:/   # :
-        yield :Colon_code, :Colon_code
-      when /\A\!/   # !
-        yield :Exclamation_code, :Exclamation_code
-      when /\A\(/   # (
-        yield :Left_parenthesis_code, :Left_parenthesis_code
-      when /\A\)/   # )
-        yield :Right_parenthesis_code, :Right_parenthesis_code
-      when /\A\$/   # $
-        yield :Dollar_code, :Dollar_code
-      when /\A\?\?/   # ??
-        yield :SYM_DT_UNKNOWN, :SYM_DT_UNKNOWN
-      when /\A\?/   # ?
-        yield :Question_mark_code, :Question_mark_code
-      when /\A\|/   # |
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: @in_interval = #{@in_interval} at #{@filename}:#{@lineno}")
-        if @in_interval
-          @in_interval = false
-        else
-#          @in_interval = false
-          @in_interval = true
-        end
-        @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: SYM_INTERVAL_DELIM at #{@filename}:#{@lineno}")
-        yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
-###       when /\A\[[a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+\]/   #V_QUALIFIED_TERM_CODE_REF form [ICD10AM(1998)::F23]
-###         yield :V_QUALIFIED_TERM_CODE_REF, $&
-###       when /\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/   #V_LOCAL_TERM_CODE_REF
-###         yield :V_LOCAL_TERM_CODE_REF, $&
-###       when /\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/   #ERR_V_QUALIFIED_TERM_CODE_REF
-###         yield :ERR_V_QUALIFIED_TERM_CODE_REF, $&
-      when /\A\[/   # [
-        yield :Left_bracket_code, :Left_bracket_code
-      when /\A\]/   # ]
-        yield :Right_bracket_code, :Right_bracket_code
-###       when /\A[A-Z][a-zA-Z0-9_-]*/
-###         yield :V_TYPE_IDENTIFIER, $&
-###       when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
-###         yield :V_GENERIC_TYPE_IDENTIFIER, $&
-###       when /\A[a-z][a-zA-Z0-9_]*/
-###         word = $&.downcase
-###         if @@dadl_reserved[word]
-###           yield @@dadl_reserved[word], @@dadl_reserved[word]
-###         else
-###           yield :V_ATTRIBUTE_IDENTIFIER, $&
-###         end
-###       when /\Aa[ct][0-9.]+/   #V_LOCAL_CODE
-###         yield :V_LOCAL_CODE, $&
-      when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/- -n-n-n-n-]-
-        yield :V_ISO8601_EXTENDED_DATE_TIME, $&
-      when /\A[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? /   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
-        yield :V_ISO8601_EXTENDED_TIME, $&
-      when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
-        yield :V_ISO8601_EXTENDED_DATE, $&
-      when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
-        yield :V_GENERIC_TYPE_IDENTIFIER, $&
-      when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
-        yield :V_INTEGER, $&
-###       when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
-###         yield :V_REAL, $&
-        #    when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
-###       when /\A"([^"]*)"/m #V_STRING
-###         yield :V_STRING, $1
-      when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
-        yield :V_URI, $&
-###       when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
-###         yield :V_ISO8601_DURATION, $&
-      when /\A\S/ #UTF8CHAR
-        yield :UTF8CHAR, $&
-      end
-      data = $' # variable $' receives the string after the match
-    when :adl
-      data = scan_adl(data) do |sym, val|
-        yield sym, val
-      end
-    when :cadl
-      data = scan_cadl(data) do |sym, val|
-        yield sym, val
-      end
-    when :regexp
-#      puts "Entering scan_regexp"
-      data = scan_regexp(data) do |sym, val|
-        yield sym, val
-      end
-    when :term_constraint
-      @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
-
-      data = scan_term_constraint(data) do |sym, val|
-        yield sym, val
-      end
-    else
-      raise
-    end
-  end
-end # of scan_dadl
-
-def scan_regexp(data)
-  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_regexp at #{@filename}:#{@lineno}: data = #{data.inspect}")
-  until data.nil?  do
-    case @adl_type.last
-    when :regexp
-      case data
-      when /\A\/\}/ #V_REGEXP
-        if @adl_type.last == :regexp
-          @in_regexp = false
-          @adl_type.pop
-          yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
-        else
-          raise
-        end
-      when /\A(.*)(\/\})/ #V_REGEXP
-        yield :REGEXP_BODY, $1
-        if @adl_type.last == :regexp
-          @in_regexp = false
-          @adl_type.pop
-          yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
-        else
-          raise
-        end
-      else
-        raise data
-      end
-      data = $' # variable $' receives the string after the match
-    when :adl
-      data = scan_adl(data) do |sym, val|
-        yield sym, val
-      end
-    when :dadl
-      data = scan_dadl(data) do |sym, val|
-        yield sym, val
-      end
-    when :cadl
-      data = scan_cadl(data) do |sym, val|
-        yield sym, val
-      end
-    when :term_constraint
-      @@logger.debug("#{__FILE__}:#{__LINE__}: scan_regexp: Entering scan_term_constraint at #{@filename}:#{@lineno}")
-      data = scan_term_constraint(data) do |sym, val|
-        yield sym, val
-      end
-    else
-      raise
-    end
-  end
-end # of scan_regexp
-
-def scan_term_constraint(data)
-  @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_term_constraint")
-  until data.nil?  do
-    case @adl_type.last
-    when :term_constraint
-      case data
-      when /\A\n/ # carriage return
-        @lineno += 1
-        ;
-      when /\A[ \t\r\f]+/ #just drop it
-        ;
-      when /\A--.*$/ # single line comment
-        @lineno += 1
-        #@@logger.debug("#{__FILE__}:#{__LINE__}: scan_term_constraint: COMMENT = #{$&} at #{@filename}:#{@lineno}")
-        ;
-      when /\A([a-zA-Z0-9\._\-])+[ \t]*,/ # match any line, with ',' termination
-        yield :TERM_CODE, $1
-      when /\A([a-zA-Z0-9\._\-])+[ \t]*;/ # match second last line with ';' termination (assumed value)
-        yield :TERM_CODE, $1
-      when /\A([a-zA-Z0-9\._\-])*[ \t]*\]/ # match final line, terminating in ']'
-        adl_type = @adl_type.pop
-        assert_at(__FILE__,__LINE__){adl_type == :term_constraint}
-        yield :END_TERM_CODE_CONSTRAINT, $1
-      else
-        raise "data = #{data}"
-      end
-      data = $' # variable $' receives the string after the match
-    when :adl
-      data = scan_adl(data) do |sym, val|
-        yield sym, val
-      end
-    when :dadl
-      data = scan_dadl(data) do |sym, val|
-        yield sym, val
-      end
-    when :cadl
-      data = scan_cadl(data) do |sym, val|
-        yield sym, val
-      end
-    else
-      raise
-    end
-  end
-end # of scan_term_constraint
 
 
 def parse(data, filename, lineno = 1, debug = false)
@@ -842,7 +132,7 @@ def on_error( t, v, values)
 end
 
 
-
+__END__
 
 
 
@@ -1517,7 +807,7 @@ racc_reduce_table = [
   3, 189, :_reduce_none,
   3, 189, :_reduce_none,
   3, 189, :_reduce_none,
-  1, 180, :_reduce_none,
+  1, 180, :_reduce_191,
   3, 190, :_reduce_none,
   3, 190, :_reduce_none,
   3, 190, :_reduce_none,
@@ -2089,7 +1379,7 @@ module_eval(<<'.,.,', 'parser.y', 36)
                                                          ) do |archetype|
       archetype.original_language = language
     end
-    @@logger.debug("#{__FILE__}:#{__LINE__}: archetype = #{archetype} at #{@filename}:#{@lineno}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}: archetype = #{archetype.to_yaml} at #{@filename}:#{@lineno}")
     result = archetype
   
     result
@@ -2773,14 +2063,13 @@ module_eval(<<'.,.,', 'parser.y', 526)
 
 module_eval(<<'.,.,', 'parser.y', 531)
   def _reduce_103(val, _values, result)
-        @@logger.debug("SYM_START_DBLOCK: #{val[0]} at #{@filename}:#{@lineno}")
-    result = val[0]
+        result = val[0]
   
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 537)
+module_eval(<<'.,.,', 'parser.y', 536)
   def _reduce_104(val, _values, result)
         result = Array[val[0]]
   
@@ -2788,7 +2077,7 @@ module_eval(<<'.,.,', 'parser.y', 537)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 541)
+module_eval(<<'.,.,', 'parser.y', 540)
   def _reduce_105(val, _values, result)
         result = (val[0] << val[1])
   
@@ -2796,16 +2085,16 @@ module_eval(<<'.,.,', 'parser.y', 541)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 546)
+module_eval(<<'.,.,', 'parser.y', 545)
   def _reduce_106(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}: keyed_object = #{val[0]} at #{@filename}:#{@lineno}")
-    result = {:object_key => val[0], :object_block => val[1]}
+    result = {:object_key => val[0], :object_block => val[2]}
   
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 552)
+module_eval(<<'.,.,', 'parser.y', 551)
   def _reduce_107(val, _values, result)
         @@logger.debug("object_key: [#{val[1]}] at #{@filename}:#{@lineno}")
     result = val[1]
@@ -2814,7 +2103,7 @@ module_eval(<<'.,.,', 'parser.y', 552)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 558)
+module_eval(<<'.,.,', 'parser.y', 557)
   def _reduce_108(val, _values, result)
         result = {:untyped_single_attr_object_block => val[0]}
   
@@ -2822,7 +2111,7 @@ module_eval(<<'.,.,', 'parser.y', 558)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 562)
+module_eval(<<'.,.,', 'parser.y', 561)
   def _reduce_109(val, _values, result)
         result = {:type_identifier => val[0], :untyped_single_attr_object_block => val[1]}
   
@@ -2830,7 +2119,7 @@ module_eval(<<'.,.,', 'parser.y', 562)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 567)
+module_eval(<<'.,.,', 'parser.y', 566)
   def _reduce_110(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}: single_attr_object_complex_head = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:single_attr_object_complex_head => val[0]}
@@ -2839,7 +2128,7 @@ module_eval(<<'.,.,', 'parser.y', 567)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 572)
+module_eval(<<'.,.,', 'parser.y', 571)
   def _reduce_111(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}: attr_vals = #{val[1]} at #{@filename}:#{@lineno}")
     result = {:single_attr_object_complex_head => val[0], :attr_vals => val[1]}
@@ -2850,7 +2139,7 @@ module_eval(<<'.,.,', 'parser.y', 572)
 
 # reduce 112 omitted
 
-module_eval(<<'.,.,', 'parser.y', 578)
+module_eval(<<'.,.,', 'parser.y', 577)
   def _reduce_113(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}: untyped_primitive_object_block = #{val[0]} at #{@filename}:#{@lineno}")
     result = {:untyped_primitive_object_block => val[0]}
@@ -2859,7 +2148,7 @@ module_eval(<<'.,.,', 'parser.y', 578)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 583)
+module_eval(<<'.,.,', 'parser.y', 582)
   def _reduce_114(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}: type_identifier = #{val[0]}, untyped_primitive_object_block = #{val[1]} at #{@filename}:#{@lineno}")
     result = {:type_identifier => val[0], :untyped_primitive_object_block => val[1]}
@@ -2868,7 +2157,7 @@ module_eval(<<'.,.,', 'parser.y', 583)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 588)
+module_eval(<<'.,.,', 'parser.y', 587)
   def _reduce_115(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}: primitive_object_block = <#{val[1]}> at #{@filename}:#{@lineno}")
     result = val[1]
@@ -2877,7 +2166,7 @@ module_eval(<<'.,.,', 'parser.y', 588)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 593)
+module_eval(<<'.,.,', 'parser.y', 592)
   def _reduce_116(val, _values, result)
         result = val[0]
   
@@ -2885,7 +2174,7 @@ module_eval(<<'.,.,', 'parser.y', 593)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 597)
+module_eval(<<'.,.,', 'parser.y', 596)
   def _reduce_117(val, _values, result)
         result = val[0]
   
@@ -2893,7 +2182,7 @@ module_eval(<<'.,.,', 'parser.y', 597)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 601)
+module_eval(<<'.,.,', 'parser.y', 600)
   def _reduce_118(val, _values, result)
         result = val[0]
   
@@ -2901,7 +2190,7 @@ module_eval(<<'.,.,', 'parser.y', 601)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 605)
+module_eval(<<'.,.,', 'parser.y', 604)
   def _reduce_119(val, _values, result)
         result = val[0]
   
@@ -2909,7 +2198,7 @@ module_eval(<<'.,.,', 'parser.y', 605)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 609)
+module_eval(<<'.,.,', 'parser.y', 608)
   def _reduce_120(val, _values, result)
         result = val[0]
   
@@ -2917,7 +2206,7 @@ module_eval(<<'.,.,', 'parser.y', 609)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 613)
+module_eval(<<'.,.,', 'parser.y', 612)
   def _reduce_121(val, _values, result)
         @@logger.debug("string_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2926,7 +2215,7 @@ module_eval(<<'.,.,', 'parser.y', 613)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 618)
+module_eval(<<'.,.,', 'parser.y', 617)
   def _reduce_122(val, _values, result)
         @@logger.debug("integer_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2935,7 +2224,7 @@ module_eval(<<'.,.,', 'parser.y', 618)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 623)
+module_eval(<<'.,.,', 'parser.y', 622)
   def _reduce_123(val, _values, result)
         @@logger.debug("real_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2944,7 +2233,7 @@ module_eval(<<'.,.,', 'parser.y', 623)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 628)
+module_eval(<<'.,.,', 'parser.y', 627)
   def _reduce_124(val, _values, result)
         @@logger.debug("boolean_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2953,7 +2242,7 @@ module_eval(<<'.,.,', 'parser.y', 628)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 633)
+module_eval(<<'.,.,', 'parser.y', 632)
   def _reduce_125(val, _values, result)
         @@logger.debug("character_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2962,7 +2251,7 @@ module_eval(<<'.,.,', 'parser.y', 633)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 638)
+module_eval(<<'.,.,', 'parser.y', 637)
   def _reduce_126(val, _values, result)
         @@logger.debug("date_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2971,7 +2260,7 @@ module_eval(<<'.,.,', 'parser.y', 638)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 643)
+module_eval(<<'.,.,', 'parser.y', 642)
   def _reduce_127(val, _values, result)
         @@logger.debug("time_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2980,7 +2269,7 @@ module_eval(<<'.,.,', 'parser.y', 643)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 648)
+module_eval(<<'.,.,', 'parser.y', 647)
   def _reduce_128(val, _values, result)
         @@logger.debug("date_time_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2989,7 +2278,7 @@ module_eval(<<'.,.,', 'parser.y', 648)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 653)
+module_eval(<<'.,.,', 'parser.y', 652)
   def _reduce_129(val, _values, result)
         @@logger.debug("duration_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -2998,7 +2287,7 @@ module_eval(<<'.,.,', 'parser.y', 653)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 658)
+module_eval(<<'.,.,', 'parser.y', 657)
   def _reduce_130(val, _values, result)
         @@logger.debug("uri_value: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3037,7 +2326,7 @@ module_eval(<<'.,.,', 'parser.y', 658)
 
 # reduce 145 omitted
 
-module_eval(<<'.,.,', 'parser.y', 681)
+module_eval(<<'.,.,', 'parser.y', 680)
   def _reduce_146(val, _values, result)
         @@logger.debug("V_TYPE_IDENTIFIER: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3046,7 +2335,7 @@ module_eval(<<'.,.,', 'parser.y', 681)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 686)
+module_eval(<<'.,.,', 'parser.y', 685)
   def _reduce_147(val, _values, result)
         @@logger.debug("V_GENERIC_TYPE_IDENTIFIER: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3055,7 +2344,7 @@ module_eval(<<'.,.,', 'parser.y', 686)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 692)
+module_eval(<<'.,.,', 'parser.y', 691)
   def _reduce_148(val, _values, result)
         @@logger.debug("V_STRING: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3070,7 +2359,7 @@ module_eval(<<'.,.,', 'parser.y', 692)
 
 # reduce 151 omitted
 
-module_eval(<<'.,.,', 'parser.y', 702)
+module_eval(<<'.,.,', 'parser.y', 701)
   def _reduce_152(val, _values, result)
         begin
       integer = Integer(val[0])
@@ -3083,7 +2372,7 @@ module_eval(<<'.,.,', 'parser.y', 702)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 711)
+module_eval(<<'.,.,', 'parser.y', 710)
   def _reduce_153(val, _values, result)
         begin
       integer = Integer(val[0])
@@ -3096,7 +2385,7 @@ module_eval(<<'.,.,', 'parser.y', 711)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 720)
+module_eval(<<'.,.,', 'parser.y', 719)
   def _reduce_154(val, _values, result)
         begin
       integer = Integer(val[0])
@@ -3133,7 +2422,7 @@ module_eval(<<'.,.,', 'parser.y', 720)
 
 # reduce 166 omitted
 
-module_eval(<<'.,.,', 'parser.y', 746)
+module_eval(<<'.,.,', 'parser.y', 745)
   def _reduce_167(val, _values, result)
         begin
       real = Float(val[0])
@@ -3146,7 +2435,7 @@ module_eval(<<'.,.,', 'parser.y', 746)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 755)
+module_eval(<<'.,.,', 'parser.y', 754)
   def _reduce_168(val, _values, result)
         begin
       real = Float(val[1])
@@ -3159,7 +2448,7 @@ module_eval(<<'.,.,', 'parser.y', 755)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 764)
+module_eval(<<'.,.,', 'parser.y', 763)
   def _reduce_169(val, _values, result)
         begin
       real = Float(val[1])
@@ -3196,7 +2485,7 @@ module_eval(<<'.,.,', 'parser.y', 764)
 
 # reduce 181 omitted
 
-module_eval(<<'.,.,', 'parser.y', 789)
+module_eval(<<'.,.,', 'parser.y', 788)
   def _reduce_182(val, _values, result)
         result = true
   
@@ -3204,7 +2493,7 @@ module_eval(<<'.,.,', 'parser.y', 789)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 793)
+module_eval(<<'.,.,', 'parser.y', 792)
   def _reduce_183(val, _values, result)
         result = false
   
@@ -3226,7 +2515,13 @@ module_eval(<<'.,.,', 'parser.y', 793)
 
 # reduce 190 omitted
 
-# reduce 191 omitted
+module_eval(<<'.,.,', 'parser.y', 807)
+  def _reduce_191(val, _values, result)
+        result = val[0]
+  
+    result
+  end
+.,.,
 
 # reduce 192 omitted
 
@@ -3304,7 +2599,7 @@ module_eval(<<'.,.,', 'parser.y', 793)
 
 # reduce 229 omitted
 
-module_eval(<<'.,.,', 'parser.y', 856)
+module_eval(<<'.,.,', 'parser.y', 858)
   def _reduce_230(val, _values, result)
         @@logger.debug("V_ISO8601_DURATION: #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3337,7 +2632,7 @@ module_eval(<<'.,.,', 'parser.y', 856)
 
 # reduce 242 omitted
 
-module_eval(<<'.,.,', 'parser.y', 876)
+module_eval(<<'.,.,', 'parser.y', 878)
   def _reduce_243(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}: V_QUALIFIED_TERM_CODE_REF = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3352,7 +2647,7 @@ module_eval(<<'.,.,', 'parser.y', 876)
 
 # reduce 246 omitted
 
-module_eval(<<'.,.,', 'parser.y', 886)
+module_eval(<<'.,.,', 'parser.y', 888)
   def _reduce_247(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}: V_URI = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
@@ -3441,7 +2736,7 @@ module_eval(<<'.,.,', 'parser.y', 886)
 
 # reduce 287 omitted
 
-module_eval(<<'.,.,', 'parser.y', 956)
+module_eval(<<'.,.,', 'parser.y', 958)
   def _reduce_288(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
   
@@ -3449,7 +2744,7 @@ module_eval(<<'.,.,', 'parser.y', 956)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 960)
+module_eval(<<'.,.,', 'parser.y', 962)
   def _reduce_289(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
   
@@ -3457,7 +2752,7 @@ module_eval(<<'.,.,', 'parser.y', 960)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 971)
+module_eval(<<'.,.,', 'parser.y', 973)
   def _reduce_290(val, _values, result)
         result = Range.new(1,1)
   
@@ -3465,7 +2760,7 @@ module_eval(<<'.,.,', 'parser.y', 971)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 975)
+module_eval(<<'.,.,', 'parser.y', 977)
   def _reduce_291(val, _values, result)
         result = val[3]
   
@@ -3473,7 +2768,7 @@ module_eval(<<'.,.,', 'parser.y', 975)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 980)
+module_eval(<<'.,.,', 'parser.y', 982)
   def _reduce_292(val, _values, result)
         begin
       integer = Integer(val[0])
@@ -3486,7 +2781,7 @@ module_eval(<<'.,.,', 'parser.y', 980)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 989)
+module_eval(<<'.,.,', 'parser.y', 991)
   def _reduce_293(val, _values, result)
         begin
       from_integer = Integer(val[0])
@@ -3500,7 +2795,7 @@ module_eval(<<'.,.,', 'parser.y', 989)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1000)
+module_eval(<<'.,.,', 'parser.y', 1002)
   def _reduce_294(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::CARDINALITY.new
   
@@ -3524,7 +2819,7 @@ module_eval(<<'.,.,', 'parser.y', 1000)
 
 # reduce 302 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1014)
+module_eval(<<'.,.,', 'parser.y', 1016)
   def _reduce_303(val, _values, result)
         result = val[0]
   
@@ -3532,7 +2827,7 @@ module_eval(<<'.,.,', 'parser.y', 1014)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1018)
+module_eval(<<'.,.,', 'parser.y', 1020)
   def _reduce_304(val, _values, result)
         result = val[0]
   
@@ -3542,7 +2837,7 @@ module_eval(<<'.,.,', 'parser.y', 1018)
 
 # reduce 305 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1025)
+module_eval(<<'.,.,', 'parser.y', 1027)
   def _reduce_306(val, _values, result)
         result = val[3]
   
@@ -3642,7 +2937,7 @@ module_eval(<<'.,.,', 'parser.y', 1025)
 
 # reduce 352 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1095)
+module_eval(<<'.,.,', 'parser.y', 1097)
   def _reduce_353(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => true)
   
@@ -3650,7 +2945,7 @@ module_eval(<<'.,.,', 'parser.y', 1095)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1099)
+module_eval(<<'.,.,', 'parser.y', 1101)
   def _reduce_354(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => false)
   
@@ -3658,7 +2953,7 @@ module_eval(<<'.,.,', 'parser.y', 1099)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1103)
+module_eval(<<'.,.,', 'parser.y', 1105)
   def _reduce_355(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => true,:false_valid => false)
   
@@ -3666,7 +2961,7 @@ module_eval(<<'.,.,', 'parser.y', 1103)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1107)
+module_eval(<<'.,.,', 'parser.y', 1109)
   def _reduce_356(val, _values, result)
         result = OpenEHR::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => false,:false_valid => true)
   
@@ -3674,7 +2969,7 @@ module_eval(<<'.,.,', 'parser.y', 1107)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1112)
+module_eval(<<'.,.,', 'parser.y', 1114)
   def _reduce_357(val, _values, result)
         result = val[0]
   
@@ -3682,7 +2977,7 @@ module_eval(<<'.,.,', 'parser.y', 1112)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1116)
+module_eval(<<'.,.,', 'parser.y', 1118)
   def _reduce_358(val, _values, result)
         raise 'Not implemented yet'
   
@@ -3690,7 +2985,7 @@ module_eval(<<'.,.,', 'parser.y', 1116)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1120)
+module_eval(<<'.,.,', 'parser.y', 1122)
   def _reduce_359(val, _values, result)
         raise 'Not implemented yet'
   
@@ -3708,7 +3003,7 @@ module_eval(<<'.,.,', 'parser.y', 1120)
 
 # reduce 364 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1132)
+module_eval(<<'.,.,', 'parser.y', 1134)
   def _reduce_365(val, _values, result)
         @in_interval = false
     @@logger.debug("#{__FILE__}:#{__LINE__}, #{val[0]}|#{val[2]} at #{@filename}") 
@@ -3717,7 +3012,7 @@ module_eval(<<'.,.,', 'parser.y', 1132)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1139)
+module_eval(<<'.,.,', 'parser.y', 1141)
   def _reduce_366(val, _values, result)
           result = val[0]
   
@@ -3725,7 +3020,7 @@ module_eval(<<'.,.,', 'parser.y', 1139)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1143)
+module_eval(<<'.,.,', 'parser.y', 1145)
   def _reduce_367(val, _values, result)
           result = val[0]
   
@@ -3733,7 +3028,7 @@ module_eval(<<'.,.,', 'parser.y', 1143)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1149)
+module_eval(<<'.,.,', 'parser.y', 1151)
   def _reduce_368(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}, START_TERM_CODE_CONSTRAINT = #{val[0]} at #{@filename}")
     @@logger.debug("#{__FILE__}:#{__LINE__}, term_code_body = #{val[1]}")
@@ -3750,7 +3045,7 @@ module_eval(<<'.,.,', 'parser.y', 1149)
 
 # reduce 371 omitted
 
-module_eval(<<'.,.,', 'parser.y', 1165)
+module_eval(<<'.,.,', 'parser.y', 1167)
   def _reduce_372(val, _values, result)
           result = val[0]
   
@@ -3758,7 +3053,7 @@ module_eval(<<'.,.,', 'parser.y', 1165)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1170)
+module_eval(<<'.,.,', 'parser.y', 1172)
   def _reduce_373(val, _values, result)
           result = val[0]
   
@@ -3766,7 +3061,7 @@ module_eval(<<'.,.,', 'parser.y', 1170)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1174)
+module_eval(<<'.,.,', 'parser.y', 1176)
   def _reduce_374(val, _values, result)
         @@logger.debug("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}")
       result = val[0]
@@ -3775,7 +3070,7 @@ module_eval(<<'.,.,', 'parser.y', 1174)
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 1185)
+module_eval(<<'.,.,', 'parser.y', 1187)
   def _reduce_375(val, _values, result)
         result = val[0]
   
