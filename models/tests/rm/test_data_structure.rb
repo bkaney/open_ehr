@@ -2,12 +2,9 @@ require 'test/unit'
 require 'set'
 require 'rm'
 
-<<<<<<< .working
-include OpenEHR::RM::Data_Structures
-=======
 include OpenEHR::RM::Data_Structures
 include OpenEHR::RM::Data_Structures::Item_Structure
->>>>>>> .merge-right.r168
+
 
 class RmDataStructureTest < Test::Unit::TestCase
   def setup

@@ -12,20 +12,6 @@ end
 
 class RM_Support_Identification_Test < Test::Unit::TestCase
   def setup
-<<<<<<< .working
-    assert_nothing_raised(Exception){@object_id = OpenEHR::RM::Support::Identification::Object_ID.new("0.0.3")}
-    assert_nothing_raised(Exception){@object_ref = OpenEHR::RM::Support::Identification::Object_Ref.new('local', 'ANY', @object_id)}
-    assert_nothing_raised(Exception){@archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new('openEHR-EHR-SECTION.physical_examination-prenatal.v2')}
-    assert_nothing_raised(Exception){@terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('ICD10(2003)')}
-    assert_nothing_raised(Exception){@generic_id = OpenEHR::RM::Support::Identification::Generic_ID.new("0.0.3", "openehr")}
-    assert_nothing_raised(Exception){@uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.3')}
-    assert_nothing_raised(Exception){@hier_object_id = OpenEHR::RM::Support::Identification::Hier_Object_ID.new('0.0.4')}
-    assert_nothing_raised(Exception){@locatable_ref = OpenEHR::RM::Support::Identification::Locatable_Ref.new('unknown', 'PERSON', @uid_based_id, 'data/event[at0001, standing]')}
-    assert_nothing_raised(Exception){@party_ref = OpenEHR::RM::Support::Identification::Party_Ref.new('unknown', 'ORGANISATION', @object_id)}
-    assert_nothing_raised(Exception){@access_group_ref = OpenEHR::RM::Support::Identification::Access_Group_Ref.new('unknown', 'ACCESS_GROUP', @object_id)}
-    assert_nothing_raised(Exception){@version_tree_id = OpenEHR::RM::Support::Identification::Version_Tree_ID.new('1.2.3')}
-    assert_nothing_raised(Exception){@object_version_id = OpenEHR::RM::Support::Identification::Object_Version_ID.new('ABC::DEF::1.2.3')}
-=======
     assert_nothing_raised(Exception){@object_id = OpenEhr::RM::Support::Identification::ObjectId.new("0.0.3")}
     assert_nothing_raised(Exception){@object_ref = OpenEhr::RM::Support::Identification::ObjectRef.new('local', 'ANY', @object_id)}
     assert_nothing_raised(Exception){@archetype_id = OpenEhr::RM::Support::Identification::ArchetypeId.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")}
@@ -38,7 +24,6 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@access_group_ref = OpenEhr::RM::Support::Identification::AccessGroupRef.new('unknown', 'ACCESS_GROUP', @object_id)}
     assert_nothing_raised(Exception){@version_tree_id = OpenEhr::RM::Support::Identification::VersionTreeId.new('1.2.3')}
     assert_nothing_raised(Exception){@object_version_id = OpenEhr::RM::Support::Identification::ObjectVersionId.new('ABC::DEF::1.2.3')}
->>>>>>> .merge-right.r168
   end
   
   def test_init
@@ -99,16 +84,6 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
   end
 
   def test_archetype_id
-<<<<<<< .working
-    assert_equal 'openEHR-EHR-SECTION.physical_examination-prenatal.v2', @archetype_id.value
-    assert_equal 'openEHR-EHR-SECTION', @archetype_id.qualified_rm_entity
-    assert_equal 'openEHR', @archetype_id.rm_originator
-    assert_equal 'EHR', @archetype_id.rm_name
-    assert_equal 'SECTION', @archetype_id.rm_entity
-    assert_equal 'physical_examination', @archetype_id.concept_name
-    assert_equal 'prenatal', @archetype_id.specialisation
-    assert_equal 'v2', @archetype_id.version_id
-=======
     assert_equal "0.0.5", @archetype_id.value
     assert_nothing_raised(Exception){@archetype_id.value = "0.0.6"}
     assert_equal "0.0.6", @archetype_id.value
@@ -165,7 +140,6 @@ class RM_Support_Identification_Test < Test::Unit::TestCase
     assert_equal "0.0.7", @archetype_id.version_id
     assert_raise(ArgumentError){@archetype_id.version_id = nil}
     assert_raise(ArgumentError){@archetype_id.version_id = ""}
->>>>>>> .merge-right.r168
   end
 
   def test_terminology_id
