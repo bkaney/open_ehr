@@ -1,4 +1,4 @@
-module OpenEhr
+module OpenEHR
   module RM
     module Support
       module Measurement
