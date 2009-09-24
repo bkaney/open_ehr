@@ -1,5 +1,5 @@
 
-module OpenEHR
+module OpenEhr
   module AM
     module Archetype
       module Constraint_Model

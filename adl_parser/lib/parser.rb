@@ -19,7 +19,7 @@ $DEBUG = false
 
 
 
-module OpenEHR
+module OpenEhr
   module ADL
     class Parser < Racc::Parser
 

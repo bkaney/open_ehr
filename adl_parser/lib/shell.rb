@@ -2,7 +2,7 @@ $:.unshift File.join(File.dirname(__FILE__))
 require 'validator.rb'
 require 'stringio'
 
-module OpenEHR
+module OpenEhr
   module Application
     class Shell
       def run

@@ -5,23 +5,23 @@ require 'tests/rm/quantity/ts_date_time'
 
 class RM_Data_Types_Basic_Test < Test::Unit::TestCase
   def setup
-    assert_nothing_raised(Exception){@dv_boolean = OpenEHR::RM::Data_Types::Basic::DV_Boolean.new("TRUE")}
-    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR(1.0.2)')
-    @code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('PROPOSED', @terminology_id)
-    @dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("Blood examination", @code_phrase)
-    assert_nothing_raised(Exception){@dv_state = OpenEHR::RM::Data_Types::Basic::DV_State.new(@dv_coded_text, false)}
-    assert_nothing_raised(Exception){@dv_identifier = OpenEHR::RM::Data_Types::Basic::DV_Identifier.new("Ruby Hospital","0123456-0", "Information office", "personal id")}
+    assert_nothing_raised(Exception){@dv_boolean = OpenEhr::RM::DataTypes::Basic::DvBoolean.new("TRUE")}
+    @terminology_id = OpenEhr::RM::Support::Identification::TerminologyId.new('openEHR(1.0.2)')
+    @code_phrase = OpenEhr::RM::DataTypes::Text::CodePhrase.new('PROPOSED', @terminology_id)
+    @dv_coded_text = OpenEhr::RM::DataTypes::Text::DvCodedText.new("Blood examination", @code_phrase)
+    assert_nothing_raised(Exception){@dv_state = OpenEhr::RM::DataTypes::Basic::DvState.new(@dv_coded_text, false)}
+    assert_nothing_raised(Exception){@dv_identifier = OpenEhr::RM::DataTypes::Basic::DvIdentifier.new("Ruby Hospital","0123456-0", "Information office", "personal id")}
   end
 
   def test_init
-    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_Boolean, @dv_boolean
-    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_State, @dv_state
-    assert_instance_of OpenEHR::RM::Data_Types::Basic::DV_Identifier, @dv_identifier
+    assert_instance_of OpenEhr::RM::DataTypes::Basic::DvBoolean, @dv_boolean
+    assert_instance_of OpenEhr::RM::DataTypes::Basic::DvState, @dv_state
+    assert_instance_of OpenEhr::RM::DataTypes::Basic::DvIdentifier, @dv_identifier
   end
 
   def test_constant
-    assert_equal("\r", OpenEHR::RM::Data_Types::Basic::Data_Value::CR)
-    assert_equal("\n", OpenEHR::RM::Data_Types::Basic::Data_Value::LF)
+    assert_equal("\r", OpenEhr::RM::DataTypes::Basic::DataValue::CR)
+    assert_equal("\n", OpenEhr::RM::DataTypes::Basic::DataValue::LF)
   end
 
   def test_dv_boolean
@@ -30,7 +30,7 @@ class RM_Data_Types_Basic_Test < Test::Unit::TestCase
     assert !@dv_boolean.value?
     # inv: Value_exists
     assert_raise(ArgumentError){@dv_boolean.value=nil}
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Basic::DV_Boolean.new(nil)}
+    assert_raise(ArgumentError){OpenEhr::RM::DataTypes::Basic::DvBoolean.new(nil)}
   end
 
   def test_dv_state
@@ -43,7 +43,7 @@ class RM_Data_Types_Basic_Test < Test::Unit::TestCase
     assert_nothing_raised(Exception){@dv_state.is_terminal = true}
     assert_equal 'COMPLETED', @dv_state.value.defining_code.code_string
     assert @dv_state.is_terminal?
-    assert_raise(ArgumentError) {OpenEHR::RM::Data_Types::Basic::DV_State.new(nil,nil)}
+    assert_raise(ArgumentError) {OpenEhr::RM::DataTypes::Basic::DvState.new(nil,nil)}
     assert_raise(ArgumentError) {@dv_state.value=nil}
     assert_raise(ArgumentError) {@dv_state.is_terminal=nil}
   end
@@ -61,20 +61,20 @@ class RM_Data_Types_Basic_Test < Test::Unit::TestCase
     assert_equal("Security office", @dv_identifier.issuer)
     @dv_identifier.type = "test id"
     assert_equal("test id", @dv_identifier.type)
-    assert_raise(ArgumentError) {OpenEHR::RM::Data_Types::Basic::DV_Identifier.new(nil, nil, nil, nil)}
+    assert_raise(ArgumentError) {OpenEhr::RM::DataTypes::Basic::DvIdentifier.new(nil, nil, nil, nil)}
   end
 end
 
 # fixed
 class RM_Data_Types_URI_Test < Test::Unit::TestCase
   def setup
-    @dv_uri = OpenEHR::RM::Data_Types::URI::DV_URI.new("http://www.openehr.jp/changeset/test?cmd=93#file0")
-    @dv_ehr_uri = OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://1234567/87284370-2D4B-4e3d-A3F3-F303D2F4F34B@2005-08-02T04:30:00")
+    @dv_uri = OpenEhr::RM::DataTypes::Uri::DvUri.new("http://www.openehr.jp/changeset/test?cmd=93#file0")
+    @dv_ehr_uri = OpenEhr::RM::DataTypes::Uri::DvEhrUri.new("ehr://1234567/87284370-2D4B-4e3d-A3F3-F303D2F4F34B@2005-08-02T04:30:00")
   end
 
   def test_init
-    assert_instance_of OpenEHR::RM::Data_Types::URI::DV_URI, @dv_uri
-    assert_instance_of OpenEHR::RM::Data_Types::URI::DV_EHR_URI, @dv_ehr_uri    
+    assert_instance_of OpenEhr::RM::DataTypes::Uri::DvUri, @dv_uri
+    assert_instance_of OpenEhr::RM::DataTypes::Uri::DvEhrUri, @dv_ehr_uri
   end
 
   def test_dv_uri
@@ -97,20 +97,20 @@ end
 
 class RM_Data_Types_Text_Test < Test::Unit::TestCase
   def setup
-    assert_nothing_raised(Exception){@dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new("valid value")}
-    @terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('ICD10')
+    assert_nothing_raised(Exception){@dv_text = OpenEhr::RM::DataTypes::Text::DvText.new("valid value")}
+    @terminology_id = OpenEhr::RM::Support::Identification::TerminologyId.new('ICD10')
     
-    assert_nothing_raised(Exception){@code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('C92.0', @terminology_id)}
-    assert_nothing_raised(Exception){@dv_coded_text = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new("Acute Myeloid Leukemia", @code_phrase)}
-    @dv_paragraph = OpenEHR::RM::Data_Types::Text::DV_Paragraph.new(Set.new(["test1", "test2"]))
-    @term_mapping = OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text,"TEST")
+    assert_nothing_raised(Exception){@code_phrase = OpenEhr::RM::DataTypes::Text::CodePhrase.new('C92.0', @terminology_id)}
+    assert_nothing_raised(Exception){@dv_coded_text = OpenEhr::RM::DataTypes::Text::DvCodedText.new("Acute Myeloid Leukemia", @code_phrase)}
+    @dv_paragraph = OpenEhr::RM::DataTypes::Text::DvParagraph.new(Set.new(["test1", "test2"]))
+    @term_mapping = OpenEhr::RM::DataTypes::Text::TermMapping.new('=',@dv_coded_text,"TEST")
   end
 
   def test_init
-    assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Text, @dv_text
-    assert_instance_of OpenEHR::RM::Data_Types::Text::Code_Phrase, @code_phrase
-    assert_instance_of OpenEHR::RM::Data_Types::Text::DV_Coded_Text, @dv_coded_text
-    assert_instance_of OpenEHR::RM::Data_Types::Text::Term_Mapping, @term_mapping
+    assert_instance_of OpenEhr::RM::DataTypes::Text::DvText, @dv_text
+    assert_instance_of OpenEhr::RM::DataTypes::Text::CodePhrase, @code_phrase
+    assert_instance_of OpenEhr::RM::DataTypes::Text::DvCodedText, @dv_coded_text
+    assert_instance_of OpenEhr::RM::DataTypes::Text::TermMapping, @term_mapping
   end
 
   def test_dv_text
@@ -146,64 +146,64 @@ class RM_Data_Types_Text_Test < Test::Unit::TestCase
 
   def test_term_mapping
     assert_equal '=', @term_mapping.match
-    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('>')
-    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('=')
-    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('<')
-    assert OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('?')
-    assert !OpenEHR::RM::Data_Types::Text::Term_Mapping.is_valid_mach_code?('!')
+    assert OpenEhr::RM::DataTypes::Text::TermMapping.is_valid_mach_code?('>')
+    assert OpenEhr::RM::DataTypes::Text::TermMapping.is_valid_mach_code?('=')
+    assert OpenEhr::RM::DataTypes::Text::TermMapping.is_valid_mach_code?('<')
+    assert OpenEhr::RM::DataTypes::Text::TermMapping.is_valid_mach_code?('?')
+    assert !OpenEhr::RM::DataTypes::Text::TermMapping.is_valid_mach_code?('!')
     assert_equal @dv_coded_text, @term_mapping.purpose
     assert_equal "TEST", @term_mapping.target
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new}
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('!',@dv_coded_text, "invalid case")}
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',nil , "invalid case")}
-    assert_raise(ArgumentError){OpenEHR::RM::Data_Types::Text::Term_Mapping.new('=',@dv_coded_text, nil)}
+    assert_raise(ArgumentError){OpenEhr::RM::DataTypes::Text::TermMapping.new}
+    assert_raise(ArgumentError){OpenEhr::RM::DataTypes::Text::TermMapping.new('!',@dv_coded_text, "invalid case")}
+    assert_raise(ArgumentError){OpenEhr::RM::DataTypes::Text::TermMapping.new('=',nil , "invalid case")}
+    assert_raise(ArgumentError){OpenEhr::RM::DataTypes::Text::TermMapping.new('=',@dv_coded_text, nil)}
   end
 end
 
 class QuantityTest < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){
-      @dv_ordered = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new }
+      @dv_ordered = OpenEhr::RM::DataTypes::Quantity::DvOrdered.new }
     assert_nothing_raised(Exception){
-      terminology = OpenEHR::RM::Support::Identification::Terminology_ID.new('urine')
-      code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('protein',terminology)
-      urinary_protein = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new('+', code_phrase)
-      @dv_ordinal1 = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(1, urinary_protein)
-      code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('protein',terminology)
-      urinary_protein = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new('+++', code_phrase)
-      @dv_ordinal2 = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(3, urinary_protein)}
+      terminology = OpenEhr::RM::Support::Identification::TerminologyId.new('urine')
+      code_phrase = OpenEhr::RM::DataTypes::Text::CodePhrase.new('protein',terminology)
+      urinary_protein = OpenEhr::RM::DataTypes::Text::DvCodedText.new('+', code_phrase)
+      @dv_ordinal1 = OpenEhr::RM::DataTypes::Quantity::DvOrdinal.new(1, urinary_protein)
+      code_phrase = OpenEhr::RM::DataTypes::Text::CodePhrase.new('protein',terminology)
+      urinary_protein = OpenEhr::RM::DataTypes::Text::DvCodedText.new('+++', code_phrase)
+      @dv_ordinal2 = OpenEhr::RM::DataTypes::Quantity::DvOrdinal.new(3, urinary_protein)}
     assert_nothing_raised(Exception){
-      @dv_interval = OpenEHR::RM::Data_Types::Quantity::DV_Interval.new(@dv_ordinal1, @dv_ordinal2)}
-    meaning = OpenEHR::RM::Data_Types::Text::DV_Text.new('normal')
+      @dv_interval = OpenEhr::RM::DataTypes::Quantity::DvInterval.new(@dv_ordinal1, @dv_ordinal2)}
+    meaning = OpenEhr::RM::DataTypes::Text::DvText.new('normal')
     assert_nothing_raised(Exception){
-      @reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new(meaning, @dv_interval)}
+      @reference_range = OpenEhr::RM::DataTypes::Quantity::ReferenceRange.new(meaning, @dv_interval)}
     assert_nothing_raised(Exception){
-      @dv_quantified = OpenEHR::RM::Data_Types::Quantity::DV_Quantified.new(1,'=')}
+      @dv_quantified = OpenEhr::RM::DataTypes::Quantity::DvQuantified.new(1,'=')}
     assert_nothing_raised(Exception){
-      @dv_amount = OpenEHR::RM::Data_Types::Quantity::DV_Amount.new(2,'<')}
+      @dv_amount = OpenEhr::RM::DataTypes::Quantity::DvAmount.new(2,'<')}
     assert_nothing_raised(Exception){
-      @dv_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new(3, 'mg', '~')}
+      @dv_quantity = OpenEhr::RM::DataTypes::Quantity::DvQuantity.new(3, 'mg', '~')}
     assert_nothing_raised(Exception){
-      @dv_count = OpenEHR::RM::Data_Types::Quantity::DV_Count.new(1)}
+      @dv_count = OpenEhr::RM::DataTypes::Quantity::DvCount.new(1)}
     assert_nothing_raised(Exception){
-      @dv_proportion = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(2,3,0)}
+      @dv_proportion = OpenEhr::RM::DataTypes::Quantity::DvProportion.new(2,3,0)}
     assert_nothing_raised(Exception){
-      @dv_absolute_quantity = OpenEHR::RM::Data_Types::Quantity::DV_Absolute_Quantity.new(7,'=')}
+      @dv_absolute_quantity = OpenEhr::RM::DataTypes::Quantity::DvAbsoluteQuantity.new(7,'=')}
    end
 
    def test_init
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordered, @dv_ordered
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Interval, @dv_interval
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::Reference_Range, @reference_range
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordinal, @dv_ordinal1
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Ordinal, @dv_ordinal2
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantified, @dv_quantified
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Amount, @dv_amount
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Quantity, @dv_quantity
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Count, @dv_count
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Proportion, @dv_proportion
-     assert_instance_of OpenEHR::RM::Data_Types::Quantity::DV_Absolute_Quantity, @dv_absolute_quantity
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvOrdered, @dv_ordered
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvQuantified, @dv_quantified
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvInterval, @dv_interval
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::ReferenceRange, @reference_range
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvOrdinal, @dv_ordinal1
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvOrdinal, @dv_ordinal2
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvQuantified, @dv_quantified
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvAmount, @dv_amount
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvQuantity, @dv_quantity
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvCount, @dv_count
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvProportion, @dv_proportion
+     assert_instance_of OpenEhr::RM::DataTypes::Quantity::DvAbsoluteQuantity, @dv_absolute_quantity
   end
 
   def test_dv_ordered
@@ -213,13 +213,13 @@ class QuantityTest < Test::Unit::TestCase
     assert_nil @dv_ordered.other_refference_ranges
     assert @dv_ordered.is_simple?
     assert_raise(NotImplementedError){@dv_ordered<=>1}
-    openehr_terminology_id = OpenEHR::RM::Support::Identification::Terminology_ID.new('openEHR')
-    normal_code = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('N', openehr_terminology_id)
+    openehr_terminology_id = OpenEhr::RM::Support::Identification::TerminologyId.new('openEHR')
+    normal_code = OpenEhr::RM::DataTypes::Text::CodePhrase.new('N', openehr_terminology_id)
     assert_equal 'N', normal_code.code_string
     assert_nothing_raised(Exception){
       @dv_ordered.normal_status = normal_code }
     assert @dv_ordered.is_normal?
-    other = OpenEHR::RM::Data_Types::Quantity::DV_Ordered.new
+    other = OpenEhr::RM::DataTypes::Quantity::DvOrdered.new
     assert_raise(NotImplementedError){
       @dv_ordered.is_strictly_comparable_to?(other)}
   end
@@ -231,10 +231,10 @@ class QuantityTest < Test::Unit::TestCase
   def test_reference_range
     assert_equal 'normal', @reference_range.meaning.value
     assert_equal 1, @reference_range.range.lower.value
-    terminology = OpenEHR::RM::Support::Identification::Terminology_ID.new('urine')
-    code_phrase = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('protein',terminology)
-    urinary_protein = OpenEHR::RM::Data_Types::Text::DV_Coded_Text.new('++', code_phrase)
-    dv_ordinal = OpenEHR::RM::Data_Types::Quantity::DV_Ordinal.new(2, urinary_protein)
+    terminology = OpenEhr::RM::Support::Identification::TerminologyId.new('urine')
+    code_phrase = OpenEhr::RM::DataTypes::Text::CodePhrase.new('protein',terminology)
+    urinary_protein = OpenEhr::RM::DataTypes::Text::DvCodedText.new('++', code_phrase)
+    dv_ordinal = OpenEhr::RM::DataTypes::Quantity::DvOrdinal.new(2, urinary_protein)
     assert @reference_range.is_in_range?(dv_ordinal)
     dv_ordinal.value = 6
     assert !@reference_range.is_in_range?(dv_ordinal)
@@ -243,12 +243,12 @@ class QuantityTest < Test::Unit::TestCase
   def test_dv_quantified
     assert_equal 1, @dv_quantified.magnitude
     assert_equal '=', @dv_quantified.magnitude_status
-    assert !OpenEHR::RM::Data_Types::Quantity::DV_Quantified.valid_magnitude_status?('*')
-    assert OpenEHR::RM::Data_Types::Quantity::DV_Quantified.valid_magnitude_status?('>')
-    assert OpenEHR::RM::Data_Types::Quantity::DV_Quantified.valid_magnitude_status?('<')
-    assert OpenEHR::RM::Data_Types::Quantity::DV_Quantified.valid_magnitude_status?('>=')
-    assert OpenEHR::RM::Data_Types::Quantity::DV_Quantified.valid_magnitude_status?('<=')
-    assert OpenEHR::RM::Data_Types::Quantity::DV_Quantified.valid_magnitude_status?('~')
+    assert !OpenEhr::RM::DataTypes::Quantity::DvQuantified.valid_magnitude_status?('*')
+    assert OpenEhr::RM::DataTypes::Quantity::DvQuantified.valid_magnitude_status?('>')
+    assert OpenEhr::RM::DataTypes::Quantity::DvQuantified.valid_magnitude_status?('<')
+    assert OpenEhr::RM::DataTypes::Quantity::DvQuantified.valid_magnitude_status?('>=')
+    assert OpenEhr::RM::DataTypes::Quantity::DvQuantified.valid_magnitude_status?('<=')
+    assert OpenEhr::RM::DataTypes::Quantity::DvQuantified.valid_magnitude_status?('~')
     assert_nothing_raised(Exception){@dv_quantified.magnitude = 0}
     assert_equal 0, @dv_quantified.magnitude
     assert_nothing_raised(Exception){@dv_quantified.magnitude_status = nil}
@@ -288,8 +288,8 @@ class QuantityTest < Test::Unit::TestCase
     assert 4, @dv_ordinal1.value
     assert @dv_ordinal1 > @dv_ordinal2
     assert_raise(ArgumentError){@dv_ordinal1.limits = @reference_range}
-    meaning = OpenEHR::RM::Data_Types::Text::DV_Text.new('limits')
-    limit_reference_range = OpenEHR::RM::Data_Types::Quantity::Reference_Range.new(meaning, @dv_interval)
+    meaning = OpenEhr::RM::DataTypes::Text::DvText.new('limits')
+    limit_reference_range = OpenEhr::RM::DataTypes::Quantity::ReferenceRange.new(meaning, @dv_interval)
     assert_nothing_raised(Exception){@dv_ordinal1.limits = limit_reference_range}
     assert_equal 'limits', @dv_ordinal1.limits.meaning.value
   end
@@ -298,7 +298,7 @@ class QuantityTest < Test::Unit::TestCase
     assert_equal 3, @dv_quantity.magnitude
     assert_equal 'mg', @dv_quantity.units
     assert_equal '~', @dv_quantity.magnitude_status
-    dv_quantity2 = OpenEHR::RM::Data_Types::Quantity::DV_Quantity.new(4, 'mg', '~')
+    dv_quantity2 = OpenEhr::RM::DataTypes::Quantity::DvQuantity.new(4, 'mg', '~')
     assert_equal 'mg', dv_quantity2.units
     assert @dv_quantity.is_strictly_comparable_to?(dv_quantity2)
     assert_nothing_raised(Exception){@dv_quantity.precision = -1}
@@ -317,7 +317,7 @@ class QuantityTest < Test::Unit::TestCase
 
   def test_dv_count
     assert_equal 1, @dv_count.magnitude
-    dv_count2 = OpenEHR::RM::Data_Types::Quantity::DV_Count.new(2)
+    dv_count2 = OpenEhr::RM::DataTypes::Quantity::DvCount.new(2)
     dv_count3 = @dv_count + dv_count2
     assert 3, dv_count3.magnitude
     dv_count3 = dv_count2 - @dv_count
@@ -325,15 +325,15 @@ class QuantityTest < Test::Unit::TestCase
   end
 
   def test_proportion_kind
-    assert_equal 0, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_RATIO
-    assert_equal 1, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_UNITARY
-    assert_equal 2, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_PERCENT
-    assert_equal 3, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_FRACTION
-    assert_equal 4, OpenEHR::RM::Data_Types::Quantity::Proportion_Kind::PK_INTEGER_FRACTION
-    assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(0)
-    assert OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(4)
-    assert !OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(-1)
-    assert !OpenEHR::RM::Data_Types::Quantity::Proportion_Kind.valid_proportion_kind?(5)
+    assert_equal 0, OpenEhr::RM::DataTypes::Quantity::ProportionKind::PK_RATIO
+    assert_equal 1, OpenEhr::RM::DataTypes::Quantity::ProportionKind::PK_UNITARY
+    assert_equal 2, OpenEhr::RM::DataTypes::Quantity::ProportionKind::PK_PERCENT
+    assert_equal 3, OpenEhr::RM::DataTypes::Quantity::ProportionKind::PK_FRACTION
+    assert_equal 4, OpenEhr::RM::DataTypes::Quantity::ProportionKind::PK_INTEGER_FRACTION
+    assert OpenEhr::RM::DataTypes::Quantity::ProportionKind.valid_proportion_kind?(0)
+    assert OpenEhr::RM::DataTypes::Quantity::ProportionKind.valid_proportion_kind?(4)
+    assert !OpenEhr::RM::DataTypes::Quantity::ProportionKind.valid_proportion_kind?(-1)
+    assert !OpenEhr::RM::DataTypes::Quantity::ProportionKind.valid_proportion_kind?(5)
   end
 
   def test_dv_proportion
@@ -342,56 +342,56 @@ class QuantityTest < Test::Unit::TestCase
     assert_equal 0, @dv_proportion.type
     assert_equal 2.0/3.0, @dv_proportion.magnitude
     assert @dv_proportion.is_integral?
-    dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(1,3,0)
+    dv_proportion2 = OpenEhr::RM::DataTypes::Quantity::DvProportion.new(1,3,0)
     assert @dv_proportion.is_strictly_comparable_to?(dv_proportion2)
-    dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(1,3,4)
+    dv_proportion2 = OpenEhr::RM::DataTypes::Quantity::DvProportion.new(1,3,4)
     assert !@dv_proportion.is_strictly_comparable_to?(dv_proportion2)
     assert_raise(ArgumentError){
-      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(1.5,2.3,3)}
+      dv_proportion2 = OpenEhr::RM::DataTypes::Quantity::DvProportion.new(1.5,2.3,3)}
     assert_raise(ArgumentError){
-      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,10,1)}
+      dv_proportion2 = OpenEhr::RM::DataTypes::Quantity::DvProportion.new(10,10,1)}
     assert_nothing_raised(Exception){
-      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,1,1)}
+      dv_proportion2 = OpenEhr::RM::DataTypes::Quantity::DvProportion.new(10,1,1)}
     assert_raise(ArgumentError){
-      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,10,2)}
+      dv_proportion2 = OpenEhr::RM::DataTypes::Quantity::DvProportion.new(10,10,2)}
     assert_nothing_raised(Exception){
-      dv_proportion2 = OpenEHR::RM::Data_Types::Quantity::DV_Proportion.new(10,100,2)}
+      dv_proportion2 = OpenEhr::RM::DataTypes::Quantity::DvProportion.new(10,100,2)}
   end
 
 end
 
 class EncapsulatedTest < Test::Unit::TestCase
   def setup
-    charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('UTF-8','character-sets')
-    language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('ja', 'languages')
+    charset = OpenEhr::RM::DataTypes::Text::CodePhrase.new('UTF-8','character-sets')
+    language = OpenEhr::RM::DataTypes::Text::CodePhrase.new('ja', 'languages')
     assert_nothing_raised(Exception){
-      @dv_encapsulated = OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated.new(charset, language, 10)}
+      @dv_encapsulated = OpenEhr::RM::DataTypes::Encapsulated::DvEncapsulated.new(charset, language, 10)}
     assert_nothing_raised(Exception){
-      @dv_parsable = OpenEHR::RM::Data_Types::Encapsulated::DV_Parsable.new(charset, language, 10, 'XML','<TEST>test</TEST>')}
-    media_type = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('text/html', 'media-types')
-    uri = OpenEHR::RM::Data_Types::URI::DV_URI.new("http://www.openehr.jp/changeset/test?cmd=93#file0")
+      @dv_parsable = OpenEhr::RM::DataTypes::Encapsulated::DvParsable.new(charset, language, 10, 'XML','<TEST>test</TEST>')}
+    media_type = OpenEhr::RM::DataTypes::Text::CodePhrase.new('text/html', 'media-types')
+    uri = OpenEhr::RM::DataTypes::Uri::DvUri.new("http://www.openehr.jp/changeset/test?cmd=93#file0")
     assert_nothing_raised(Exception){
-      @dv_multimedia = OpenEHR::RM::Data_Types::Encapsulated::DV_Multimedia.new(charset, language, 10, media_type, uri)}
+      @dv_multimedia = OpenEhr::RM::DataTypes::Encapsulated::DvMultimedia.new(charset, language, 10, media_type, uri)}
   end
 
   def test_init
-    assert_instance_of OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated, @dv_encapsulated
-    assert_instance_of OpenEHR::RM::Data_Types::Encapsulated::DV_Parsable, @dv_parsable
-    assert_instance_of OpenEHR::RM::Data_Types::Encapsulated::DV_Multimedia, @dv_multimedia
+    assert_instance_of OpenEhr::RM::DataTypes::Encapsulated::DvEncapsulated, @dv_encapsulated
+    assert_instance_of OpenEhr::RM::DataTypes::Encapsulated::DvParsable, @dv_parsable
+    assert_instance_of OpenEhr::RM::DataTypes::Encapsulated::DvMultimedia, @dv_multimedia
   end
 
   def test_dv_encapsulated
     assert_equal 'UTF-8', @dv_encapsulated.charset.code_string
     assert_equal 'ja', @dv_encapsulated.language.code_string
     assert_equal 10, @dv_encapsulated.size
-    wrong_charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('USO8000', 'character-sets')
+    wrong_charset = OpenEhr::RM::DataTypes::Text::CodePhrase.new('USO8000', 'character-sets')
     assert_raise(ArgumentError){@dv_encapsulated.charset = wrong_charset}
-    charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('EUC-JP', 'character-sets')
+    charset = OpenEhr::RM::DataTypes::Text::CodePhrase.new('EUC-JP', 'character-sets')
     assert_nothing_raised(Exception){@dv_encapsulated.charset = charset}
     assert_equal 'EUC-JP', @dv_encapsulated.charset.code_string
-    wrong_language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('jpg', 'language')
+    wrong_language = OpenEhr::RM::DataTypes::Text::CodePhrase.new('jpg', 'language')
     assert_raise(ArgumentError){@dv_encapsulated.language = wrong_language}
-    language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('eng', 'language')
+    language = OpenEhr::RM::DataTypes::Text::CodePhrase.new('eng', 'language')
     assert_nothing_raised(Exception){@dv_encapsulated.language = language}
     assert_equal 'eng', @dv_encapsulated.language.code_string
     assert_raise(ArgumentError){@dv_encapsulated.size = -1}
@@ -428,20 +428,20 @@ end
 
 
 class TestDvTimeSpecification < Test::Unit::TestCase
-  include OpenEHR::RM::Data_Types::Time_Specification
-  include OpenEHR::RM::Data_Types::Encapsulated
+  include OpenEhr::RM::DataTypes::TimeSpecification
+  include OpenEhr::RM::DataTypes::Encapsulated
   def setup
-    charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('UTF-8','character-sets')
-    language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('ja', 'languages')
+    charset = OpenEhr::RM::DataTypes::Text::CodePhrase.new('UTF-8','character-sets')
+    language = OpenEhr::RM::DataTypes::Text::CodePhrase.new('ja', 'languages')
     assert_nothing_raised(Exception){
-      dv_parsable = DV_Parsable.new(charset, language, 10, 'XML','<TEST>test</TEST>')
-      @dv_time_specification = DV_Time_Specification.new(dv_parsable)}
+      dv_parsable = DvParsable.new(charset, language, 10, 'XML','<TEST>test</TEST>')
+      @dv_time_specification = DvTimeSpecification.new(dv_parsable)}
 #    assert_nothing_raised(Exception){
 #      @dv_periodic_time_specification = DV_Periodic_Time_Specification.new('[200004181100;200004181110]/(7d)@DWIST', charset, language, 10, 'HL7:PIVL')}
   end
 
   def test_init
-    assert_instance_of DV_Time_Specification, @dv_time_specification
+    assert_instance_of DvTimeSpecification, @dv_time_specification
   end
 
   def test_dv_time_specification

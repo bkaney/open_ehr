@@ -13,7 +13,7 @@
 $:.unshift File.join(File.dirname(__FILE__))
 require 'rm/common/resource.rb'
 #require 'rm/support/terminology/openehr_code_set_identifier.rb'
-module OpenEHR
+module OpenEhr
   module AM
     module Archetype
       autoload :ARCHETYPE, "am/archetype/archetype.rb"
@@ -37,7 +37,7 @@ module OpenEHR
     end # of Archetype
 
     module OpenEHR_Profile
-      module Data_Types
+      module DataTypes
         module Basic
           autoload :C_DV_STATE, "am/openehr_profile/data_types/basic.rb"
         end

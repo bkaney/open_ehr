@@ -10,7 +10,7 @@ require 'logger'
 require 'adl_scanner.rb'
 require 'adl_exception.rb'
 
-module OpenEHR
+module OpenEhr
 
   if $DEBUG
     LOG = Logger.new('log/adl_parser.log','daily')

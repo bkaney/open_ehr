@@ -2,8 +2,8 @@
 require 'date'
 require 'time'
 
-module OpenEHR
-  module Assumed_Library_Types
+module OpenEhr
+  module AssumedLibraryTypes
     class Any < Object
       
     end # of Any

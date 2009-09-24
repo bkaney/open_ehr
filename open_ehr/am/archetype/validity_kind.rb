@@ -1,4 +1,4 @@
-module OpenEHR
+module OpenEhr
   module AM
     module Archetype
       class VALIDITY_KIND

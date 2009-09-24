@@ -1,15 +1,15 @@
 require 'rm/support/terminology.rb'
 
-module OpenEHR
+module OpenEhr
   module AM
     module Archetype
       module ADL_Definition
 #        include OpenEHR::RM::Support::Terminology::OpenEHR_Code_Set_Identifier
-        include OpenEHR::RM::Support::Terminology
+        include OpenEhr::RM::Support::Terminology
         CURRENT_ADL_VERSION = "1.4"
       end
 
-      class ARCHETYPE < OpenEHR::RM::Common::Resource::Authored_Resource
+      class ARCHETYPE < OpenEhr::RM::Common::Resource::AuthoredResource
         include ADL_Definition
         attr_accessor :archetype_id, :concept_code, :is_controlled, :original_language, :parent_archtype_id, :uid
 
@@ -20,7 +20,7 @@ module OpenEHR
         def initialize(args = {})
           @adl_version = args[:adl_version] if args[:adl_version]
           @archetype_id = args[:archetype_id] ? args[:archetype_id] : nil
-          @parent_archtype_id = args[:parent_archtype_id] if args[:parent_archtype_id]
+          @parent_id = args[:parent_id] if args[:parent_id]
           @concept = args[:concept] if args[:concept]
           @is_controled = args[:is_controled] if args[:is_controled]
           @definition = args[:definition] if args[:definition]

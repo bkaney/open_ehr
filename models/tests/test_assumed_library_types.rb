@@ -1,25 +1,25 @@
 require 'test/unit'
 require 'assumed_library_types.rb'
 
-include OpenEHR::Assumed_Library_Types
+include OpenEhr::AssumedLibraryTypes
 
 class Assumed_Library_Test < Test::Unit::TestCase
   def setup
-    assert_nothing_raised(Exception){@interval = OpenEHR::Assumed_Library_Types::Interval.new(1,2)}
-    assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new('2009-04-27')}
-    assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('15:55:37.32+0900')}
-    assert_nothing_raised(Exception){@iso8601_date_time = OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME.new('2009-04-27T15:55:37.32+0900')}
-    assert_nothing_raised(Exception){@iso8601_duration = OpenEHR::Assumed_Library_Types::ISO8601_DURATION.new('P1Y2M3W4DT5H6M7.8S')}
-    assert_nothing_raised(Exception){@iso8601_timezone = OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE.new}
+    assert_nothing_raised(Exception){@interval = OpenEhr::AssumedLibraryTypes::Interval.new(1,2)}
+    assert_nothing_raised(Exception){@iso8601_date = OpenEhr::AssumedLibraryTypes::ISO8601_DATE.new('2009-04-27')}
+    assert_nothing_raised(Exception){@iso8601_time = OpenEhr::AssumedLibraryTypes::ISO8601_TIME.new('15:55:37.32+0900')}
+    assert_nothing_raised(Exception){@iso8601_date_time = OpenEhr::AssumedLibraryTypes::ISO8601_DATE_TIME.new('2009-04-27T15:55:37.32+0900')}
+    assert_nothing_raised(Exception){@iso8601_duration = OpenEhr::AssumedLibraryTypes::ISO8601_DURATION.new('P1Y2M3W4DT5H6M7.8S')}
+    assert_nothing_raised(Exception){@iso8601_timezone = OpenEhr::AssumedLibraryTypes::ISO8601_TIMEZONE.new}
   end
 
   def test_initialize
-    assert_instance_of OpenEHR::Assumed_Library_Types::Interval, @interval
-    assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE, @iso8601_date
-    assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIME, @iso8601_time
-    assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DATE_TIME, @iso8601_date_time
-    assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_DURATION, @iso8601_duration
-    assert_instance_of OpenEHR::Assumed_Library_Types::ISO8601_TIMEZONE, @iso8601_timezone
+    assert_instance_of OpenEhr::AssumedLibraryTypes::Interval, @interval
+    assert_instance_of OpenEhr::AssumedLibraryTypes::ISO8601_DATE, @iso8601_date
+    assert_instance_of OpenEhr::AssumedLibraryTypes::ISO8601_TIME, @iso8601_time
+    assert_instance_of OpenEhr::AssumedLibraryTypes::ISO8601_DATE_TIME, @iso8601_date_time
+    assert_instance_of OpenEhr::AssumedLibraryTypes::ISO8601_DURATION, @iso8601_duration
+    assert_instance_of OpenEhr::AssumedLibraryTypes::ISO8601_TIMEZONE, @iso8601_timezone
   end
 
   def test_limits_comparable
@@ -57,122 +57,122 @@ class Assumed_Library_Test < Test::Unit::TestCase
   end
 
   def test_time_definitions
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::DAYS_IN_LEAP_YEAR, 366
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::DAYS_IN_WEEK, 7
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::DAYS_IN_YEAR, 365
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::HOURS_IN_DAY, 24
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::MAX_DAYS_IN_MONTH, 31
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::MAX_DAYS_IN_YEAR, 366
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::MINUTES_IN_HOUR, 60
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::MONTH_IN_YEAR, 12
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::NOMINAL_DAYS_IN_MONTH, 30.42
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::NOMINAL_DAYS_IN_YEAR, 365.24
-    assert_equal OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS::SECONDS_IN_MINUTE, 60
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::DAYS_IN_LEAP_YEAR, 366
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::DAYS_IN_WEEK, 7
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::DAYS_IN_YEAR, 365
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::HOURS_IN_DAY, 24
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::MAX_DAYS_IN_MONTH, 31
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::MAX_DAYS_IN_YEAR, 366
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::MINUTES_IN_HOUR, 60
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::MONTH_IN_YEAR, 12
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::NOMINAL_DAYS_IN_MONTH, 30.42
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::NOMINAL_DAYS_IN_YEAR, 365.24
+    assert_equal OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS::SECONDS_IN_MINUTE, 60
   end
 
   def test_time_definition_validity
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_year?(2008)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_year?(-20)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_year?(0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_year?(2008)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_year?(-20)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_year?(0)
 # today
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,6,19)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,6,19)
 # test valid_day lower limit
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(0,0,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(0,1,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(-1,1,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(0,1,0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(0,0,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(0,1,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(-1,1,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(0,1,0)
 # test valid_day upper and lowerlimit of each month
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(0,0,1)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,1,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,1,0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,0,1)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,1,31)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,1,32)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,2,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,2,0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,2,31)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,3,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,3,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,3,31)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,3,32)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,4,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,4,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,4,30)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,4,31)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,5,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,5,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,5,31)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,5,32)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,6,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,6,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,6,30)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,6,31)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,7,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,7,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,7,31)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,7,32)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,8,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,8,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,8,31)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,8,32)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,9,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,9,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,9,30)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,9,31)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,10,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,10,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,10,31)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,10,32)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,11,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,11,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,11,30)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,11,31)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,12,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,12,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,12,31)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,12,32)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(0,0,1)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,1,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,1,0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,0,1)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,1,31)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,1,32)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,2,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,2,0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,2,31)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,3,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,3,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,3,31)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,3,32)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,4,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,4,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,4,30)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,4,31)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,5,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,5,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,5,31)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,5,32)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,6,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,6,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,6,30)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,6,31)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,7,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,7,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,7,31)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,7,32)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,8,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,8,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,8,31)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,8,32)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,9,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,9,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,9,30)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,9,31)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,10,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,10,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,10,31)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,10,32)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,11,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,11,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,11,30)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,11,31)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,12,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,12,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,12,31)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,12,32)
 # test valid_day leap year
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(1900,2,28)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(1900,2,29)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2000,2,29)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_day?(2008,2,29)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(1900,2,28)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(1900,2,29)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2000,2,29)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_day?(2008,2,29)
 # test valid_hour lower limit
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(0,0,0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(-1,0,0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(0,-1,0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(0,0,-1)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(0,0,0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(-1,0,0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(0,-1,0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(0,0,-1)
 # test valid_hour upper limit
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(0,59,0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(0,60,0)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(0,0,59)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(0,0,60)
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(24,0,0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(24,0,1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_hour?(24,1,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(0,59,0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(0,60,0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(0,0,59)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(0,0,60)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(24,0,0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(24,0,1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_hour?(24,1,0)
 # test valid_minute method lower limit
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_minute?(0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_minute?(-1)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_minute?(0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_minute?(-1)
 # test valid_minute method upper limit
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_minute?(59)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_minute?(60)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_minute?(59)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_minute?(60)
 # test valid_second method lower limit
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_second?(0)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_second?(-1)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_second?(0)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_second?(-1)
 # test valid_second method upper limit
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_second?(59)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_second?(60)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_second?(59)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_second?(60)
 # test valid_month method lower limit
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_month?(1)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_month?(0)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_month?(1)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_month?(0)
 # test valid_month method upper limit
-    assert OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_month?(12)
-    assert !OpenEHR::Assumed_Library_Types::TIME_DEFINITIONS.valid_month?(13)
+    assert OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_month?(12)
+    assert !OpenEhr::AssumedLibraryTypes::TIME_DEFINITIONS.valid_month?(13)
   end
   def test_iso8601_date
     assert_equal 2009, @iso8601_date.year
     assert_equal 4,@iso8601_date.month
     assert_equal 27,@iso8601_date.day
-    assert_nothing_raised(Exception){@iso8601_date = OpenEHR::Assumed_Library_Types::ISO8601_DATE.new('2008')}
+    assert_nothing_raised(Exception){@iso8601_date = OpenEhr::AssumedLibraryTypes::ISO8601_DATE.new('2008')}
     assert @iso8601_date.day_unknown?
     assert @iso8601_date.month_unknown?
     assert @iso8601_date.is_partial?
@@ -193,8 +193,8 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert !@iso8601_date.day_unknown?
     assert !@iso8601_date.is_partial?
     assert_equal "2008-06-14", @iso8601_date.as_string
-    assert OpenEHR::Assumed_Library_Types::ISO8601_DATE.valid_iso8601_date?("2006-06-14")
-    assert !OpenEHR::Assumed_Library_Types::ISO8601_DATE.valid_iso8601_date?("ABCDEFG")
+    assert OpenEhr::AssumedLibraryTypes::ISO8601_DATE.valid_iso8601_date?("2006-06-14")
+    assert !OpenEhr::AssumedLibraryTypes::ISO8601_DATE.valid_iso8601_date?("ABCDEFG")
   end
 
   def test_iso8601_time
@@ -206,7 +206,7 @@ class Assumed_Library_Test < Test::Unit::TestCase
 
 #    assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('15:55:37.32+0900')}
 
-    assert_nothing_raised(Exception){@iso8601_time = OpenEHR::Assumed_Library_Types::ISO8601_TIME.new('01')}
+    assert_nothing_raised(Exception){@iso8601_time = OpenEhr::AssumedLibraryTypes::ISO8601_TIME.new('01')}
     assert_equal 1, @iso8601_time.hour
     assert @iso8601_time.is_partial?
     assert_equal "01", @iso8601_time.as_string
@@ -252,13 +252,13 @@ class Assumed_Library_Test < Test::Unit::TestCase
     assert_equal "23:59:59.23", @iso8601_time.as_string
     assert @iso8601_time.is_extended?
     assert !@iso8601_time.is_decimal_sign_comma?
-    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345Z")
-    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("012345.67+0900")
-    assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("242345.67+0900")
-    assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("242345.67+0900")
-    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("240000")
-    assert OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("240000Z")
-    assert !OpenEHR::Assumed_Library_Types::ISO8601_TIME.valid_iso8601_time?("240000.011Z")
+    assert OpenEhr::AssumedLibraryTypes::ISO8601_TIME.valid_iso8601_time?("012345Z")
+    assert OpenEhr::AssumedLibraryTypes::ISO8601_TIME.valid_iso8601_time?("012345.67+0900")
+    assert !OpenEhr::AssumedLibraryTypes::ISO8601_TIME.valid_iso8601_time?("242345.67+0900")
+    assert !OpenEhr::AssumedLibraryTypes::ISO8601_TIME.valid_iso8601_time?("242345.67+0900")
+    assert OpenEhr::AssumedLibraryTypes::ISO8601_TIME.valid_iso8601_time?("240000")
+    assert OpenEhr::AssumedLibraryTypes::ISO8601_TIME.valid_iso8601_time?("240000Z")
+    assert !OpenEhr::AssumedLibraryTypes::ISO8601_TIME.valid_iso8601_time?("240000.011Z")
   end
 
   def test_iso_8601_date_time

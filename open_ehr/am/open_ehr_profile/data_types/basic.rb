@@ -1,7 +1,7 @@
-module OpenEHR
+module OpenEhr
   module AM
     module OpenEHR_Profile
-      module Data_Types
+      module DataTypes
         module Basic
           class C_DV_STATE
           end

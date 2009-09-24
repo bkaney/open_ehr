@@ -1,27 +1,27 @@
 require 'test/unit'
 require 'rm'
-include OpenEHR::RM::Data_Types::Quantity::Date_Time
+include OpenEhr::RM::DataTypes::Quantity::DateTime
 
 class DateTimeTest < Test::Unit::TestCase
   def setup
     assert_nothing_raised(Exception){
-      @dv_temporal = DV_Temporal.new('2008')}
+      @dv_temporal = DvTemporal.new('2008')}
     assert_nothing_raised(Exception){
-      @dv_date = DV_Date.new('2009-06-29')}
+      @dv_date = DvDate.new('2009-06-29')}
     assert_nothing_raised(Exception){
-      @dv_time = DV_Time.new('12:34:56.78')}
+      @dv_time = DvTime.new('12:34:56.78')}
     assert_nothing_raised(Exception){
-      @dv_date_time = DV_Date_Time.new('2009-06-29T12:34:56.78')}
+      @dv_date_time = DvDateTime.new('2009-06-29T12:34:56.78')}
     assert_nothing_raised(Exception){
-      @dv_duration = DV_Duration.new('P1Y2M3W4DT5H6M7.8S')}
+      @dv_duration = DvDuration.new('P1Y2M3W4DT5H6M7.8S')}
   end
 
   def test_init
-    assert_instance_of DV_Temporal, @dv_temporal
-    assert_instance_of DV_Date, @dv_date
-    assert_instance_of DV_Time, @dv_time
-    assert_instance_of DV_Date_Time, @dv_date_time
-    assert_instance_of DV_Duration, @dv_duration
+    assert_instance_of DvTemporal, @dv_temporal
+    assert_instance_of DvDate, @dv_date
+    assert_instance_of DvTime, @dv_time
+    assert_instance_of DvDateTime, @dv_date_time
+    assert_instance_of DvDuration, @dv_duration
   end
 
   def test_dv_temporal
@@ -35,15 +35,15 @@ class DateTimeTest < Test::Unit::TestCase
     assert_equal 6, @dv_date.month
     assert_equal 29, @dv_date.day
     assert_equal 733954, @dv_date.magnitude
-    date2 = DV_Date.new('2009-07-08')
+    date2 = DvDate.new('2009-07-08')
     assert_equal 'P0Y0M1W9D',@dv_date.diff(date2).value
-    date2 = DV_Date.new('2004-02-28')
-    date3 = DV_Date.new('2004-03-01')
+    date2 = DvDate.new('2004-02-28')
+    date3 = DvDate.new('2004-03-01')
     assert_equal 'P0Y0M0W2D', date2.diff(date3).value
-    date4 = DV_Date.new('2003-12-31')
+    date4 = DvDate.new('2003-12-31')
     assert_equal 'P0Y1M4W28D', date2.diff(date4).value
-    birthday = DV_Date.new('1970-04-19')
-    assert_equal 'P39Y2M1W11D', birthday.diff(DV_Date.new('2009-06-30')).value
+    birthday = DvDate.new('1970-04-19')
+    assert_equal 'P39Y2M1W11D', birthday.diff(DvDate.new('2009-06-30')).value
   end
 
   def test_dv_time
@@ -53,7 +53,7 @@ class DateTimeTest < Test::Unit::TestCase
     assert_equal 56, @dv_time.second
     assert_equal 0.78, @dv_time.fractional_second
     assert_equal((12*60*60 + 34 * 60 + 56 + 0.78), @dv_time.magnitude)
-    dv_time2 = DV_Time.new('15:36:48.05')
+    dv_time2 = DvTime.new('15:36:48.05')
     assert_equal 'P0Y0M0W0DT3H1M51.27S', @dv_time.diff(dv_time2).value
   end
 
@@ -66,7 +66,7 @@ class DateTimeTest < Test::Unit::TestCase
     assert_equal 34, @dv_date_time.minute
     assert_equal 56, @dv_date_time.second
     assert_equal 0.78, @dv_date_time.fractional_second
-    dv_date_time2 = DV_Date_Time.new('1970-04-19T13:55:30.12')
+    dv_date_time2 = DvDateTime.new('1970-04-19T13:55:30.12')
     assert_equal 'P39Y2M1W9DT22H39M26.66S', @dv_date_time.diff(dv_date_time2).value
   end
 

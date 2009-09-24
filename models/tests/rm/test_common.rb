@@ -2,25 +2,25 @@ require 'test/unit'
 require 'set'
 require 'rm'
 
-include OpenEHR::RM::Data_Types::Text
-include OpenEHR::RM::Common::Resource
-include OpenEHR::RM::Common::Archetyped
-include OpenEHR::RM::Common::Generic
-include OpenEHR::RM::Common::Change_Control
-include OpenEHR::RM::Common::Directory
-include OpenEHR::RM::Support::Identification
-include OpenEHR::RM::Data_Types::Basic
-include OpenEHR::RM::Data_Types::Quantity
-include OpenEHR::RM::Data_Types::URI
+include OpenEhr::RM::DataTypes::Text
+include OpenEhr::RM::Common::Resource
+include OpenEhr::RM::Common::Archetyped
+include OpenEhr::RM::Common::Generic
+include OpenEhr::RM::Common::ChangeControl
+include OpenEhr::RM::Common::Directory
+include OpenEhr::RM::Support::Identification
+include OpenEhr::RM::DataTypes::Basic
+include OpenEhr::RM::DataTypes::Quantity
+include OpenEhr::RM::DataTypes::Uri
 
 class RM_Common_Resource_Test < Test::Unit::TestCase
   def setup
-    terminology_id = Terminology_ID.new('openehr')
-    code_phrase = Code_Phrase.new('ja', terminology_id)    
-    @translation_details = OpenEHR::RM::Common::Resource::Translation_Details.new(:language => code_phrase, :author => {'KOBAYASHI, Shinji', 'Ehime Univ'},
+    terminology_id = TerminologyId.new('openehr')
+    code_phrase = CodePhrase.new('ja', terminology_id)
+    @translation_details = OpenEhr::RM::Common::Resource::TranslationDetails.new(:language => code_phrase, :author => {'KOBAYASHI, Shinji', 'Ehime Univ'},
   :accreditation => 'jp', :other_details => {'ruby', 'test'})
-    @authored_resource = OpenEHR::RM::Common::Resource::Authored_Resource.new(:original_language => code_phrase, :translations => {'ja', @translation_details}, :description => "test")
-    @resource_description_item = OpenEHR::RM::Common::Resource::Resource_Description_Item.new(:language => code_phrase,
+    @authored_resource = OpenEhr::RM::Common::Resource::AuthoredResource.new(:original_language => code_phrase, :translations => {'ja', @translation_details}, :description => "test")
+    @resource_description_item = OpenEhr::RM::Common::Resource::ResourceDescriptionItem.new(:language => code_phrase,
               :purpose => 'test',
               :keywords => %w[test ruby],
               :use => 'unit test',
@@ -28,21 +28,21 @@ class RM_Common_Resource_Test < Test::Unit::TestCase
               :copyright => 'openEHR.jp',
               :original_resource_uri => {'issuer', 'http://openehr.jp/'},
               :other_details => {'samos', 'icicth7'})
-    @resource_description = OpenEHR::RM::Common::Resource::Resource_Description.new(:original_author => {'KOBAYASHI, Shinji' => 'Ehime University'},
+    @resource_description = OpenEhr::RM::Common::Resource::ResourceDescription.new(:original_author => {'KOBAYASHI, Shinji' => 'Ehime University'},
     :lifecycle_state => 'experimental',
     :details => {'ja', @resource_description_item},
     :other_contributors => %w[aki tim hugh],
     :resource_package_uri => 'http://openehr.jp/svn/ruby',
     :other_details => {'ja', 'shikoku'},
     :parent_resource => @authored_resource)
-    @authored_resource = OpenEHR::RM::Common::Resource::Authored_Resource.new(:original_language => code_phrase, :translations => {'ja', @translation_details}, :description => @resource_description)
+    @authored_resource = OpenEhr::RM::Common::Resource::AuthoredResource.new(:original_language => code_phrase, :translations => {'ja', @translation_details}, :description => @resource_description)
   end
 
   def test_init
-    assert_instance_of OpenEHR::RM::Common::Resource::Authored_Resource, @authored_resource
-    assert_instance_of OpenEHR::RM::Common::Resource::Translation_Details, @translation_details
-    assert_instance_of OpenEHR::RM::Common::Resource::Resource_Description_Item, @resource_description_item
-    assert_instance_of OpenEHR::RM::Common::Resource::Resource_Description, @resource_description
+    assert_instance_of OpenEhr::RM::Common::Resource::AuthoredResource, @authored_resource
+    assert_instance_of OpenEhr::RM::Common::Resource::TranslationDetails, @translation_details
+    assert_instance_of OpenEhr::RM::Common::Resource::ResourceDescriptionItem, @resource_description_item
+    assert_instance_of OpenEhr::RM::Common::Resource::ResourceDescription, @resource_description
   end
 
   def test_translation_details
@@ -85,41 +85,50 @@ end
 
 class RM_Common_Archetyped_Test < Test::Unit::TestCase
   def setup
+<<<<<<< .working
     @dv_text = OpenEHR::RM::Data_Types::Text::DV_Text.new('Test')
     @uid_based_id = OpenEHR::RM::Support::Identification::UID_Based_ID.new('rrip::0.0.5')
     @archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new('openEHR-EHR-SECTION.physical_examination-prenatal.v2')
     @template_id = OpenEHR::RM::Support::Identification::Template_ID.new('1.0.1')
     assert_nothing_raised(Exception){@archetyped = OpenEHR::RM::Common::Archetyped::Archetyped.new(@archetype_id, '1.0.1')}
     assert_nothing_raised(Exception){@link = OpenEHR::RM::Common::Archetyped::Link.new(OpenEHR::RM::Data_Types::Text::DV_Text.new("generic"), OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://test/"),OpenEHR::RM::Data_Types::Text::DV_Text.new("problem"))}
+=======
+    @dv_text = OpenEhr::RM::DataTypes::Text::DvText.new('Test')
+    @uid_based_id = OpenEhr::RM::Support::Identification::UidBasedId.new('rrip::0.0.5')
+    @archetype_id = OpenEhr::RM::Support::Identification::ArchetypeId.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
+    @template_id = OpenEhr::RM::Support::Identification::TemplateId.new('1.0.1')
+    assert_nothing_raised(Exception){@archetyped = OpenEhr::RM::Common::Archetyped::Archetyped.new(@archetype_id, '1.0.1')}
+    assert_nothing_raised(Exception){@link = OpenEhr::RM::Common::Archetyped::Link.new(OpenEhr::RM::DataTypes::Text::DvText.new("generic"), OpenEhr::RM::DataTypes::Uri::DvEhrUri.new("ehr://test/"),OpenEhr::RM::DataTypes::Text::DvText.new("problem"))}
+>>>>>>> .merge-right.r168
     assert_nothing_raised(Exception){
-      @pathable = OpenEHR::RM::Common::Archetyped::Pathable.new }
-    name = OpenEHR::RM::Data_Types::Text::DV_Text.new('blood')
+      @pathable = OpenEhr::RM::Common::Archetyped::Pathable.new }
+    name = OpenEhr::RM::DataTypes::Text::DvText.new('blood')
     links = Set.new([@uid_based_id])
     assert_nothing_raised(Exception){
       @locatable = Locatable.new(:archetype_node_id => 'at0001',
                                  :name => name,
                                  :links => links)}
-    provider = Party_Identified.new(:name => 'NERV')
-    location = Party_Identified.new(:name => 'GEOFRONT')
-    object_version_id = Object_Version_ID.new('ABC::DEF::1.3.4')
-    party_ref = Party_Ref.new('local', 'ORGANISATION', object_id)
+    provider = PartyIdentified.new(:name => 'NERV')
+    location = PartyIdentified.new(:name => 'GEOFRONT')
+    object_version_id = ObjectVersionId.new('ABC::DEF::1.3.4')
+    party_ref = PartyRef.new('local', 'ORGANISATION', object_id)
     assert_nothing_raised(Exception){
-      @feeder_audit_details = Feeder_Audit_Details.new(:system_id => 'MAGI',
+      @feeder_audit_details = FeederAuditDetails.new(:system_id => 'MAGI',
                                                        :provider => provider,
                                                        :location => location,
-                                                       :time => DV_Date_Time.new('2009-07-03T12:16:31'),
-                                                       :subject => Party_Proxy.new(:external_ref => party_ref),
+                                                       :time => DvDateTime.new('2009-07-03T12:16:31'),
+                                                       :subject => PartyProxy.new(:external_ref => party_ref),
                                                        :version_id => '0.0.4')}
-    feeder_audit_details = Feeder_Audit_Details.new(:system_id => 'AKAGI')
-    dv_identifier = DV_Identifier.new('NERV', 'MELCHIOR', 'RITSUKO', 'COMPUTER')
-    feeder_audit_details2 = Feeder_Audit_Details.new(:system_id => 'KATSURAGI')
-    dv_identifier2 = DV_Identifier.new('NERV', 'SHOGOUKI', 'MISATO', 'EVANGELION')
-    charset = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('UTF-8','character-sets')
-    language = OpenEHR::RM::Data_Types::Text::Code_Phrase.new('ja', 'languages')
+    feeder_audit_details = FeederAuditDetails.new(:system_id => 'AKAGI')
+    dv_identifier = DvIdentifier.new('NERV', 'MELCHIOR', 'RITSUKO', 'COMPUTER')
+    feeder_audit_details2 = FeederAuditDetails.new(:system_id => 'KATSURAGI')
+    dv_identifier2 = DvIdentifier.new('NERV', 'SHOGOUKI', 'MISATO', 'EVANGELION')
+    charset = OpenEhr::RM::DataTypes::Text::CodePhrase.new('UTF-8','character-sets')
+    language = OpenEhr::RM::DataTypes::Text::CodePhrase.new('ja', 'languages')
 
-    dv_encapsulated = OpenEHR::RM::Data_Types::Encapsulated::DV_Encapsulated.new(charset, language, 10)
+    dv_encapsulated = OpenEhr::RM::DataTypes::Encapsulated::DvEncapsulated.new(charset, language, 10)
     assert_nothing_raised(Exception){
-      @feeder_audit = Feeder_Audit.new(:originating_system_audit => feeder_audit_details,
+      @feeder_audit = FeederAudit.new(:originating_system_audit => feeder_audit_details,
                                        :originating_system_item_ids => [dv_identifier],
                                        :feeder_system_audit => feeder_audit_details2,
                                        :feeder_system_item_ids => [dv_identifier2],
@@ -127,12 +136,12 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
   end
 
   def test_init
-    assert_instance_of OpenEHR::RM::Common::Archetyped::Archetyped, @archetyped
-    assert_instance_of OpenEHR::RM::Common::Archetyped::Link, @link
-    assert_instance_of OpenEHR::RM::Common::Archetyped::Pathable, @pathable
-    assert_instance_of OpenEHR::RM::Common::Archetyped::Locatable, @locatable
-    assert_instance_of Feeder_Audit_Details, @feeder_audit_details
-    assert_instance_of Feeder_Audit, @feeder_audit
+    assert_instance_of OpenEhr::RM::Common::Archetyped::Archetyped, @archetyped
+    assert_instance_of OpenEhr::RM::Common::Archetyped::Link, @link
+    assert_instance_of OpenEhr::RM::Common::Archetyped::Pathable, @pathable
+    assert_instance_of OpenEhr::RM::Common::Archetyped::Locatable, @locatable
+    assert_instance_of FeederAuditDetails, @feeder_audit_details
+    assert_instance_of FeederAudit, @feeder_audit
   end
 
   def test_archetyped
@@ -143,7 +152,11 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_raise(ArgumentError){@archetyped.rm_version = ''}
     assert_nothing_raised(Exception){@archetyped.template_id = @template_id}
     assert_equal @template_id, @archetyped.template_id
+<<<<<<< .working
     archetype_id2 = OpenEHR::RM::Support::Identification::Archetype_ID.new('openEHR-EHR-SECTION.physical_examination-prenatal.v2')
+=======
+    archetype_id2 = OpenEhr::RM::Support::Identification::ArchetypeId.new("1.0.2", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
+>>>>>>> .merge-right.r168
     assert_nothing_raised(ArgumentError){@archetyped.archetype_id = archetype_id2}
     assert_equal archetype_id2, @archetyped.archetype_id
     assert_nothing_raised(ArgumentError){@archetyped.rm_version = '1.0.2'}
@@ -156,15 +169,15 @@ class RM_Common_Archetyped_Test < Test::Unit::TestCase
     assert_equal 'ehr://test/', @link.target.value
     assert_equal 'problem', @link.type.value
     # test meaning
-    assert_nothing_raised(Exception){@link.meaning = OpenEHR::RM::Data_Types::Text::DV_Text.new('clinical')}
+    assert_nothing_raised(Exception){@link.meaning = OpenEhr::RM::DataTypes::Text::DvText.new('clinical')}
     assert_equal 'clinical', @link.meaning.value
     assert_raise(ArgumentError){@link.meaning = nil}
     # test target
-    assert_nothing_raised(Exception){@link.target = OpenEHR::RM::Data_Types::URI::DV_EHR_URI.new("ehr://try/")}
+    assert_nothing_raised(Exception){@link.target = OpenEhr::RM::DataTypes::Uri::DvEhrUri.new("ehr://try/")}
     assert_equal 'ehr://try/', @link.target.value
     assert_raise(ArgumentError){@link.target = nil}
     # test type
-    assert_nothing_raised(Exception){@link.type = OpenEHR::RM::Data_Types::Text::DV_Text.new("issue")}
+    assert_nothing_raised(Exception){@link.type = OpenEhr::RM::DataTypes::Text::DvText.new("issue")}
     assert_equal 'issue', @link.type.value
     assert_raise(ArgumentError){@link.type = nil}
   end
@@ -189,55 +202,55 @@ end
 
 class RM_Common_Generic_Test < Test::Unit::TestCase
   def setup
-    assert_nothing_raised(Exception){party_proxy = Party_Proxy.new}
-    object_id = Object_ID.new('0.0.4')
-    party_ref = Party_Ref.new('unknown', 'ORGANISATION', object_id)
+    assert_nothing_raised(Exception){party_proxy = PartyProxy.new}
+    object_id = ObjectId.new('0.0.4')
+    party_ref = PartyRef.new('unknown', 'ORGANISATION', object_id)
     assert_nothing_raised(Exception){
-      @party_proxy = Party_Proxy.new(:external_ref => party_ref)}
-    assert_nothing_raised(Exception){party_self = Party_Self.new}
+      @party_proxy = PartyProxy.new(:external_ref => party_ref)}
+    assert_nothing_raised(Exception){party_self = PartySelf.new}
     assert_nothing_raised(Exception){
-      @party_self = Party_Self.new(:external_ref => party_ref)}
+      @party_self = PartySelf.new(:external_ref => party_ref)}
     assert_raise(ArgumentError){
-      party_identified = Party_Identified.new}
+      party_identified = PartyIdentified.new}
 
     identifiers = []
-    identifiers << DV_Identifier.new('NERV', 'MELCHIOR', 'GENDO', 'COMPUTER')
-    identifiers << DV_Identifier.new('NERV', 'CASPER', 'GENDO', 'COMPUTER')
-    identifiers << DV_Identifier.new('NERV', 'BALTHAZAR', 'GENDO', 'COMPUTER')
+    identifiers << DvIdentifier.new('NERV', 'MELCHIOR', 'GENDO', 'COMPUTER')
+    identifiers << DvIdentifier.new('NERV', 'CASPER', 'GENDO', 'COMPUTER')
+    identifiers << DvIdentifier.new('NERV', 'BALTHAZAR', 'GENDO', 'COMPUTER')
     assert_nothing_raised(Exception){
-      @party_identified = Party_Identified.new(:name => 'NERV',
+      @party_identified = PartyIdentified.new(:name => 'NERV',
                                                :external_ref => party_ref,
                                                :identifier => identifiers)}
 
-    terminology_id = Terminology_ID.new('test(0.04)')
-    code_phrase = Code_Phrase.new('self', terminology_id)
-    dv_coded_text = DV_Coded_Text.new('Seele',code_phrase)
+    terminology_id = TerminologyId.new('test(0.04)')
+    code_phrase = CodePhrase.new('self', terminology_id)
+    dv_coded_text = DvCodedText.new('Seele',code_phrase)
     assert_nothing_raised(Exception){
-      @party_related = Party_Related.new(:name => 'GEHIRN',
+      @party_related = PartyRelated.new(:name => 'GEHIRN',
                                          :relationship => dv_coded_text)}
-    dv_text = DV_Text.new('commiter')
-    dv_coded_text = DV_Coded_Text.new('present',terminology_id)
-    dv_date_time1 = DV_Date_Time.new('2009-07-04T16:30:00')
-    dv_date_time2 = DV_Date_Time.new('2009-07-14T00:00:00')
-    dv_interval = DV_Interval.new(dv_date_time1, dv_date_time2)
+    dv_text = DvText.new('commiter')
+    dv_coded_text = DvCodedText.new('present',terminology_id)
+    dv_date_time1 = DvDateTime.new('2009-07-04T16:30:00')
+    dv_date_time2 = DvDateTime.new('2009-07-14T00:00:00')
+    dv_interval = DvInterval.new(dv_date_time1, dv_date_time2)
     assert_nothing_raised(Exception){
       @participation = Participation.new(:performer => @party_proxy,
                                          :function => dv_text,
                                          :mode => dv_coded_text,
                                          :time => dv_interval)}
-    dv_date_time = DV_Date_Time.new('2009-07-04T18:56:00')
-    terminology_id = Terminology_ID.new('openehr(1.0.2)')
-    code_phrase = Code_Phrase.new('249', terminology_id)
-    dv_coded_text = DV_Coded_Text.new('creation', code_phrase)
-    dv_text = DV_Text.new('test environment')
+    dv_date_time = DvDateTime.new('2009-07-04T18:56:00')
+    terminology_id = TerminologyId.new('openehr(1.0.2)')
+    code_phrase = CodePhrase.new('249', terminology_id)
+    dv_coded_text = DvCodedText.new('creation', code_phrase)
+    dv_text = DvText.new('test environment')
     assert_nothing_raised(Exception){
-      @audit_details = Audit_Details.new(:system_id => 'MAGI',
+      @audit_details = AuditDetails.new(:system_id => 'MAGI',
                                          :committer => @party_proxy,
                                          :time_committed => dv_date_time,
                                          :change_type => dv_coded_text,
                                          :description => dv_text)}
-    dv_text = DV_Text.new('authorisation')
-    dv_ehr_uri = DV_EHR_URI.new('ehr://test/')
+    dv_text = DvText.new('authorisation')
+    dv_ehr_uri = DvEhrUri.new('ehr://test/')
     assert_nothing_raised(Exception){
       @attestation = Attestation.new(:system_id => 'NERV',
                                      :committer => @party_proxy,
@@ -247,40 +260,40 @@ class RM_Common_Generic_Test < Test::Unit::TestCase
                                      :description => dv_text,
                                      :proof => 'hashedstring',
                                      :items => Set[dv_ehr_uri])}
-    object_version_id = Object_Version_ID.new('SHOGOUKI::NERV::1.1.1')
-    audit_details2 = Audit_Details.new(:system_id => 'MAGI',
+    object_version_id = ObjectVersionId.new('SHOGOUKI::NERV::1.1.1')
+    audit_details2 = AuditDetails.new(:system_id => 'MAGI',
                                        :committer => @party_proxy,
                                        :time_committed => dv_date_time2,
                                        :change_type => dv_coded_text)
     assert_nothing_raised(Exception){
-      @revision_history_item = Revision_History_Item.new(:audits => [@audit_details, audit_details2],
+      @revision_history_item = RevisionHistoryItem.new(:audits => [@audit_details, audit_details2],
                                                          :version_id => object_version_id)}
-    dv_date_time3 = DV_Date_Time.new('2009-07-14T12:00:00')
-    dv_date_time4 = DV_Date_Time.new('2009-07-15T00:00:00')
-    audit_details3 = Audit_Details.new(:system_id => 'MAGI',
+    dv_date_time3 = DvDateTime.new('2009-07-14T12:00:00')
+    dv_date_time4 = DvDateTime.new('2009-07-15T00:00:00')
+    audit_details3 = AuditDetails.new(:system_id => 'MAGI',
                                      :committer => @party_proxy,
                                      :time_committed => dv_date_time3,
                                      :change_type => dv_coded_text)
-    audit_details4 = Audit_Details.new(:system_id => 'MAGI',
+    audit_details4 = AuditDetails.new(:system_id => 'MAGI',
                                      :committer => @party_proxy,
                                      :time_committed => dv_date_time4,
                                      :change_type => dv_coded_text)
-    object_version_id = Object_Version_ID.new('NIGOUKI::NERV::2.2.2')
-    revision_history_item2 = Revision_History_Item.new(:audits => [audit_details3, audit_details4],
+    object_version_id = ObjectVersionId.new('NIGOUKI::NERV::2.2.2')
+    revision_history_item2 = RevisionHistoryItem.new(:audits => [audit_details3, audit_details4],
                                                       :version_id => object_version_id)
     assert_nothing_raised(Exception){
-      @revision_history = Revision_History.new([@revision_history_item, revision_history_item2])}
+      @revision_history = RevisionHistory.new([@revision_history_item, revision_history_item2])}
   end
 
   def test_init
-    assert_instance_of Party_Proxy, @party_proxy
-    assert_instance_of Party_Self, @party_self
-    assert_instance_of Party_Identified, @party_identified
+    assert_instance_of PartyProxy, @party_proxy
+    assert_instance_of PartySelf, @party_self
+    assert_instance_of PartyIdentified, @party_identified
     assert_instance_of Participation, @participation
-    assert_instance_of Audit_Details, @audit_details
+    assert_instance_of AuditDetails, @audit_details
     assert_instance_of Attestation, @attestation
-    assert_instance_of Revision_History_Item, @revision_history_item
-    assert_instance_of Revision_History, @revision_history
+    assert_instance_of RevisionHistoryItem, @revision_history_item
+    assert_instance_of RevisionHistory, @revision_history
   end
 
   def test_party_proxy
@@ -346,9 +359,9 @@ end
 class RM_Common_Directory_Test < Test::Unit::TestCase
   def setup
     archetype_node_id = 'at0001'
-    name = DV_Text.new('folder_test')
-    object_id = Object_ID.new('1.1.1')
-    object_ref = Object_Ref.new('local', 'PARTY', object_id)
+    name = DvText.new('folder_test')
+    object_id = ObjectId.new('1.1.1')
+    object_ref = ObjectRef.new('local', 'PARTY', object_id)
     assert_nothing_raised(Exception){
       @folder = Folder.new(:archetype_node_id => archetype_node_id,
                            :name => name,
@@ -358,7 +371,7 @@ class RM_Common_Directory_Test < Test::Unit::TestCase
   end
   
   def test_init
-    assert_instance_of OpenEHR::RM::Common::Directory::Folder, @folder
+    assert_instance_of OpenEhr::RM::Common::Directory::Folder, @folder
   end
 
   def test_folder
@@ -369,24 +382,24 @@ end
 
 class RM_Common_Change_Control_Test < Test::Unit::TestCase
   def setup
-    object_version_id1 = Object_Version_ID.new('ABC::DEF::2.2.3')
-    object_version_id2 = Object_Version_ID.new('GHI::JKL::4.5.6')
-    object_id = Object_ID.new('ehr://uniqueid1020')
-    dv_date_time = DV_Date_Time.new('2009-07-06T21:10:12')
-    party_ref = Party_Ref.new('unknown', 'ORGANISATION', object_id)
-    party_proxy = Party_Proxy.new(:external_ref => party_ref)
-    terminology_id = Terminology_ID.new('openehr(1.0.2)')
-    code_phrase = Code_Phrase.new('249', terminology_id)
-    dv_coded_text = DV_Coded_Text.new('creation', code_phrase)
-    audit_details = Audit_Details.new(:system_id => 'MAGI',
+    object_version_id1 = ObjectVersionId.new('ABC::DEF::2.2.3')
+    object_version_id2 = ObjectVersionId.new('GHI::JKL::4.5.6')
+    object_id = ObjectId.new('ehr://uniqueid1020')
+    dv_date_time = DvDateTime.new('2009-07-06T21:10:12')
+    party_ref = PartyRef.new('unknown', 'ORGANISATION', object_id)
+    party_proxy = PartyProxy.new(:external_ref => party_ref)
+    terminology_id = TerminologyId.new('openehr(1.0.2)')
+    code_phrase = CodePhrase.new('249', terminology_id)
+    dv_coded_text = DvCodedText.new('creation', code_phrase)
+    audit_details = AuditDetails.new(:system_id => 'MAGI',
                                       :committer => party_proxy,
                                       :time_committed => dv_date_time,
                                       :change_type => dv_coded_text)
-    code_phrase = Code_Phrase.new('532', terminology_id)
-    dv_coded_text = DV_Coded_Text.new('complete', code_phrase)
-    object_id = Object_ID.new('ehr://test_location')
-    object_ref = Object_Ref.new('local', 'PARTY', object_id)
-    hier_object_id = Hier_Object_ID.new('ABC')
+    code_phrase = CodePhrase.new('532', terminology_id)
+    dv_coded_text = DvCodedText.new('complete', code_phrase)
+    object_id = ObjectId.new('ehr://test_location')
+    object_ref = ObjectRef.new('local', 'PARTY', object_id)
+    hier_object_id = HierObjectId.new('ABC')
     assert_nothing_raised(Exception){
       @version = Version.new(:uid => object_version_id1,
                              :preceding_version_uid => object_version_id2,
@@ -395,22 +408,22 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
                              :contribution => object_ref,
                              :signature => 'test_version',
                              :data => 'data')}
-    object_version_id3 = Object_Version_ID.new('MNO::PQR::7.8.9')
-    object_version_id4 = Object_Version_ID.new('STU::VWX::1.2.3')
-    code_phrase = Code_Phrase.new('240', terminology_id)
-    dv_coded_text2 = DV_Coded_Text.new('signed', code_phrase)
+    object_version_id3 = ObjectVersionId.new('MNO::PQR::7.8.9')
+    object_version_id4 = ObjectVersionId.new('STU::VWX::1.2.3')
+    code_phrase = CodePhrase.new('240', terminology_id)
+    dv_coded_text2 = DvCodedText.new('signed', code_phrase)
     attestation = Attestation.new(:system_id => 'NERV',
                                   :committer => party_proxy,
                                   :time_committed => dv_date_time,
                                   :change_type => dv_coded_text,
-                                  :reason => DV_Text.new('signed'))
-    dv_date_time = DV_Date_Time.new('2009-07-07T21:10:12')
-    audit_details = Audit_Details.new(:system_id => 'MAGI',
+                                  :reason => DvText.new('signed'))
+    dv_date_time = DvDateTime.new('2009-07-07T21:10:12')
+    audit_details = AuditDetails.new(:system_id => 'MAGI',
                                       :committer => party_proxy,
                                       :time_committed => dv_date_time,
                                       :change_type => dv_coded_text)
     assert_nothing_raised(Exception){
-      @original_version = Original_Version.new(:uid => object_version_id3,
+      @original_version = OriginalVersion.new(:uid => object_version_id3,
                                                :preceding_version_uid => object_version_id4,
                                                :other_input_version_uids => Set[object_version_id1, object_version_id2],
                                                :commit_audit => audit_details,
@@ -418,15 +431,15 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
                                                :attestations => [attestation],
                                                :data => 'data',
                                                :lifecycle_state => dv_coded_text)}
-    dv_date_time = DV_Date_Time.new('2009-07-08T21:10:12')
-    audit_details = Audit_Details.new(:system_id => 'CASPER',
+    dv_date_time = DvDateTime.new('2009-07-08T21:10:12')
+    audit_details = AuditDetails.new(:system_id => 'CASPER',
                                       :committer => party_proxy,
                                       :time_committed => dv_date_time,
                                       :change_type => dv_coded_text,
                                       :description => 'for contribution')
-    object_ref = Object_Ref.new('unknown', 'PARTY', object_id)
+    object_ref = ObjectRef.new('unknown', 'PARTY', object_id)
     assert_nothing_raised(Exception){
-      @imported_version = Imported_Version.new(:item => @original_version,
+      @imported_version = ImportedVersion.new(:item => @original_version,
                                                :commit_audit => audit_details,
                                                :contribution => object_ref,
                                                :signature => 'import test')}
@@ -434,8 +447,8 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
       @contribution = Contribution.new(:uid => hier_object_id,
                                        :versions => Set[object_ref],
                                        :audit => audit_details)}
-    dv_date_time = DV_Date_Time.new('2009-07-08T18:10:12')
-    audit_details = Audit_Details.new(:system_id => 'MAGI',
+    dv_date_time = DvDateTime.new('2009-07-08T18:10:12')
+    audit_details = AuditDetails.new(:system_id => 'MAGI',
                                       :committer => party_proxy,
                                       :time_committed => dv_date_time,
                                       :change_type => dv_coded_text)
@@ -445,18 +458,18 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
                                 :contribution => object_ref,
                                 :change_type => dv_coded_text)
     assert_nothing_raised(Exception){
-      @versioned_object = Versioned_Object.new(:uid => hier_object_id,
+      @versioned_object = VersionedObject.new(:uid => hier_object_id,
                                                :owner_id => object_ref,
                                                :time_created => dv_date_time,
                                                :all_versions => [@version,@original_version,@imported_version,@trunk_version])}
   end
 
   def test_init
-    assert_instance_of OpenEHR::RM::Common::Change_Control::Version, @version
-    assert_instance_of Original_Version, @original_version
-    assert_instance_of Imported_Version, @imported_version
-    assert_instance_of OpenEHR::RM::Common::Change_Control::Contribution, @contribution
-    assert_instance_of Versioned_Object, @versioned_object
+    assert_instance_of OpenEhr::RM::Common::ChangeControl::Version, @version
+    assert_instance_of OriginalVersion, @original_version
+    assert_instance_of ImportedVersion, @imported_version
+    assert_instance_of OpenEhr::RM::Common::ChangeControl::Contribution, @contribution
+    assert_instance_of VersionedObject, @versioned_object
   end
 
   def test_version
@@ -504,7 +517,7 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
     assert @versioned_object.has_version_id?(@version.uid)
     assert !@versioned_object.is_original_version?(@version.uid)
     assert @versioned_object.is_original_version?(@original_version.uid)
-    assert @versioned_object.has_version_at_time?(DV_Date_Time.new('2009-07-06T21:10:12'))
+    assert @versioned_object.has_version_at_time?(DvDateTime.new('2009-07-06T21:10:12'))
     assert_equal @version, @versioned_object.version_with_id(@version.uid)
     assert_equal @version, @versioned_object.version_at_time(@version.commit_audit.time_committed)
     assert_equal @imported_version, @versioned_object.latest_version
@@ -537,12 +550,12 @@ class RM_Common_Change_Control_Test < Test::Unit::TestCase
                                                 :commit_audit => @imported_version.commit_audit,
                                                 :item => @imported_version.item)}
     assert_equal 7, @versioned_object.version_count
-    dv_date_time = DV_Date_Time.new('2009-07-07T22:11:31')
+    dv_date_time = DvDateTime.new('2009-07-07T22:11:31')
     attestation = Attestation.new(:system_id => 'NERV2',
                                   :committer => @version.contribution,
                                   :time_committed => dv_date_time,
                                   :change_type => @original_version.commit_audit.change_type,
-                                  :reason => DV_Text.new('signed'))
+                                  :reason => DvText.new('signed'))
     assert_nothing_raised(Exception){
       @versioned_object.commit_attestation(:attestation => attestation,
                                            :uid => @original_version.uid,
