@@ -1,5 +1,5 @@
 
-module OpenEhr
+module OpenEHR
   module RM
     module Support
       module Terminology
@@ -7,17 +7,21 @@ module OpenEhr
           def all_codes
             raise NotImplementedError, "all_codes must be implemented"
           end
+
           def has_code(a_code)
             raise NotImplementedError, "has_code must be implemented"
           end
+
           def has_lang(a_lang)
             raise NotImplementedError, "has_lang must be implemented"
           end
+
           def id
             raise NotImplementedError, "id must be returned"
           end
         end
-        module OpenEhrCodeSetIdentifier
+
+        module OpenEHRCodeSetIdentifier
           CODE_SET_ID_CHARACER_SETS = "character sets".freeze
           CODE_SET_ID_COMPRESSION_ALGORITHMS = "compression algorithms".freeze
           CODE_SET_ID_COUNTRIES = "countries".freeze
@@ -28,7 +32,8 @@ module OpenEhr
             !@an_id.nil?
           end
         end
-        module OpenEhrTerminologyGroupIdentifiers
+
+        module OpenEHRTerminologyGroupIdentifiers
           GROUP_ID_ATTESTATION_REASON = "attestation reason".freeze
           GROUP_ID_AUDIT_CHANGE_TYPE = "audit change type".freeze
           GROUP_ID_COMPOSITION_CATEGORY = "composition category".freeze
@@ -45,25 +50,40 @@ module OpenEhr
           GROUP_ID_VERSION_LIFECYCLE_STATE = "version lifecycle state".freeze
           TERMINOLOGY_ID = "openehr".freeze
         end
+
         class TerminologyAccess
+          attr_reader :id
+
+          def initialize(args = {})
+            self.id = args[:id]
+          end
+
           def all_codes
             raise NotImplementedError, "all_codes is not implemented"
           end
+
           def codes_for_group_id(group_id)
             raise NotImplementedError, "codes_for_group_id is not implemented"
           end
+
           def codes_for_group_name(name, lang)
             raise NotImplementedError, "codes_for_group_name is not implemented"
           end
+
           def has_code_for_group_id(group_id, a_code)
-            raise NotImplementedError, "has_code_for_group_id is not implemented"
+            
           end
-          def id
-            raise NotImplementedError, "id is not implemented"
+
+          def id=(id)
+            @terminology = Terminology.find_all_by_name(id)
+            @id = id
           end
+
           def rubric_for_code(code, lang)
-            raise NotImplementedError, "rubic_for_code is not implemented"
+            return Terminology.find(:first, :conditions => {:code => code,
+                                      :lang => lang})
           end
+
           private
           def id_exists
             if id.nil?
@@ -73,29 +93,38 @@ module OpenEhr
             end
           end
         end
+
         class TerminologyService
-          include OpenEhrCodeSetIdentifier, OpenEhrTerminologyGroupIdentifiers
+          include OpenEHRCodeSetIdentifier, OpenEHRTerminologyGroupIdentifiers
+
           def code_set(name)
             raise NotImplementedError, "code_set is not implemented"
           end
+
           def code_set_for_id(id)
             raise NotImplementedError, "code_set_for_id is not implemented"
           end
+
           def code_set_identifiers
             raise NotImplementedError, "code_set_for_identifiers is not implemented"
           end
+
           def has_code_set(name)
             raise NotImplementedError, "has_code_set is not implemented"
           end
+
           def has_terminology?(name)
             raise NotImplementedError, "has_terminology is not implemented"
           end
+
           def openehr_code_sets
             raise NotImplementedError, "openehr_code_set is not implemented"
           end
+
           def terminology(name)
-            raise NotImplementedError, "terminology is not implemented"
+            return TerminologyAccess.new(:id => name)
           end
+          
           def terminology_identifiers
             raise NotImplementedError, "terminology_identiferes is not implemented"
           end

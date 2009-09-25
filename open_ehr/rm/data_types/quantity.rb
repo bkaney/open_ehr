@@ -1,23 +1,20 @@
 # This modules are implemented from the UML shown bellow
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109599337877_94556_1510Report.html
 # Ticket refs #50
-require 'assumed_library_types'
+#require 'assumed_library_types'
 module OpenEHR
   module RM
     module DataTypes
       module Quantity
-
-        autoload :Date_Time, "rm/data_types/quantity/date_time.rb"
-
         class DvOrdered < OpenEHR::RM::DataTypes::Basic::DataValue
           include Comparable
           attr_accessor :normal_range, :other_refference_ranges, :normal_status
 
-          def initialize(normal_range=nil, normal_status = nil,
-                         other_reference_ranges=nil)
-            self.normal_range = normal_range
-            self.normal_status = normal_status
-            self.other_reference_ranges = other_reference_ranges
+          def initialize(args = {})
+            super(args)
+            self.normal_range = args[:normal_range]
+            self.normal_status = args[:normal_status]
+            self.other_reference_ranges = args[:other_reference_ranges]
           end          
 
           def is_normal?
@@ -31,7 +28,7 @@ module OpenEHR
           end
 
           def is_simple?
-            normal_status.nil? and other_refference_ranges.nil?
+            return @other_reference_ranges.nil?
           end
 
           def <=>(other)
@@ -39,14 +36,18 @@ module OpenEHR
           end
 
           def other_reference_ranges=(other_reference_ranges)
-            unless other_reference_ranges.nil? or !other_reference_ranges.is_empty?
+            if !other_reference_ranges.nil? && other_reference_ranges.empty?
               raise ArgumentError, "Other reference ranges validity error"
             end
             @other_reference_ranges = other_reference_ranges
           end
 
-          def is_strictly_comparable_to?(other)
-            raise NotImplementedError, 'this method should be implemented'
+          def is_strictly_comparable_to?(others)
+            if others.instance_of? self.class
+              return true
+            else
+              return false
+            end
           end
         end
 
@@ -57,16 +58,14 @@ module OpenEHR
         class DvQuantified < DvOrdered
           attr_reader :magnitude, :magnitude_status
 
-          def initialize(magnitude, magnitude_status=nil,
-                         normal_range=nil, normal_status = nil,
-                         other_reference_ranges=nil)
-            super(normal_range, normal_status, other_reference_ranges)
-            self.magnitude = magnitude
-            self.magnitude_status = magnitude_status
+          def initialize(args = {})
+            super(args)
+            self.magnitude = args[:magnitude]
+            self.magnitude_status = args[:magnitude_status]
           end
 
           def <=>(others)
-            @value <=> others.value
+            @magnitude <=> others.magnitude
           end
 
           def magnitude=(magnitude)
@@ -101,12 +100,10 @@ module OpenEHR
         class DvOrdinal < DvOrdered
           attr_reader :value, :symbol, :limits
 
-          def initialize(value, symbol, limits=nil, normal_range=nil,
-                         normal_status = nil, other_reference_ranges=nil)
-            self.value = value
-            self.symbol = symbol
-            self.limits = limits
-            super(normal_range, normal_status, other_reference_ranges)
+          def initialize(args = {})
+            super(args)
+            self.symbol = args[:symbol]
+            self.limits = args[:limits]
           end
 
           def value=(value)
@@ -117,17 +114,6 @@ module OpenEHR
           def symbol=(symbol)
             raise ArgumentError,'symbol should not be nil' if symbol.nil?
             @symbol = symbol
-          end
-
-          def is_strictly_comparable_to?(others)
-            unless others.instance_of? OpenEhr::RM::DataTypes::Quantity::DvOrdinal
-              return false
-            end
-            unless others.symbol.defining_code.terminology_id.value ==
-                @symbol.defining_code.terminology_id.value
-              return false
-            end
-            return true
           end
 
           def <=>(other)
@@ -141,56 +127,84 @@ module OpenEHR
               @limits = limits
             end
           end
+          def is_strictly_comparable_to?(others)
+            unless super(others)
+              return false
+            end
+            unless others.symbol.defining_code.terminology_id.value ==
+                @symbol.defining_code.terminology_id.value
+              return false
+            else
+              return true
+            end
+          end
         end
 
         class DvAbsoluteQuantity < DvQuantified
           attr_accessor :accuracy
 
-          def initialize(magnitude, magnitude_status=nil, accuracy=nil,
-                         normal_range=nil, normal_status = nil,
-                         other_reference_ranges=nil)
-            super(magnitude, magnitude_status, normal_range,
-                   normal_status, other_reference_ranges)
-            self.accuracy = accuracy
+          def initialize(args = {})
+            super(args)
+            self.accuracy = args[:accuracy]
           end
 
           def add(a_diff)
-            raise NotImplementedError, 'add must be implemented'
+            type_check(a_diff)
+            return result_builder(DvAbsoluteQuantity,
+                                  @magnitude+a_diff.magnitude)
           end
 
           def diff(other)
-            raise NotImplementedError, 'diff must be implemented'
+            type_check(other)
+            return result_builder(DvAmount,
+                                  (@magnitude-other.magnitude).abs)
           end
 
           def subtract(a_diff)
-            raise NotImplementedError, 'subtract must be implemented'
+            type_check(a_diff)
+            return result_builder(DvAbsoluteQuantity,
+                                  @magnitude-a_diff.magnitude)
+          end
+          private
+          def type_check(other)
+            unless self.is_strictly_comparable_to? other
+              raise ArgumentError, 'type mismatch'
+            end
+          end
+
+          def result_builder(klass, magnitude)
+            return klass.new(:magnitude => magnitude,
+                             :magnitude_status => @magnitude_status,
+                             :accuracy => @accuracy,
+                             :accuracy_percent => @accuracy_percent,
+                             :normal_range => @normal_range,
+                             :normal_status => @normal_status,
+                             :other_reference_ranges => @other_reference_ranges)
           end
         end
 
         class DvAmount < DvQuantified
           attr_reader :accuracy, :accuracy_percent
-          def initialize(magnitude, magnitude_status=nil, accuracy=nil,
-                         accuracy_percent=nil, normal_range=nil,
-                         normal_status = nil, other_reference_ranges=nil)
-            super(magnitude, magnitude_status, normal_range,
-                  normal_status, other_reference_ranges)
-            unless accuracy.nil?
-              set_accuracy(accuracy, accuracy_percent)
+
+          def initialize(args = {})
+            super(args)
+            unless args[:accuracy].nil?
+              set_accuracy(args[:accuracy], args[:accuracy_percent])
             else
               @accuracy, @accuracy_percent = nil, nil
             end
           end
 
           def +(other)
-            unless self.is_strictly_comparable_to?(other)
+            unless self.is_strictly_comparable_to? other
               raise ArgumentError, 'type mismatch'
             end
-            return DvAmount.new(@magnitude+other.magnitude, @magnitude_status,
-                                 @accuracy, @accuracy_percent, @normal_range,
-                                 @normal_status, @other_reference_ranges)
+            result = self.dup
+            result.magnitude = @magnitude + other.magnitude
+            return result
           end
 
-          def -(other)
+          def -(other)            
             other.magnitude = - other.magnitude
             self+(other)
           end
@@ -211,13 +225,11 @@ module OpenEHR
 
         class DvQuantity < DvAmount
           attr_reader :units, :precision
-          def initialize(magnitude, units, magnitude_status=nil, precision=nil,
-                         accuracy=nil, accuracy_percent=nil, normal_range=nil,
-                         normal_status = nil, other_reference_ranges=nil)
-            super(magnitude, magnitude_status, accuracy, accuracy_percent,
-                  normal_range, normal_status, other_reference_ranges)
-            self.units = units
-            self.precision = precision
+
+          def initialize(args = {})
+            super(args)
+            self.units = args[:units]
+            self.precision = args[:precision]
           end
 
           def units=(units)
@@ -233,8 +245,10 @@ module OpenEHR
           end
 
           def is_strictly_comparable_to?(others)
-            return false if others.nil?
-            if others.instance_of?(DvQuantity) && others.units == @units
+            unless super(others)
+              return false
+            end
+            if others.units == @units
               return true
             else
               return false
@@ -248,33 +262,18 @@ module OpenEHR
               return true
             end
           end
-# accuracy???
-          def +(other)
-            dv_amount = super(other)
-            return DvQuantity.new(dv_amount.magnitude, @units,
-                                   @magnitude_status, @precision,
-                                   @accuracy, @accuracy_percent, @normal_range,
-                                   @normal_status, @other_reference_ranges)
-          end
         end
 
         class DvCount < DvAmount
-          def is_strictly_comparable_to?(others)
-            return false if others.nil?
-            if others.instance_of?(DvCount)
-              return true
-            else
-              return false
-            end
-          end
+
         end
 
         class ReferenceRange
           attr_reader :meaning, :range
 
-          def initialize(meaning, range)
-            self.meaning = meaning
-            self.range = range
+          def initialize(args = {})
+            self.meaning = args[:meaning]
+            self.range = args[:range]
           end
 
           def meaning=(meaning)
@@ -313,23 +312,20 @@ module OpenEHR
           include ProportionKind
           attr_reader :numerator, :denominator, :type, :precision
 
-          def initialize(numerator, denominator, type, precision=nil,
-                         magnitude_status=nil, accuracy=nil,
-                         accuracy_percent=nil, normal_range=nil,
-                         normal_status = nil, other_reference_ranges=nil)
-            self.type = type
-            self.numerator = numerator
-            self.denominator = denominator
-            self.precision = precision
-            self.magnitude_status = magnitude_status
-            unless accuracy.nil?
-              set_accuracy(accuracy, accuracy_percent)
+          def initialize(args = {})
+            self.type = args[:type]
+            self.numerator = args[:numerator]
+            self.denominator = args[:denominator]
+            self.precision = args[:precision]
+            self.magnitude_status =args[:magnitude_status]
+            unless args[:accuracy].nil?
+              set_accuracy(args[:accuracy], args[:accuracy_percent])
             else
               @accuracy, @accuracy_percent = nil, nil
             end
-            self.normal_range = normal_range
-            self.normal_status = normal_status
-            self.other_reference_ranges = other_reference_ranges
+            self.normal_range = args[:normal_range]
+            self.normal_status = args[:normal_status]
+            self.other_reference_ranges = args[:other_reference_ranges]
           end
 
           def numerator=(numerator)
@@ -342,18 +338,19 @@ module OpenEHR
           end
 
           def denominator=(denominator)
-            if denominator.nil? or denominator == PK_RATIO
-              raise ArgumentError, 'denominator invalid'
-            end
-            if (@type == PK_FRACTION || @type == PK_INTEGER_FRACTION) &&
-                !denominator.integer?
-              raise ArgumentError, 'denominator invalid for type'
-            end
-            if @type == PK_UNITARY && denominator != 1
-              raise ArgumentError, 'denominator invalid for type'
-            end
-            if @type == PK_PERCENT && denominator != 100
-              raise ArgumentError, 'denominator invaild for type'
+            case @type
+            when PK_UNITARY
+              unless denominator == 1
+                raise ArgumentError, 'Unitary denominator must be 1'
+              end
+            when PK_PERCENT
+              unless denominator == 100
+                raise ArgumentError, 'Percent denominator must be 100'
+              end
+            when PK_FRACTION, PK_INTEGER_FRACTION
+              unless denominator.integer? and @numerator.integer?
+                raise ArgumentError, 'Fraction numerator/denominator must be integer'
+              end
             end
             @denominator = denominator
           end
@@ -372,12 +369,11 @@ module OpenEHR
 
           def precision=(precision)
             unless precision.nil?
-              unless precision == 0 || self.is_integral?
-                @precision = precision
-              else
+              if (self.is_integral? && precision !=0)
                 raise ArgumentError, 'precision invalid'
               end
             end
+            @precision = precision
           end
 
           def is_integral?
@@ -385,7 +381,7 @@ module OpenEHR
           end
 
           def is_strictly_comparable_to?(other)
-            unless other.instance_of?(DvProportion)
+            unless super(other)
               return false
             end
             if other.type == @type
