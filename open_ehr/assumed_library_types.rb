@@ -2,7 +2,7 @@
 require 'date'
 require 'time'
 
-module OpenEhr
+module OpenEHR
   module AssumedLibraryTypes
     class Any < Object
       
@@ -11,11 +11,10 @@ module OpenEhr
     class Interval < Any
       attr_reader :lower, :upper
       
-      def initialize(lower, upper, 
-                     lower_included = nil, upper_included = nil)
-        check_lower_upper(lower, upper)
-        self.lower_included = lower_included
-        self.upper_included = upper_included
+      def initialize(args = {})
+        check_lower_upper(args[:lower], args[:upper])
+        self.lower_included = args[:lower_included]
+        self.upper_included = args[:upper_included]
       end
 
       def lower=(lower)
@@ -46,7 +45,7 @@ module OpenEhr
       end
 
       def upper_included=(upper_included)
-        if (upper == nil) && (upper_included != nil)
+        if (@upper.nil?) && (upper_included != nil)
           raise ArgumentError, "upper is not set"
         end
         @upper_included = upper_included
@@ -57,9 +56,8 @@ module OpenEhr
       end
 
       def has?(value)
-        if ((@lower < value) && (value < @upper) ||
-            (@lower_included == true) && (@lower == value) ||
-            (@upper_included == true) && (@upper == value))
+        if ((@lower.nil?||@lower < value||((@lower_included == true) && (@lower == value)))&&
+            (@upper.nil?||value < @upper||((@upper_included == true) && (@upper == value))))
           true
         else
           false
@@ -69,7 +67,7 @@ module OpenEhr
       private
 
       def check_lower_upper(lower, upper)
-        if (lower == nil) && (upper == nil)
+        if lower.nil? && upper.nil?
           raise ArgumentError, "Either lower or upper must be assigned"
         end
         unless (lower.nil? || upper.nil?)
@@ -82,7 +80,7 @@ module OpenEhr
       end
     end # end of Interval
   
-    class TIME_DEFINITIONS < Any
+    class TimeDefinitions < Any
       DAYS_IN_LEAP_YEAR = 366
       DAYS_IN_WEEK = 7
       DAYS_IN_YEAR = 365
@@ -96,14 +94,23 @@ module OpenEhr
       SECONDS_IN_MINUTE = 60
 
       def self.valid_year?(year)
-        year >= 0
+        return !year.nil? && year >= 0
       end
 
       def self.valid_day?(y, m, d)
-        Date.valid_date?(y,m,d) and valid_year? y
+        unless y.nil? || m.nil? || d.nil?
+          return Date.valid_date?(y,m,d)
+        end
+        if (y.nil?) || (m.nil? && !d.nil?)
+          return false
+        end
+        return self.valid_year?(y) && self.valid_month?(m)
       end
 
       def self.valid_hour?(h,m = nil, s = nil)
+        if h.nil?
+          return false
+        end
         if !m.nil? and !valid_minute?(m)
           return false
         end
@@ -112,30 +119,38 @@ module OpenEhr
         end
         (h >= 0 and h < HOURS_IN_DAY) or (h == HOURS_IN_DAY and m == 0 and s == 0)
       end
+
       def self.valid_minute?(mi)
         mi >= 0 and mi < MINUTES_IN_HOUR
       end
+
       def self.valid_second?(s)
         s >= 0 and s < SECONDS_IN_MINUTE
       end
+
       def self.valid_month?(mo)
         mo >= 1 and mo <= MONTH_IN_YEAR
       end
-    end # end of TIME_DEFINITIONS
+    end # end of TimeDefinitions
 
-    module ISO8601_DATE_MODULE
+    module ISO8601DateModule
       attr_reader :year, :month, :day
+
       def year=(year)
-        raise ArgumentError, "Year is not valid" unless ISO8601_DATE.valid_year?(year)
+        unless ISO8601Date.valid_year?(year)
+          raise ArgumentError, "Year is not valid"
+        end
         @year = year
       end
+
       def month=(month)
-        raise ArgumentError, "Month is not valid" unless month.nil? or ISO8601_DATE.valid_month?(month)
+        raise ArgumentError, "Month is not valid" unless month.nil? or ISO8601Date.valid_month?(month)
         @month = month
       end
 
       def day=(day)
-        raise ArgumentError, "Day is not valid" unless day.nil? or ISO8601_DATE.valid_day?(@year, @month, day)
+        
+        raise ArgumentError, "Day is not valid" unless day.nil? or ISO8601Date.valid_day?(@year, @month, day)
         @day = day
       end
 
@@ -175,8 +190,8 @@ module OpenEhr
       end
     end
 
-    class ISO8601_DATE < TIME_DEFINITIONS
-      include ISO8601_DATE_MODULE
+    class ISO8601Date < TimeDefinitions
+      include ISO8601DateModule
       def initialize(string)
         /(\d{4})(?:-(\d{2})(?:-(\d{2})?)?)?/ =~ string
         if $1.nil?
@@ -206,11 +221,13 @@ module OpenEhr
       end
     end # end of ISO8601_DATE
 
-    module ISO8601_TIME_MODULE
+    module ISO8601TimeModule
       attr_reader :hour, :minute, :second, :fractional_second, :timezone
 
       def hour=(hour)
-        raise ArgumentError, "hour is not valid" if !ISO8601_TIME.valid_hour?(hour, @minute, @second)
+        unless ISO8601Time.valid_hour?(hour, @minute, @second)
+          raise ArgumentError, "hour is not valid"
+        end
         @hour = hour
       end
 
@@ -219,7 +236,7 @@ module OpenEhr
       end
 
       def minute=(minute)
-        raise ArgumentError, "minute is not valid" if !minute.nil? and !ISO8601_TIME.valid_minute?(minute)
+        raise ArgumentError, "minute is not valid" if !minute.nil? and !ISO8601Time.valid_minute?(minute)
         @minute = minute
       end
 
@@ -229,23 +246,22 @@ module OpenEhr
 
       def second=(second)
         raise ArgumentError, "minute not defined" if @minute.nil? and !second.nil?
-        raise ArgumentError, "second is not valid" if !second.nil? and !ISO8601_TIME.valid_second?(second)
+        raise ArgumentError, "second is not valid" if !second.nil? and !ISO8601Time.valid_second?(second)
         @second = second
       end
 
       def fractional_second=(fractional_second)
         raise ArgumentError, "minute not defined" if minute_unknown? and !fractional_second.nil?
         raise ArgumentError, "second not defined" if second_unknown? and !fractional_second.nil?
-        raise ArgumentError, "fractional second should be lower than 1.0" if !fractional_second.nil? and fractional_second >= 1.0
+        if !fractional_second.nil? &&
+            (fractional_second < 0.0 || fractional_second >= 1.0)
+          raise ArgumentError, 'fractional second should be between 0.0 - 1.0'
+        end
         @fractional_second = fractional_second
       end
 
       def has_fractional_second?
-        if @fractional_second.nil?
-          return false
-        else
-          return true
-        end
+        return !@fractional_second.nil?
       end
 
       def timezone=(timezone)
@@ -290,8 +306,8 @@ module OpenEhr
       end
     end
 
-    class ISO8601_TIME < TIME_DEFINITIONS
-      include ISO8601_TIME_MODULE
+    class ISO8601Time < TimeDefinitions
+      include ISO8601TimeModule
       def initialize(string)
         /(\d{2}):?(\d{2})?(:?)(\d{2})?((\.|,)(\d+))?(Z|([+-](\d{2}):?(\d{2})))?/ =~ string
         if $2.nil?
@@ -320,8 +336,9 @@ module OpenEhr
           self.timezone = $8
         end
       end
+
       def self.valid_iso8601_time?(s)
-        if /(\d{2}):?(\d{2})?(:?)(\d{2})?((\.|,)(\d+))?(Z|([+-](\d{2}):?(\d{2})))?/ =~ s
+        if /^(\d{2}):?(\d{2})?(:?)(\d{2})?((\.|,)(\d+))?(Z|([+-](\d{2}):?(\d{2})))?$/ =~ s
 # ISO 8601 regular expression by H. Yuki
 #  http://digit.que.ne.jp/work/wiki.cgi?Perl%E3%83%A1%E3%83%A2%2FW3C%E5%BD%A2%E5%BC%8F%E3%81%AE%E6%97%A5%E6%99%82%E3%81%AE%E8%A7%A3%E6%9E%90
 # (\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d))?)?(Z|([+-]\d{2}):(\d{2}))?)?)?)?
@@ -351,8 +368,6 @@ module OpenEhr
               if m.to_i < 0 or m.to_i >= MINUTES_IN_HOUR
                 return false
               end
-            else
-              return false
             end
           end
           return true
@@ -362,8 +377,8 @@ module OpenEhr
       end
     end # end of ISO8601_TIME
 
-    module ISO8601_DATE_TIME_MODULE
-      include ISO8601_DATE_MODULE, ISO8601_TIME_MODULE
+    module ISO8601DateTimeModule
+      include ISO8601DateModule, ISO8601TimeModule
       def as_string
         if (!@year.nil? and !@month.nil? and !@day.nil?)
           s = Date.new(@year, @month, @day).to_s
@@ -391,11 +406,10 @@ module OpenEhr
       end
     end
 
-    class ISO8601_DATE_TIME < ISO8601_DATE
-      include ISO8601_DATE_TIME_MODULE
+    class ISO8601DateTime < ISO8601Date
+      include ISO8601DateTimeModule
       def initialize(string)
-        /(\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(Z|([+-]\d{2}):?(\d{2}))?)?)?)?/ =~ string
-        if $1.empty?
+        unless /(\d{4})(?:-(\d{2})(?:-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(Z|([+-]\d{2}):?(\d{2}))?)?)?)?/ =~ string
           raise ArgumentError, 'format invalid'
         else
           self.year = $1.to_i
@@ -438,24 +452,35 @@ module OpenEhr
       end
     end
   
-    class ISO8601_TIMEZONE
+    class ISO8601Timezone
       attr_accessor :sign, :hour, :minute
 
+      def initialize(string)
+        unless /(Z|(([+-])(\d{2}):?(\d{2})))/ =~ string
+          raise ArgumentError, 'invaild format'
+        end
+        if $1 == 'Z'
+          @sign, @hour, @minute = +1, 0, 0
+        else
+          @sign, @hour, @minute = ($3+'1').to_i, $4.to_i , $5.to_i
+        end
+      end
+
       def is_gmt?
-        @sign == "+1" and @hour == 0 and @minute == 0
+        @sign == +1 and @hour == 0 and @minute == 0
       end
 
       def as_string
-        if @sign == "+1"
+        if @sign == +1
           s = "+"
-        elsif @sign == "-1"
+        elsif @sign == -1
           s = "-"
         end
-        sprintf("Z%s%02d%02d", s, @hour, @minute)
+        sprintf("%s%02d%02d", s, @hour, @minute)
       end
-    end # end of ISO8601_TIMEZONE
+    end # end of ISO8601Timezone
 
-    module ISO8601_DURATION_MODULE
+    module ISO8601DurationModule
       attr_reader :years, :months, :weeks, :days
       attr_reader :hours, :minutes, :seconds, :fractional_second
 
@@ -545,8 +570,9 @@ module OpenEhr
         return str
       end
     end
-    class ISO8601_DURATION < TIME_DEFINITIONS
-      include ISO8601_DURATION_MODULE
+
+    class ISO8601Duration < TimeDefinitions
+      include ISO8601DurationModule
       def initialize(str)
         /^P((\d+)Y)?((\d+)M)?((\d+)W)?((\d)D)?(T((\d+)H)?((\d+)M)?((\d+)(\.\d+)?S)?)?$/ =~ str
         self.years = $2.to_i
@@ -558,6 +584,6 @@ module OpenEhr
         self.seconds = $15.to_i
         self.fractional_second = $16.to_f
       end
-    end # end of ISO8601_DURATION
+    end # end of ISO8601Duration
   end # end of Assumed_Types
 end # end of OpenEHR

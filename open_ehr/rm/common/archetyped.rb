@@ -1,7 +1,7 @@
 # This module is based on the UML,
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109318114715_211173_0Report.html
 # Ticket refs #65
-module OpenEhr
+module OpenEHR
   module RM
     module Common
       module Archetyped
@@ -16,28 +16,28 @@ module OpenEhr
         class Pathable
           attr_accessor :parent
 
-          def initialize(parent = nil)
-            @parent = parent
+          def initialize(args = { })
+            self.parent = args[:parent]
           end
 
           def item_at_path(path)
-            raise NotImplementError, "item_at_path must be implemented"
+            raise NotImplementedError, "item_at_path must be implemented"
           end
 
           def items_at_path(path)
-            raise NotImplementError, "items_at_path must be implemented"
+            raise NotImplementedError, "items_at_path must be implemented"
           end
 
           def path_exists?(path)
-            raise NotImplementError, "path_exists? must be implemented"
+            raise NotImplementedError, "path_exists? must be implemented"
           end
 
           def path_of_item(item)
-            raise NotImplementError, "path_of_item must be implemented"
+            raise NotImplementedError, "path_of_item must be implemented"
           end
 
-          def path_unique(path)
-            raise NotImplementError, "path_unique must be implemented"
+          def path_unique?(path)
+            raise NotImplementedError, "path_unique? must be implemented"
           end
         end
 
@@ -47,7 +47,7 @@ module OpenEhr
           attr_accessor :uid, :archetype_details, :feeder_audit
 
           def initialize(args = { })
-            super(args[:parent])
+            super(args)
             self.archetype_node_id = args[:archetype_node_id]
             self.name = args[:name]
             self.links = args[:links]
@@ -57,7 +57,9 @@ module OpenEhr
           end
           
           def archetype_node_id=(archetype_node_id)
-            raise ArgumentError, 'archetype_node_id should not be nil' if archetype_node_id.nil?
+            if archetype_node_id.nil? or archetype_node_id.empty?
+              raise ArgumentError, 'archetype_node_id should not be nil'
+            end
             @archetype_node_id = archetype_node_id
           end
 

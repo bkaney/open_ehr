@@ -1,7 +1,7 @@
 # This module implemented from this UML
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109067605961_209522_3179Report.html
 # Ticket refs #48
-module OpenEhr
+module OpenEHR
   module RM
     module DataTypes
       module Text
@@ -61,7 +61,7 @@ module OpenEhr
           end 
         end # of CodePhrase
 
-        class DvText < OpenEhr::RM::DataTypes::Basic::DataValue
+        class DvText < OpenEHR::RM::DataTypes::Basic::DataValue
           attr_reader :value, :formatting, :hyperlink, :mappings
           attr_reader :language, :encoding
           def initialize(value, formatting = nil, hyperlink = nil,
@@ -145,7 +145,7 @@ module OpenEhr
           end
         end
 
-        class DvParagraph < OpenEhr::RM::DataTypes::Basic::DataValue
+        class DvParagraph < OpenEHR::RM::DataTypes::Basic::DataValue
           attr_reader :items
           def initialize(items)
             items_exists(items)

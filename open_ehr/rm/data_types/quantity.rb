@@ -2,14 +2,14 @@
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109599337877_94556_1510Report.html
 # Ticket refs #50
 require 'assumed_library_types'
-module OpenEhr
+module OpenEHR
   module RM
     module DataTypes
       module Quantity
 
         autoload :Date_Time, "rm/data_types/quantity/date_time.rb"
 
-        class DvOrdered < OpenEhr::RM::DataTypes::Basic::DataValue
+        class DvOrdered < OpenEHR::RM::DataTypes::Basic::DataValue
           include Comparable
           attr_accessor :normal_range, :other_refference_ranges, :normal_status
 
@@ -50,7 +50,7 @@ module OpenEhr
           end
         end
 
-        class DvInterval < OpenEhr::AssumedLibraryTypes::Interval
+        class DvInterval < OpenEHR::AssumedLibraryTypes::Interval
 
         end
 

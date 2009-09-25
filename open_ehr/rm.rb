@@ -8,7 +8,7 @@ $:.unshift File.join(File.dirname(__FILE__))
 #
 
 # OpenEHR::RM
-module OpenEhr
+module OpenEHR
 
   autoload :Assumed_Library_Types, "assumed_library_types.rb"
 

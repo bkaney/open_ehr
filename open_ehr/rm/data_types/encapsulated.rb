@@ -4,27 +4,25 @@
 require 'rubygems'
 require 'locale/info'
 
-module OpenEhr
+module OpenEHR
   module RM
     module DataTypes
       module Encapsulated
-        class DvEncapsulated  < OpenEhr::RM::DataTypes::Basic::DataValue
-          attr_reader :language, :charset, :size
-          def initialize(charset, language, size)
-            self.charset = charset
-            self.language = language
-            self.size = size
+        class DvEncapsulated  < OpenEHR::RM::DataTypes::Basic::DataValue
+          attr_reader :language, :charset
+
+          def initialize(args = {})
+            super(args)
+            self.charset = args[:charset]
+            self.language = args[:language]
           end
 
-          def size=(size)
-            if size < 0
-              raise ArgumentError, "negative size"
-            end
-            @size = size
+          def size
+            @value.size
           end
 
           def language=(language)
-            if language.nil? ||
+            if !language.nil? &&
                 !Locale::Info.language_code?(language.code_string)
               raise ArgumentError, 'invalid language code'
             end
@@ -32,20 +30,17 @@ module OpenEhr
           end
 
           def charset=(charset)
-            if charset.nil? || !charset_valid?(charset.code_string)
+            if !charset.nil? && !charset_valid?(charset.code_string)
               raise ArgumentError, 'invalid charset'
             end
             @charset = charset
           end
 
           private
-          def size_positive
-            raise ArgumentError, "size must be positive" if size < 0
-          end
 
           def charset_valid?(charset)
             result = false
-            open('rm/data_types/charset.lst') do |file|
+            open('lib/open_ehr/rm/data_types/charset.lst') do |file|
               while line = file.gets
                 if charset == line.chomp
                   result = true
@@ -62,19 +57,18 @@ module OpenEhr
           attr_reader :media_type
           attr_accessor :uri, :data, :compression_algorithm,
           :integrity_check, :integrity_check_algorithm, :alternate_text
-          def initialize(charset, language, size, media_type, uri=nil,
-                         data=nil, compression_algorithm=nil,
-                         integrity_check=nil, integrity_check_algorithm=nil,
-                         alternate_text=nil)
-            super(charset, language, size)
-            self.media_type = media_type
-            @uri = uri
-            @data = data
-            @compression_algorithm = compression_algorithm
-            @integrity_check = integrity_check
-            @integrity_check_algorithm = integrity_check_algorithm
-            @alternate_text = alternate_text
+
+          def initialize(args = {})
+            super(args)
+            self.media_type = args[:media_type]
+            self.uri = args[:uri]
+            self.data = args[:data]
+            self.compression_algorithm = args[:compression_algorithm]
+            self.integrity_check = args[:integrity_check]
+            self.integrity_check_algorithm = args[:integrity_check_algorithm]
+            self.alternate_text = args[:alternate_text]
           end
+
           def media_type=(media_type)
             if media_type.code_string.nil?
               raise ArgumentError, 'media_type should not be nil'
@@ -84,23 +78,16 @@ module OpenEhr
         end
 
         class DvParsable < DvEncapsulated
-          attr_reader :value, :formalism
-          def initialize(charset, language, size, formalism, value)
-            super(charset, language, size)
-            self.formalism = formalism
-            self.value = value
-          end
+          attr_reader :formalism
 
-          def value=(value)
-            raise ArgumentError, 'value must not be nil' if value.nil?
-            @value = value
+          def initialize(args = {})
+            super(args)
+            self.formalism = args[:formalism]
           end
 
           def formalism=(formalism)
-            if formalism.nil?
-              raise ArgumentError, "formalism must not be nil"
-            elsif formalism.empty?
-              raise ArgumentError, "formalism must nto be empty"
+            if formalism.nil? || formalism.empty?
+              raise ArgumentError, 'formalism is mandatory'
             end
             @formalism = formalism
           end
