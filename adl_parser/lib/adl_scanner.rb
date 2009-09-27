@@ -1,17 +1,17 @@
 require 'rubygems'
-require 'yaparc'
 require 'logger'
 require 'adl_parser.rb'
-require 'am.rb'
-require 'rm.rb'
+require 'open_ehr'
+#require 'am.rb'
+#require 'rm.rb'
 require 'util.rb'
 
 
-module OpenEHR
+module OpenEhr
   module ADL
     module Scanner
       LOGGER = Logger.new('log/scanner.log')
-      LOGGER.level = Logger::WARN
+      LOGGER.level = Logger::DEBUG
 
       class Base
         attr_accessor :adl_type, :lineno
@@ -32,7 +32,7 @@ module OpenEHR
       class ADLScanner < Base
         attr_accessor :adl_type, :lineno, :cadl_scanner, :dadl_scanner, :regex_scanner, :term_constraint_scanner
 
-        @@logger = OpenEHR::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')
+        @@logger = OpenEhr::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')
         RESERVED = {
           'archetype' => :SYM_ARCHETYPE,
           'adl_version' => :SYM_ADL_VERSION,
@@ -84,7 +84,8 @@ module OpenEHR
                 yield :V_TYPE_IDENTIFIER, $&
               when /\A(\w+)-(\w+)-(\w+)\.(\w+)((?:-\w+)*)\.(v\w+)/   #V_ARCHETYPE_ID
                 object_id, rm_originator, rm_name, rm_entity, concept_name, specialisation, version_id = $&, $1, $2, $3, $4, $5, $6
-                archetype_id = OpenEHR::RM::Support::Identification::Archetype_ID.new(object_id, concept_name, rm_name, rm_entity, rm_originator, specialisation, version_id)
+                #archetype_id = OpenEhr::RM::Support::Identification::ArchetypeID.new(object_id, concept_name, rm_name, rm_entity, rm_originator, specialisation, version_id)
+                archetype_id = OpenEhr::RM::Support::Identification::ArchetypeID.new(:concept_name => concept_name, :rm_name => rm_name, :rm_entity => rm_entity, :rm_originator => :rm_originator, :specialisation => specialisation, :version_id => version_id)
                 yield :V_ARCHETYPE_ID, archetype_id
               when /\A[a-z][a-zA-Z0-9_]*/
                 word = $&
@@ -172,8 +173,8 @@ module OpenEHR
                 yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
               when /\A\[([a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+)\]/ #V_QUALIFIED_TERM_CODE_REF form such as [ICD10AM(1998)::F23]
                 yield :V_QUALIFIED_TERM_CODE_REF, $1
-              when /\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/   #V_LOCAL_TERM_CODE_REF
-                yield :V_LOCAL_TERM_CODE_REF, $&
+              when /\A\[([a-zA-Z0-9][a-zA-Z0-9._\-]*)\]/   #V_LOCAL_TERM_CODE_REF
+                yield :V_LOCAL_TERM_CODE_REF, $1
               when /\A\[/   # [
                 yield :Left_bracket_code, :Left_bracket_code
               when /\A\]/   # ]
@@ -207,22 +208,22 @@ module OpenEHR
               end
               data = $' # variable $' receives the string after the match
             when :dadl
-              dadl_scanner = OpenEHR::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
+              dadl_scanner = OpenEhr::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
               data = dadl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :cadl
-              cadl_scanner = OpenEHR::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
+              cadl_scanner = OpenEhr::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
               data = cadl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :regexp
-              regex_scanner = OpenEHR::ADL::Scanner::RegexScanner.new(@adl_type, @filename, @lineno)
+              regex_scanner = OpenEhr::ADL::Scanner::RegexScanner.new(@adl_type, @filename, @lineno)
               data = regex_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :term_constraint
-              term_constraint_scanner = OpenEHR::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
+              term_constraint_scanner = OpenEhr::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
               data = term_constraint_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
@@ -237,7 +238,8 @@ module OpenEHR
       # DADLScanner
       # 
       class DADLScanner < Base
-        @@logger = OpenEHR::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')
+        attr_accessor :in_interval, :in_c_domain_type, :in_dblock
+        @@logger = OpenEhr::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')
         RESERVED = {
           'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
           'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
@@ -248,6 +250,7 @@ module OpenEHR
           super(adl_type, filename, lineno)
           @in_interval = false
           @in_c_domain_type = false
+          @in_dblock = true
         end
 
         #
@@ -257,6 +260,7 @@ module OpenEHR
           @@logger.debug("Entering DADLScanner#scan at #{@filename}:#{@lineno}: @adl_type = #{@adl_type.inspect}, data = #{data.inspect}")
           until data.nil?  do
             @@logger.debug("#{@filename}:#{@lineno}: DADLScanner#scan:loop data = #{data.inspect}")
+            @@logger.debug("#{@filename}:#{@lineno}: DADLScanner#scan:loop self = \n#{self.to_yaml}")
             case @adl_type.last
             when :dadl
               case data
@@ -296,14 +300,18 @@ module OpenEHR
               when /\A\>/   # >
                 if @in_interval
                   yield :SYM_GT, :SYM_GT
+#                 elsif @in_dblock == true
+#                   @in_dblock = false
+#                   yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
                 elsif @in_c_domain_type == true
                   assert_at(__FILE__,__LINE__){@adl_type.last == :dadl}
                   adl_type = @adl_type.pop
-                  if @adl_type.last == :cadl
+                  if adl_type == :dadl
                     @in_c_domain_type = false
-                    yield :END_V_C_DOMAIN_TYPE_BLOCK, $&
+                    yield :END_V_C_DOMAIN_TYPE_BLOCK, :END_V_C_DOMAIN_TYPE_BLOCK
+#                    yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
                   else
-                    yield :SYM_END_DBLOCK, $&
+                    yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
                   end
                 elsif @in_c_domain_type == false
                   adl_type = @adl_type.pop
@@ -391,23 +399,23 @@ module OpenEHR
               end
               data = $' # variable $' receives the string after the match
             when :adl
-              adl_scanner = OpenEHR::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
+              adl_scanner = OpenEhr::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
               data = adl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :cadl
-              cadl_scanner = OpenEHR::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
+              cadl_scanner = OpenEhr::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
               data = cadl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :regexp
-              regex_scanner = OpenEHR::ADL::Scanner::RegexScanner.new(@adl_type, @filename, @lineno)
+              regex_scanner = OpenEhr::ADL::Scanner::RegexScanner.new(@adl_type, @filename, @lineno)
               data = regex_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :term_constraint
               @@logger.debug("#{__FILE__}:#{__LINE__}: scan_dadl: Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
-              term_constraint_scanner = OpenEHR::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
+              term_constraint_scanner = OpenEhr::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
               data = term_constraint_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
@@ -422,7 +430,7 @@ module OpenEHR
 
       class CADLScanner < Base
 
-        @@logger = OpenEHR::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')        #Logger.new('log/scanner.log')
+        @@logger = OpenEhr::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')        #Logger.new('log/scanner.log')
         RESERVED = {
           'then' => :SYM_THEN, # [Tt][Hh][Ee][Nn]
           'else' => :SYM_ELSE, # [Ee][Ll][Ss][Ee]
@@ -567,8 +575,8 @@ module OpenEHR
               when /\A\[([a-zA-Z0-9\(\)\._\-]+)::[ \t\n]*/
                 @adl_type.push(:term_constraint)
                 yield :START_TERM_CODE_CONSTRAINT, $1
-              when /\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/   #V_LOCAL_TERM_CODE_REF
-                yield :V_LOCAL_TERM_CODE_REF, $&
+              when /\A\[([a-zA-Z0-9][a-zA-Z0-9._\-]*)\]/   #V_LOCAL_TERM_CODE_REF
+                yield :V_LOCAL_TERM_CODE_REF, $1
               when /\A\[/   # [
                 yield :Left_bracket_code, :Left_bracket_code
               when /\A\]/   # ]
@@ -594,6 +602,10 @@ module OpenEHR
                   @@logger.debug("CADLScanner#scan: V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}:#{@lineno}")
                   yield :V_ATTRIBUTE_IDENTIFIER, word #V_ATTRIBUTE_IDENTIFIER /\A[a-z][a-zA-Z0-9_]*/
                 end
+              when /\A([A-Z][a-zA-Z0-9_]*)[ \n]*\</ # V_C_DOMAIN_TYPE
+                @in_c_domain_type = true
+                @adl_type.push(:dadl)
+                yield  :START_V_C_DOMAIN_TYPE_BLOCK, $1
               when /\A[A-Z][a-zA-Z0-9_]*/
                 word = $&.dup
                 if RESERVED[word.downcase]
@@ -623,32 +635,33 @@ module OpenEHR
               when /\A\S/ #UTF8CHAR
                 yield :UTF8CHAR, $&
               when /\A.+/ #
-                raise OpenEHR::ADL::Exception::CADLScanner::Base.new, "can't handle #{data.inspect}"
+                raise OpenEhr::ADL::Exception::CADLScanner::Base.new, "can't handle #{data.inspect}"
               end
               data = $' # variable $' receives the string after the match
             when :adl
-              adl_scanner = OpenEHR::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
+              adl_scanner = OpenEhr::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
               data = adl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :dadl
-              dadl_scanner = OpenEHR::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
+              dadl_scanner = OpenEhr::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
+              dadl_scanner.in_c_domain_type = @in_c_domain_type
               data = dadl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :regexp
-              regex_scanner = OpenEHR::ADL::Scanner::RegexScanner.new(@adl_type, @filename, @lineno)
+              regex_scanner = OpenEhr::ADL::Scanner::RegexScanner.new(@adl_type, @filename, @lineno)
               data = regex_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :term_constraint
               @@logger.debug("Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
-              term_constraint_scanner = OpenEHR::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
+              term_constraint_scanner = OpenEhr::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
               data = term_constraint_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             else
-              raise OpenEHR::ADL::Exception::CADLScanner.new, "unexpected adl_type: #{@adl_type.last}"
+              raise OpenEhr::ADL::Exception::CADLScanner.new, "unexpected adl_type: #{@adl_type.last}"
             end
           end # of until
         end
@@ -660,7 +673,7 @@ module OpenEHR
       # 
       class RegexScanner < Base
 
-        @@logger = OpenEHR::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')        #Logger.new('log/scanner.log')
+        @@logger = OpenEhr::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')        #Logger.new('log/scanner.log')
         
         def initialize(adl_type, filename, lineno = 1)
           super(adl_type, filename, lineno)
@@ -694,23 +707,23 @@ module OpenEHR
               end
               data = $' # variable $' receives the string after the match
             when :adl
-              adl_scanner = OpenEHR::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
+              adl_scanner = OpenEhr::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
               data = adl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :dadl
-              dadl_scanner = OpenEHR::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
+              dadl_scanner = OpenEhr::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
               data = dadl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :cadl
-              cadl_scanner = OpenEHR::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
+              cadl_scanner = OpenEhr::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
               data = cadl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :term_constraint
               #@@logger.debug("#{__FILE__}:#{__LINE__}: scan_regexp: Entering scan_term_constraint at #{@filename}:#{@lineno}")
-              term_constraint_scanner = OpenEHR::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
+              term_constraint_scanner = OpenEhr::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
               data = term_constraint_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
@@ -725,7 +738,7 @@ module OpenEHR
       # TermConstraintScanner
       # 
       class TermConstraintScanner < Base
-        @@logger = OpenEHR::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')        #Logger.new('log/scanner.log')
+        @@logger = OpenEhr::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')        #Logger.new('log/scanner.log')
         def initialize(adl_type, filename, lineno = 1)
           super(adl_type, filename, lineno)
         end
@@ -758,17 +771,17 @@ module OpenEHR
               end
               data = $' # variable $' receives the string after the match
             when :adl
-              adl_scanner = OpenEHR::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
+              adl_scanner = OpenEhr::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
               data = adl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :dadl
-              dadl_scanner = OpenEHR::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
+              dadl_scanner = OpenEhr::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
               data = dadl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
             when :cadl
-              cadl_scanner = OpenEHR::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
+              cadl_scanner = OpenEhr::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
               data = cadl_scanner.scan(data) do |sym, val|
                 yield sym, val
               end
@@ -793,7 +806,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/[ \t\n]*\[([a-zA-Z0-9\(\)\._\-]+)::[ \t\n]*/)) do |match|
-#                 OpenEHR::LOG.info("START_TERM_CODE_CONSTRAINT: #{match}")
+#                 OpenEhr::LOG.info("START_TERM_CODE_CONSTRAINT: #{match}")
 #                 [:START_TERM_CODE_CONSTRAINT, match]
 #               end
 #             end
@@ -806,7 +819,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A\[[a-zA-Z0-9()\._-]+::[a-zA-Z0-9\._-]+\]/)) do |match|
-#                 OpenEHR::LOG.info("V_QUALIFIED_TERM_CODE_REF: #{match}")
+#                 OpenEhr::LOG.info("V_QUALIFIED_TERM_CODE_REF: #{match}")
 #                 [:V_QUALIFIED_TERM_CODE_REF, match]
 #               end
 #             end
@@ -818,7 +831,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A\[[a-zA-Z0-9][a-zA-Z0-9._\-]*\]/)) do |match|
-#                 OpenEHR::LOG.info("V_TERM_CODE_REF: #{match}")
+#                 OpenEhr::LOG.info("V_TERM_CODE_REF: #{match}")
 #                 [:V_LOCAL_TERM_CODE_REF, match]
 #               end
 #             end
@@ -830,7 +843,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A\[[a-zA-Z0-9._\- ]+::[a-zA-Z0-9._\- ]+\]/)) do |match|
-#                 OpenEHR::LOG.info("ERR_V_QUALIFIED_TERM_CODE_REF: #{match}")
+#                 OpenEhr::LOG.info("ERR_V_QUALIFIED_TERM_CODE_REF: #{match}")
 #                 [:ERR_V_QUALIFIED_TERM_CODE_REF, match]
 #               end
 #             end
@@ -842,7 +855,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A[A-Z][a-zA-Z0-9_]*/)) do |match|
-#                 OpenEHR::LOG.info("V_TYPE_IDENTIFIER: #{match}")
+#                 OpenEhr::LOG.info("V_TYPE_IDENTIFIER: #{match}")
 #                 [:V_TYPE_IDENTIFIER, match]
 #               end
 #             end
@@ -854,7 +867,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/)) do |match|
-#                 OpenEHR::LOG.info("V_GENERIC_TYPE_IDENTIFIER: #{match}")
+#                 OpenEhr::LOG.info("V_GENERIC_TYPE_IDENTIFIER: #{match}")
 #                 [:V_GENERIC_TYPE_IDENTIFIER, match]
 #               end
 #             end
@@ -867,7 +880,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\Aa[ct][0-9.]+/)) do |match|
-#                 OpenEHR::LOG.info("V_LOCAL_CODE: #{match}")
+#                 OpenEhr::LOG.info("V_LOCAL_CODE: #{match}")
 #                 [:V_LOCAL_CODE, match]
 #               end
 #             end
@@ -879,7 +892,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A"([^"]*)"/m)) do |match|
-#                 OpenEHR::LOG.info("V_STRING: #{match}")
+#                 OpenEhr::LOG.info("V_STRING: #{match}")
 #                 [:V_STRING, match]
 #               end
 #             end
@@ -891,7 +904,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+/)) do |match|
-#                 OpenEHR::LOG.info("V_REAL: #{match}")
+#                 OpenEhr::LOG.info("V_REAL: #{match}")
 #                 [:V_REAL, match]
 #               end
 #             end
@@ -906,7 +919,7 @@ __END__
 #               Yaparc::Apply.new(
 #                                 Yaparc::Alt.new(Yaparc::Regex.new(/\AP([0-9]+|[yY])?([0-9]+|[mM])?([0-9]+|[wW])?([0-9]+|[dD])?T([0-9]+|[hH])?([0-9]+|[mM])?([0-9]+|[sS])?/),
 #                                                 Yaparc::Regex.new(/\AP([0-9]+|[yY])?([0-9]+|[mM])?([0-9]+|[wW])?([0-9]+|[dD])?/))) do |match|
-#                 OpenEHR::LOG.info("V_ISO8601_DURATION: #{match}")
+#                 OpenEhr::LOG.info("V_ISO8601_DURATION: #{match}")
 #                 [:V_ISO8601_DURATION, match]
 #               end
 #             end
@@ -930,16 +943,16 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Alt.new(Reserved.new,
-#                               OpenEHR::ADL::Scanner::Common::V_QUALIFIED_TERM_CODE_REF.new,
-#                               OpenEHR::ADL::Scanner::Common::V_LOCAL_TERM_CODE_REF.new,
-#                               OpenEHR::ADL::Scanner::Common::ERR_V_QUALIFIED_TERM_CODE_REF.new,
-#                               OpenEHR::ADL::Scanner::Common::V_TYPE_IDENTIFIER.new,
-#                               OpenEHR::ADL::Scanner::Common::V_GENERIC_TYPE_IDENTIFIER.new,
-#                               OpenEHR::ADL::Scanner::Common::V_STRING.new,
-#                               OpenEHR::ADL::Scanner::Common::V_LOCAL_CODE.new,
-#                               OpenEHR::ADL::Scanner::Common::V_REAL.new,
-#                               OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION.new#,
-#                               #OpenEHR::ADL::Scanner::Common::START_TERM_CODE_CONSTRAINT.new
+#                               OpenEhr::ADL::Scanner::Common::V_QUALIFIED_TERM_CODE_REF.new,
+#                               OpenEhr::ADL::Scanner::Common::V_LOCAL_TERM_CODE_REF.new,
+#                               OpenEhr::ADL::Scanner::Common::ERR_V_QUALIFIED_TERM_CODE_REF.new,
+#                               OpenEhr::ADL::Scanner::Common::V_TYPE_IDENTIFIER.new,
+#                               OpenEhr::ADL::Scanner::Common::V_GENERIC_TYPE_IDENTIFIER.new,
+#                               OpenEhr::ADL::Scanner::Common::V_STRING.new,
+#                               OpenEhr::ADL::Scanner::Common::V_LOCAL_CODE.new,
+#                               OpenEhr::ADL::Scanner::Common::V_REAL.new,
+#                               OpenEhr::ADL::Scanner::Common::V_ISO8601_DURATION.new#,
+#                               #OpenEhr::ADL::Scanner::Common::START_TERM_CODE_CONSTRAINT.new
 #                               )
 #             end
 #           end
@@ -951,17 +964,17 @@ __END__
           
 #           def initialize
 #             @parser = lambda do |input|
-#               reserved_parsers = OpenEHR::ADL::Scanner::DADL::RESERVED.map do |keyword| 
+#               reserved_parsers = OpenEhr::ADL::Scanner::DADL::RESERVED.map do |keyword| 
 #                 Yaparc::Tokenize.new(
 #                                      Yaparc::Literal.new(keyword[0],false)
 #                                      )
 #               end
 #               Yaparc::Alt.new(Yaparc::Apply.new(Yaparc::Alt.new(*reserved_parsers)) do |match|
-#                                 OpenEHR::LOG.info("Reserved: #{match}")
-#                                 [OpenEHR::ADL::Scanner::DADL::RESERVED[match], OpenEHR::ADL::Scanner::DADL::RESERVED[match]]
+#                                 OpenEhr::LOG.info("Reserved: #{match}")
+#                                 [OpenEhr::ADL::Scanner::DADL::RESERVED[match], OpenEhr::ADL::Scanner::DADL::RESERVED[match]]
 #                               end,
 #                               Yaparc::Apply.new(Yaparc::Regex.new(/\A[a-z][a-zA-Z0-9_]*/)) do |match|
-#                                 OpenEHR::LOG.info("V_ATTRIBUTE_IDENTIFIER: #{match}")
+#                                 OpenEhr::LOG.info("V_ATTRIBUTE_IDENTIFIER: #{match}")
 #                                 [:V_ATTRIBUTE_IDENTIFIER, match]
 #                               end)
 #             end
@@ -1006,7 +1019,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X][T\t][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]/)) do |match|
-#                 OpenEHR::LOG.info("V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN: #{match}")
+#                 OpenEhr::LOG.info("V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN: #{match}")
 #                 [:V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN, match]
 #               end
 #             end
@@ -1019,7 +1032,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X]/)) do |match|
-#                 OpenEHR::LOG.info("V_ISO8601_DATE_CONSTRAINT_PATTERN: #{match}")
+#                 OpenEhr::LOG.info("V_ISO8601_DATE_CONSTRAINT_PATTERN: #{match}")
 #                 [:V_ISO8601_DATE_CONSTRAINT_PATTERN, match]
 #               end
 #             end
@@ -1032,7 +1045,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]/)) do |match|
-#                 OpenEHR::LOG.info("V_ISO8601_TIME_CONSTRAINT_PATTERN: #{match}")
+#                 OpenEhr::LOG.info("V_ISO8601_TIME_CONSTRAINT_PATTERN: #{match}")
 #                 [:V_ISO8601_TIME_CONSTRAINT_PATTERN, match]
 #               end
 #             end
@@ -1046,7 +1059,7 @@ __END__
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Alt.new(Yaparc::Regex.new(/\AP[yY]?[mM]?[wW]?[dD]?T[hH]?[mM]?[sS]?/),
 #                                                 Yaparc::Regex.new(/\AP[yY]?[mM]?[wW]?[dD]?/))) do |match|
-#                 OpenEHR::LOG.info("V_ISO8601_DURATION_CONSTRAINT_PATTERN: #{match}")
+#                 OpenEhr::LOG.info("V_ISO8601_DURATION_CONSTRAINT_PATTERN: #{match}")
 #                 [:V_ISO8601_DURATION_CONSTRAINT_PATTERN, match]
 #               end
 #             end
@@ -1059,7 +1072,7 @@ __END__
 #           def initialize
 #             @parser = lambda do |input|
 #               Yaparc::Apply.new(Yaparc::Regex.new(/\A[A-Z][a-zA-Z0-9_]*[ \n]*\</)) do |match|
-#                 OpenEHR::LOG.info("V_C_DOMAIN_TYPE: #{match}")
+#                 OpenEhr::LOG.info("V_C_DOMAIN_TYPE: #{match}")
 #                 [:START_V_C_DOMAIN_TYPE_BLOCK, match]
 #               end
 #             end
@@ -1076,20 +1089,20 @@ __END__
 #               Yaparc::Alt.new(V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN.new,
 #                               V_ISO8601_DATE_CONSTRAINT_PATTERN.new,
 #                               V_ISO8601_TIME_CONSTRAINT_PATTERN.new,
-#                               OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION.new,
+#                               OpenEhr::ADL::Scanner::Common::V_ISO8601_DURATION.new,
 #                               V_C_DOMAIN_TYPE.new,
 #                               V_ISO8601_DURATION_CONSTRAINT_PATTERN.new,
 #                               Reserved.new,
-#                               OpenEHR::ADL::Scanner::Common::V_QUALIFIED_TERM_CODE_REF.new,
-#                               OpenEHR::ADL::Scanner::Common::V_LOCAL_TERM_CODE_REF.new,
-#                               OpenEHR::ADL::Scanner::Common::ERR_V_QUALIFIED_TERM_CODE_REF.new,
-#                               OpenEHR::ADL::Scanner::Common::V_TYPE_IDENTIFIER.new,
-#                               OpenEHR::ADL::Scanner::Common::V_GENERIC_TYPE_IDENTIFIER.new,
-#                               OpenEHR::ADL::Scanner::Common::V_STRING.new,
-#                               OpenEHR::ADL::Scanner::Common::V_LOCAL_CODE.new,
-#                               OpenEHR::ADL::Scanner::Common::V_REAL.new,
-#                               OpenEHR::ADL::Scanner::Common::V_ISO8601_DURATION.new#,
-#                               #OpenEHR::ADL::Scanner::Common::START_TERM_CODE_CONSTRAINT.new
+#                               OpenEhr::ADL::Scanner::Common::V_QUALIFIED_TERM_CODE_REF.new,
+#                               OpenEhr::ADL::Scanner::Common::V_LOCAL_TERM_CODE_REF.new,
+#                               OpenEhr::ADL::Scanner::Common::ERR_V_QUALIFIED_TERM_CODE_REF.new,
+#                               OpenEhr::ADL::Scanner::Common::V_TYPE_IDENTIFIER.new,
+#                               OpenEhr::ADL::Scanner::Common::V_GENERIC_TYPE_IDENTIFIER.new,
+#                               OpenEhr::ADL::Scanner::Common::V_STRING.new,
+#                               OpenEhr::ADL::Scanner::Common::V_LOCAL_CODE.new,
+#                               OpenEhr::ADL::Scanner::Common::V_REAL.new,
+#                               OpenEhr::ADL::Scanner::Common::V_ISO8601_DURATION.new#,
+#                               #OpenEhr::ADL::Scanner::Common::START_TERM_CODE_CONSTRAINT.new
 #                               )
 #             end
 #           end
@@ -1106,11 +1119,11 @@ __END__
 #                 Yaparc::Literal.new(keyword,false)
 #               end
 #               Yaparc::Alt.new(Yaparc::Apply.new(Yaparc::Alt.new(*reserved_parsers)) do |match|
-#                                 OpenEHR::LOG.info("Reserved: #{match}")
-#                                 [OpenEHR::ADL::Scanner::CADL::RESERVED[match], OpenEHR::ADL::Scanner::CADL::RESERVED[match]]
+#                                 OpenEhr::LOG.info("Reserved: #{match}")
+#                                 [OpenEhr::ADL::Scanner::CADL::RESERVED[match], OpenEhr::ADL::Scanner::CADL::RESERVED[match]]
 #                               end,
 #                               Yaparc::Apply.new(Yaparc::Regex.new(/\A[a-z][a-zA-Z0-9_]*/)) do |match|
-#                                 OpenEHR::LOG.info("V_ATTRIBUTE_IDENTIFIER: #{match}")
+#                                 OpenEhr::LOG.info("V_ATTRIBUTE_IDENTIFIER: #{match}")
 #                                 [:V_ATTRIBUTE_IDENTIFIER, match]
 #                               end)
 #             end

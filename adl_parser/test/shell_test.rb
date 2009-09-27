@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 class ShellADLValidatorTest < Test::Unit::TestCase
   def setup
-    @adl_validator = ::OpenEHR::Application::ADLValidator.new(::OpenEHR::ADL::Validator.new(::OpenEHR::ADL::Parser.new))
+    @adl_validator = ::OpenEhr::Application::ADLValidator.new(::OpenEhr::ADL::Validator.new(::OpenEhr::ADL::Parser.new))
   end
 
   must "assert application validator instance" do
-    assert_instance_of ::OpenEHR::Application::ADLValidator,@adl_validator
+    assert_instance_of ::OpenEhr::Application::ADLValidator,@adl_validator
   end
 
 

@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 class ADLScannerTest < Test::Unit::TestCase
   def setup
-    @scanner = OpenEHR::ADL::Scanner::ADLScanner.new([:adl], "filename")
+    @scanner = OpenEhr::ADL::Scanner::ADLScanner.new([:adl], "filename")
   end
 
-  must "assert OpenEHR::ADL::Scanner::ADLScanner scanner instance" do
-    assert_instance_of OpenEHR::ADL::Scanner::ADLScanner, @scanner
+  must "assert OpenEhr::ADL::Scanner::ADLScanner scanner instance" do
+    assert_instance_of OpenEhr::ADL::Scanner::ADLScanner, @scanner
   end
 
   must "assert ADLScanner scanner scan CR and lineno incremented" do
@@ -19,7 +19,7 @@ class ADLScannerTest < Test::Unit::TestCase
     lineno = @scanner.lineno
     @scanner.scan("openEHR-EHR-OBSERVATION.body_mass_index.v1") do |sym, val|
       assert_equal :V_ARCHETYPE_ID,sym
-      assert_instance_of OpenEHR::RM::Support::Identification::Archetype_ID,val
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID,val
     end
   end
 
@@ -39,11 +39,11 @@ end
 
 class CADLScannerTest < Test::Unit::TestCase
   def setup
-    @scanner = OpenEHR::ADL::Scanner::CADLScanner.new([:cadl], "filename")
+    @scanner = OpenEhr::ADL::Scanner::CADLScanner.new([:cadl], "filename")
   end
 
-  must "assert OpenEHR::ADL::Scanner::CADLScanner scanner instance" do
-    assert_instance_of OpenEHR::ADL::Scanner::CADLScanner, @scanner
+  must "assert OpenEhr::ADL::Scanner::CADLScanner scanner instance" do
+    assert_instance_of OpenEhr::ADL::Scanner::CADLScanner, @scanner
   end
 
   must "assert CADLScanner scanner scan V_ATTRIBUTE_IDENTIFIER" do
@@ -79,7 +79,7 @@ end
 
 class DADLScannerTest < Test::Unit::TestCase
   def setup
-    @scanner = OpenEHR::ADL::Scanner::DADLScanner.new([:dadl], "filename")
+    @scanner = OpenEhr::ADL::Scanner::DADLScanner.new([:dadl], "filename")
   end
 
   must "assert DADLScanner scanner scan V_QUALIFIED_TERM_CODE_REF" do

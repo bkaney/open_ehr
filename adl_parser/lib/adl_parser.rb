@@ -9,6 +9,7 @@ $:.unshift File.join(File.dirname(__FILE__))
 require 'logger'
 require 'adl_scanner.rb'
 require 'adl_exception.rb'
+require 'parser.rb'
 
 module OpenEhr
 

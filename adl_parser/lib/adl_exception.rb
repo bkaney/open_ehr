@@ -1,4 +1,4 @@
-module OpenEHR
+module OpenEhr
   module ADL
     module Exception
       class Base < RuntimeError

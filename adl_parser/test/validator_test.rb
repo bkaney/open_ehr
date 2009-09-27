@@ -3,11 +3,11 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 class ADLValidatorTest < Test::Unit::TestCase
   def setup
-    @validator = ::OpenEHR::ADL::Validator.new(::OpenEHR::ADL::Parser.new)
+    @validator = ::OpenEhr::ADL::Validator.new(::OpenEhr::ADL::Parser.new)
   end
 
   must "assert adl validator instance" do
-    assert_instance_of ::OpenEHR::ADL::Validator,@validator
+    assert_instance_of ::OpenEhr::ADL::Validator,@validator
   end
 
   must "assert validation openEHR-EHR-CLUSTER.exam-nervous_system.v1" do

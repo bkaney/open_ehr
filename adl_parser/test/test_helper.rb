@@ -4,9 +4,10 @@ TEST_ROOT_DIR = File.dirname(__FILE__)
 $LOAD_PATH << File.join(TEST_ROOT_DIR, '..', 'lib')
 require "rubygems"
 require 'adl_parser.rb'
-require 'adl_scanner.rb'
-require 'rm.rb'
-require 'am.rb'
+#require 'adl_scanner.rb'
+#require 'open_ehr'
+#require 'rm.rb'
+#require 'am.rb'
 
 
 # c.f. "Ruby Best Practice",p.75
