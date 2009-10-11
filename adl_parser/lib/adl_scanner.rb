@@ -2,8 +2,6 @@ require 'rubygems'
 require 'logger'
 require 'adl_parser.rb'
 require 'open_ehr'
-#require 'am.rb'
-#require 'rm.rb'
 require 'util.rb'
 
 
@@ -26,11 +24,26 @@ module OpenEhr
         end
       end
 
+      class RootScanner < Base
+        def initialize(filename, lineno = 1)
+          @current_scanner = ADLScanner.new
+        end
+
+        def scan(data)
+          until data.nil?  do
+            case @current_scanner
+            when ADLScanner
+              @current_scanner.scan(data)
+            end
+          end
+        end          
+      end
+
       #
       # ADLScanner
       # 
       class ADLScanner < Base
-        attr_accessor :adl_type, :lineno, :cadl_scanner, :dadl_scanner, :regex_scanner, :term_constraint_scanner
+        attr_accessor :adl_type, :lineno
 
         @@logger = OpenEhr::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')
         RESERVED = {
@@ -55,6 +68,7 @@ module OpenEhr
         def initialize(adl_type, filename, lineno = 1)
           super(adl_type, filename, lineno)
           @in_interval  = false
+          @adl_type  = nil
         end
 
         #
@@ -63,8 +77,7 @@ module OpenEhr
         def scan(data)
           @@logger.debug("#{__FILE__}:#{__LINE__}: Entering  ADLScanner#scan at #{@filename}:#{@lineno}: data = #{data.inspect}")
           until data.nil?  do
-            case @adl_type.last
-            when :adl
+            if @adl_type.nil?
               case data
               when /\A\n/ # carriage return
                 @lineno += 1
@@ -84,7 +97,6 @@ module OpenEhr
                 yield :V_TYPE_IDENTIFIER, $&
               when /\A(\w+)-(\w+)-(\w+)\.(\w+)((?:-\w+)*)\.(v\w+)/   #V_ARCHETYPE_ID
                 object_id, rm_originator, rm_name, rm_entity, concept_name, specialisation, version_id = $&, $1, $2, $3, $4, $5, $6
-                #archetype_id = OpenEhr::RM::Support::Identification::ArchetypeID.new(object_id, concept_name, rm_name, rm_entity, rm_originator, specialisation, version_id)
                 archetype_id = OpenEhr::RM::Support::Identification::ArchetypeID.new(:concept_name => concept_name, :rm_name => rm_name, :rm_entity => rm_entity, :rm_originator => :rm_originator, :specialisation => specialisation, :version_id => version_id)
                 yield :V_ARCHETYPE_ID, archetype_id
               when /\A[a-z][a-zA-Z0-9_]*/
@@ -106,22 +118,23 @@ module OpenEhr
                 if @in_interval
                   yield :SYM_LT, :SYM_LT
                 else
-                  @adl_type.push(:dadl)
+                  @adl_type = OpenEhr::ADL::Scanner::DADLScanner.new(@filename, @lineno)
                   yield :SYM_START_DBLOCK,  $&
                 end
               when /\A\>/   # >
                 if @in_interval
                   yield :SYM_GT, :SYM_GT
                 else
+                  raise
                   adl_type = @adl_type.pop
                   assert_at(__FILE__,__LINE__){adl_type == :dadl}
                   yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
                 end
               when /\A\{/   # {
-                @adl_type.push(:cadl)
-                @@logger.debug("ADLScanner#scan: SYM_START_CBLOCK")
+                @adl_type = OpenEhr::ADL::Scanner::CADLScanner.new(@filename, @lineno)
                 yield :SYM_START_CBLOCK, :SYM_START_CBLOCK
               when /\A\}/   # }
+                raise
                 adl_type = @adl_type.pop
                 assert_at(__FILE__,__LINE__){adl_type == :cadl}
                 @@logger.debug("ADLScanner#scan: SYM_END_CBLOCK")
@@ -207,28 +220,10 @@ module OpenEhr
                 yield :UTF8CHAR, $&
               end
               data = $' # variable $' receives the string after the match
-            when :dadl
-              dadl_scanner = OpenEhr::ADL::Scanner::DADLScanner.new(@adl_type, @filename, @lineno)
-              data = dadl_scanner.scan(data) do |sym, val|
-                yield sym, val
-              end
-            when :cadl
-              cadl_scanner = OpenEhr::ADL::Scanner::CADLScanner.new(@adl_type, @filename, @lineno)
-              data = cadl_scanner.scan(data) do |sym, val|
-                yield sym, val
-              end
-            when :regexp
-              regex_scanner = OpenEhr::ADL::Scanner::RegexScanner.new(@adl_type, @filename, @lineno)
-              data = regex_scanner.scan(data) do |sym, val|
-                yield sym, val
-              end
-            when :term_constraint
-              term_constraint_scanner = OpenEhr::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
-              data = term_constraint_scanner.scan(data) do |sym, val|
-                yield sym, val
-              end
             else
-              raise
+              data = @adl_type.scan(data) do |sym, val|
+                yield sym, val
+              end
             end
           end
         end
@@ -246,23 +241,20 @@ module OpenEhr
           'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
         }
 
-        def initialize(adl_type, filename, lineno = 1)
+        def initialize(filename, lineno = 1)
           super(adl_type, filename, lineno)
           @in_interval = false
           @in_c_domain_type = false
           @in_dblock = true
+          @adl_type = nil
         end
 
         #
         # DADLScanner#scan
         #
         def scan(data)
-          @@logger.debug("Entering DADLScanner#scan at #{@filename}:#{@lineno}: @adl_type = #{@adl_type.inspect}, data = #{data.inspect}")
           until data.nil?  do
-            @@logger.debug("#{@filename}:#{@lineno}: DADLScanner#scan:loop data = #{data.inspect}")
-            @@logger.debug("#{@filename}:#{@lineno}: DADLScanner#scan:loop self = \n#{self.to_yaml}")
-            case @adl_type.last
-            when :dadl
+            if @adl_type.nil?
               case data
               when /\A\n/ # carriage return
                 #@@logger.debug("DADLScanner#scan:  carriage return, data = #{data.inspect}")
@@ -294,15 +286,13 @@ module OpenEhr
                 if @in_interval
                   yield :SYM_LT, :SYM_LT
                 else
+                  raise
                   @adl_type.push(:dadl)
                   yield :SYM_START_DBLOCK, :SYM_START_DBLOCK
                 end
               when /\A\>/   # >
                 if @in_interval
                   yield :SYM_GT, :SYM_GT
-#                 elsif @in_dblock == true
-#                   @in_dblock = false
-#                   yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
                 elsif @in_c_domain_type == true
                   assert_at(__FILE__,__LINE__){@adl_type.last == :dadl}
                   adl_type = @adl_type.pop
@@ -398,6 +388,12 @@ module OpenEhr
                 yield :UTF8CHAR, $&
               end
               data = $' # variable $' receives the string after the match
+
+
+
+          until data.nil?  do
+            case @adl_type.last
+            when :dadl
             when :adl
               adl_scanner = OpenEhr::ADL::Scanner::ADLScanner.new(@adl_type, @filename, @lineno)
               data = adl_scanner.scan(data) do |sym, val|
