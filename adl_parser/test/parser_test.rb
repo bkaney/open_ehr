@@ -182,52 +182,52 @@ class ADLParserTest < Test::Unit::TestCase
 
 
 # C_DV_QUANTITY parse error
-#   must "openEHR-EHR-CLUSTER.dimensions-circumference.v1.adl be properly parsed" do
-#     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.dimensions-circumference.v1.adl")
-#     assert_nothing_raised do
-#       ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.dimensions-circumference.v1')
-#       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
-#     end
-#   end
+  must "openEHR-EHR-CLUSTER.dimensions-circumference.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.dimensions-circumference.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.dimensions-circumference.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
 
-#   must "openEHR-EHR-CLUSTER.dimensions.v1.adl be properly parsed" do
-#     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.dimensions.v1.adl")
-#     assert_nothing_raised do
-#       ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.dimensions.v1')
-#       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
-#     end
-#   end
+  must "openEHR-EHR-CLUSTER.dimensions.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.dimensions.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.dimensions.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
 
-#   must "openEHR-EHR-CLUSTER.exam-fetus.v1.adl be properly parsed" do
-#     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-fetus.v1.adl")
-#     assert_nothing_raised do
-#       ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.exam-fetus.v1')
-#       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
-#     end
-#   end
+  must "openEHR-EHR-CLUSTER.exam-fetus.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-fetus.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.exam-fetus.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
 
-#   must "openEHR-EHR-CLUSTER.exam-uterine_cervix.v1.adl be properly parsed" do
-#     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-uterine_cervix.v1.adl")
-#     assert_nothing_raised do
-#       ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.exam-uterine_cervix.v1')
-#       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
-#     end
-#   end
+  must "openEHR-EHR-CLUSTER.exam-uterine_cervix.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-uterine_cervix.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.exam-uterine_cervix.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
 
-#   must "openEHR-EHR-EVALUATION.adverse.v1.adl be properly parsed" do
-#     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-EVALUATION.adverse.v1.adl")
-#     assert_nothing_raised do
-#       ast = @parser.parse(file, 'openEHR-EHR-EVALUATION.adverse.v1')
-#       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
-#     end
-#   end
-#   must "openEHR-EHR-OBSERVATION.body_mass_index.v1.adl be properly parsed" do
-#     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-OBSERVATION.body_mass_index.v1.adl")
-#     assert_nothing_raised do
-#       ast = @parser.parse(file, 'openEHR-EHR-OBSERVATION.body_mass_index.v1')
-#       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
-#     end
-#   end
+  must "openEHR-EHR-EVALUATION.adverse.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-EVALUATION.adverse.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-EVALUATION.adverse.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
+  must "openEHR-EHR-OBSERVATION.body_mass_index.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-OBSERVATION.body_mass_index.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-OBSERVATION.body_mass_index.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
 
 
 end
