@@ -35,6 +35,17 @@ class ADLScannerTest < Test::Unit::TestCase
       assert_equal "ICD10AM(1998)::F23",val
     end
   end
+
+  must "assert ADLScanner scanner scan V_STRING" do
+    @scanner.scan("\"string\"") do |sym, val|
+      assert_equal :V_STRING,sym
+      assert_equal "string",val
+    end
+    @scanner.scan("\"1605E211E9BFB4093A72CCE7A9792FF9\"") do |sym, val|
+      assert_equal :V_STRING,sym
+      assert_equal "1605E211E9BFB4093A72CCE7A9792FF9",val
+    end
+  end
 end
 
 class CADLScannerTest < Test::Unit::TestCase
@@ -75,6 +86,17 @@ class CADLScannerTest < Test::Unit::TestCase
       assert_equal "PT1M",val
     end
   end
+
+  must "assert CADLScanner scanner scan V_STRING" do
+    @scanner.scan("\"string\"") do |sym, val|
+      assert_equal :V_STRING,sym
+      assert_equal "string",val
+    end
+    @scanner.scan("\"1605E211E9BFB4093A72CCE7A9792FF9\"") do |sym, val|
+      assert_equal :V_STRING,sym
+      assert_equal "1605E211E9BFB4093A72CCE7A9792FF9",val
+    end
+  end
 end
 
 class DADLScannerTest < Test::Unit::TestCase
@@ -100,6 +122,10 @@ class DADLScannerTest < Test::Unit::TestCase
     @scanner.scan("\"string\"") do |sym, val|
       assert_equal :V_STRING,sym
       assert_equal "string",val
+    end
+    @scanner.scan("\"1605E211E9BFB4093A72CCE7A9792FF9\"") do |sym, val|
+      assert_equal :V_STRING,sym
+      assert_equal "1605E211E9BFB4093A72CCE7A9792FF9",val
     end
   end
 end

@@ -270,10 +270,9 @@ module OpenEhr
                 @lineno += 1
                 ;
               when /\A[ \t\r\f]+/ #just drop it
-                #@@logger.debug("DADLScanner#scan:  white space, data = #{data.inspect}")
+                ##@@logger.debug("DADLScanner#scan:  white space, data = #{data.inspect}")
                 ;
               when /\A--.*/ # single line comment
-#                @lineno += 1
                 @@logger.debug("DADLScanner#scan: COMMENT = #{$&} at #{@filename}:#{@lineno}")
                 ;
               when /\A[a-z][a-zA-Z0-9_]*/
@@ -398,6 +397,8 @@ module OpenEhr
               when /\A"([^"]*)"/m #V_STRING
                 @@logger.debug("DADLScanner#scan: V_STRING, #{$1}")
                 yield :V_STRING, $1
+              when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
+                yield :V_REAL, $&
               when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
                 @@logger.debug("DADLScanner#scan: V_INTEGER = #{$&}")
                 yield :V_INTEGER, $&
@@ -630,15 +631,15 @@ module OpenEhr
                 yield :V_ISO8601_EXTENDED_TIME, $&
               when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
                 yield :V_ISO8601_EXTENDED_DATE, $&
-              when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
-                @@logger.debug("CADLScanner#scan: V_INTEGER = #{$&}")
-                yield :V_INTEGER, $&
-              when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
-                yield :V_REAL, $&
               when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
                 yield :V_STRING, $1
               when /\A"([^"]*)"/m #V_STRING
                 yield :V_STRING, $1
+              when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
+                yield :V_REAL, $&
+              when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
+                @@logger.debug("CADLScanner#scan: V_INTEGER = #{$&}")
+                yield :V_INTEGER, $&
               when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
                 yield :V_URI, $&
               when /\A\S/ #UTF8CHAR
