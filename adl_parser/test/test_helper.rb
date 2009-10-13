@@ -8,6 +8,9 @@ require 'adl_parser.rb'
 #require 'open_ehr'
 #require 'rm.rb'
 #require 'am.rb'
+require 'open-uri'
+require 'hpricot'
+
 
 
 # c.f. "Ruby Best Practice",p.75

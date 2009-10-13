@@ -76,24 +76,10 @@ module OpenEhr
                 @lineno += 1
                 @@logger.debug("ADLScanner#scan: COMMENT = #{$&} at #{@filename}:#{@lineno}")
                 ;
-              when /\Alanguage/   # language section
-                assert_at(__FILE__,__LINE__){@adl_type.pop == :adl}
-                @adl_type.push(:dadl)
-                yield :SYM_LANGUAGE, :SYM_LANGUAGE
-              when /\Adescription/   # description section
-                assert_at(__FILE__,__LINE__){@adl_type.pop == :dadl}
-                @adl_type.push(:dadl)
+              when /\Adescription/   # description
                 yield :SYM_DESCRIPTION, :SYM_DESCRIPTION
-              when /\Adefinition/   # definition section
-                assert_at(__FILE__,__LINE__){@adl_type.pop == :dadl}
-                @adl_type.push(:cadl)
+              when /\Adefinition/   # definition
                 yield :SYM_DEFINITION, :SYM_DEFINITION
-              when /\Aontology/   # ontology section
-                assert_at(__FILE__,__LINE__){@adl_type.pop == :cadl}
-                @adl_type.push(:dadl)
-                yield :SYM_ONTOLOGY, :SYM_ONTOLOGY
-              when /\Ainvariatn/   # invariant section
-                raise
               ###----------/* symbols */ ------------------------------------------------- 
               when /\A[A-Z][a-zA-Z0-9_]*/
                 yield :V_TYPE_IDENTIFIER, $&
@@ -329,6 +315,13 @@ module OpenEhr
                     else
                       yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
                     end
+#                     adl_type = @adl_type.pop
+#                     if adl_type == :dadl
+#                       yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
+#                     else
+#                       @in_c_domain_type = false
+#                       yield :END_V_C_DOMAIN_TYPE_BLOCK, :END_V_C_DOMAIN_TYPE_BLOCK
+#                     end
                   else
                     adl_type = @adl_type.pop
                     assert_at(__FILE__,__LINE__){adl_type == :dadl}
@@ -354,6 +347,7 @@ module OpenEhr
               when /\A\;/   # ;
                 yield :Semicolon_code, :Semicolon_code
               when /\A\,/   # ,
+                @@logger.debug("DADLScanner#scan: Comma_code")
                 yield :Comma_code, :Comma_code
               when /\A\:/   # :
                 yield :Colon_code, :Colon_code

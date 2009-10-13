@@ -683,14 +683,42 @@ simple_value: string_value
   }
 
 simple_list_value: string_list_value
+  {
+    @@logger.debug("string_list_value: #{val[0]} at #{@filename}:#{@lineno}")
+    result = val[0]
+  }
   | integer_list_value
+  {
+    result = val[0]
+  }
   | real_list_value
+  {
+    result = val[0]
+  }
   | boolean_list_value
+  {
+    result = val[0]
+  }
   | character_list_value
+  {
+    result = val[0]
+  }
   | date_list_value
+  {
+    result = val[0]
+  }
   | time_list_value
+  {
+    result = val[0]
+  }
   | date_time_list_value
+  {
+    result = val[0]
+  }
   | duration_list_value
+  {
+    result = val[0]
+  }
 
 simple_interval_value: integer_interval_value
   | real_interval_value
@@ -717,8 +745,17 @@ string_value: V_STRING
   }
 
 string_list_value: V_STRING Comma_code V_STRING
+  {
+    result = [val[0],val[2]]
+  }
   | string_list_value Comma_code V_STRING
+  {
+    result = val[0] << val[2]
+  }
   | V_STRING Comma_code SYM_LIST_CONTINUE
+  {
+    result = val[0]
+  }
 
 integer_value: V_INTEGER
   { 
