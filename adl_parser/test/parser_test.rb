@@ -9,6 +9,14 @@ class ADLParserTest < Test::Unit::TestCase
     assert_instance_of ::OpenEhr::ADL::Parser,@parser
   end
 
+  must "openEHR-EHR-CLUSTER.exam-uterus.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-uterus.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-CLUSTER.exam-uterus.v11')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
+
   must "openEHR-EHR-SECTION.summary.v1.adl be properly parsed" do
     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-SECTION.summary.v1.adl")
     assert_nothing_raised do
@@ -107,13 +115,6 @@ class ADLParserTest < Test::Unit::TestCase
     end
   end
 
-  must "openEHR-EHR-COMPOSITION.encounter.v1draft.adl be properly parsed" do
-    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-COMPOSITION.encounter.v1draft.adl")
-    assert_nothing_raised do
-      ast = @parser.parse(file, 'openEHR-EHR-COMPOSITION.encounter.v1draft')
-      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
-    end
-  end
 
   must "openEHR-EHR-INSTRUCTION.medication.v1.adl be properly parsed" do
     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-INSTRUCTION.medication.v1.adl")
@@ -227,6 +228,30 @@ class ADLParserTest < Test::Unit::TestCase
     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-ACTION.imaging.v1.adl")
     assert_nothing_raised do
       ast = @parser.parse(file, 'openEHR-EHR-ACTION.imaging.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
+
+  must "openEHR-EHR-COMPOSITION.encounter.v1draft.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-COMPOSITION.encounter.v1draft.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-COMPOSITION.encounter.v1draft')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
+
+  must "openEHR-EHR-ITEM_TREE.follow_up.v1draft.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-ITEM_TREE.follow_up.v1draft.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-ITEM_TREE.follow_up.v1draft')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
+
+  must "openEHR-EHR-ITEM_TREE.medication-formulation.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-ITEM_TREE.medication-formulation.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-ITEM_TREE.medication-formulation.v1')
       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
     end
   end

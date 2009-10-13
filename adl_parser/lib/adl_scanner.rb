@@ -275,6 +275,8 @@ module OpenEhr
               when /\A--.*/ # single line comment
                 @@logger.debug("DADLScanner#scan: COMMENT = #{$&} at #{@filename}:#{@lineno}")
                 ;
+              when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
+                yield :V_URI, $&
               when /\A[a-z][a-zA-Z0-9_]*/
                 word = $&.dup
                 if RESERVED[word.downcase]
@@ -315,13 +317,6 @@ module OpenEhr
                     else
                       yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
                     end
-#                     adl_type = @adl_type.pop
-#                     if adl_type == :dadl
-#                       yield :SYM_END_DBLOCK, :SYM_END_DBLOCK
-#                     else
-#                       @in_c_domain_type = false
-#                       yield :END_V_C_DOMAIN_TYPE_BLOCK, :END_V_C_DOMAIN_TYPE_BLOCK
-#                     end
                   else
                     adl_type = @adl_type.pop
                     assert_at(__FILE__,__LINE__){adl_type == :dadl}
@@ -381,6 +376,12 @@ module OpenEhr
               when /\A\]/   # ]
                 @@logger.debug("DADLScanner#scan: Right_bracket_code at #{@filename}:#{@lineno}")
                 yield :Right_bracket_code, :Right_bracket_code
+              when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
+                @@logger.debug("DADLScanner#scan: V_STRING, #{$1}")
+                yield :V_STRING, $1
+              when /\A"([^"]*)"/m #V_STRING
+                @@logger.debug("DADLScanner#scan: V_STRING, #{$1}")
+                yield :V_STRING, $1
               when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/- -n-n-n-n-]-
                 @@logger.debug("DADLScanner#scan: V_ISO8601_EXTENDED_DATE_TIME")
                 yield :V_ISO8601_EXTENDED_DATE_TIME, $&
@@ -392,19 +393,11 @@ module OpenEhr
                 yield :V_ISO8601_EXTENDED_DATE, $&
               when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
                 yield :V_GENERIC_TYPE_IDENTIFIER, $&
-              when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
-                @@logger.debug("DADLScanner#scan: V_STRING, #{$1}")
-                yield :V_STRING, $1
-              when /\A"([^"]*)"/m #V_STRING
-                @@logger.debug("DADLScanner#scan: V_STRING, #{$1}")
-                yield :V_STRING, $1
               when /\A[0-9]+\.[0-9]+|[0-9]+\.[0-9]+[eE][+-]?[0-9]+ /   #V_REAL
                 yield :V_REAL, $&
               when /\A[0-9]+|[0-9]+[eE][+-]?[0-9]+/   #V_INTEGER
                 @@logger.debug("DADLScanner#scan: V_INTEGER = #{$&}")
                 yield :V_INTEGER, $&
-              when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
-                yield :V_URI, $&
               when /\A\S/ #UTF8CHAR
                 yield :UTF8CHAR, $&
               end
@@ -600,10 +593,11 @@ module OpenEhr
                 yield :V_ISO8601_DATE_CONSTRAINT_PATTERN, $&
               when /\A[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]/
                 yield :V_ISO8601_TIME_CONSTRAINT_PATTERN, $&
-                #when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION such as PnYnMnWnDTnnHnnMnnS
+#              when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION such as PnYnMnWnDTnnHnnMnnS
+#                yield :V_ISO8601_DURATION, $&
               when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?/   #V_ISO8601_DURATION such as PnYnMnWnDTnnHnnMnnS
                 yield :V_ISO8601_DURATION, $&
-              when /\AP[yY]?[mM]?[wW]?[dD]?T[hH]?[mM]?[sS]?/   #V_ISO8601_DURATION_CONSTRAINT_PATTERNo
+              when /\AP[yY]?[mM]?[wW]?[dD]?(T[hH]?[mM]?[sS]?)?/   #V_ISO8601_DURATION_CONSTRAINT_PATTERN
                 yield :V_ISO8601_DURATION_CONSTRAINT_PATTERN, $&
               when /\A[a-z][a-zA-Z0-9_]*/
                 word = $&.dup

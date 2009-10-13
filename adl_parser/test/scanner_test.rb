@@ -97,6 +97,13 @@ class CADLScannerTest < Test::Unit::TestCase
       assert_equal "1605E211E9BFB4093A72CCE7A9792FF9",val
     end
   end
+
+  must "assert CADLScanner scanner scan V_ISO8601_DURATION_CONSTRAINT_PATTERN" do
+    @scanner.scan("PW") do |sym, val|
+      assert_equal :V_ISO8601_DURATION_CONSTRAINT_PATTERN,sym
+      assert_equal "PW",val
+    end
+  end
 end
 
 class DADLScannerTest < Test::Unit::TestCase
@@ -123,9 +130,22 @@ class DADLScannerTest < Test::Unit::TestCase
       assert_equal :V_STRING,sym
       assert_equal "string",val
     end
+
+    @scanner.scan("\"2005-10-10\"") do |sym, val|
+      assert_equal :V_STRING,sym
+      assert_equal "2005-10-10",val
+    end
+
     @scanner.scan("\"1605E211E9BFB4093A72CCE7A9792FF9\"") do |sym, val|
       assert_equal :V_STRING,sym
       assert_equal "1605E211E9BFB4093A72CCE7A9792FF9",val
+    end
+  end
+
+  must "assert DADLScanner scanner scan V_URI" do
+    @scanner.scan("http://openEHR.org/Services") do |sym, val|
+      assert_equal :V_URI,sym
+      assert_equal "http://openEHR.org/Services",val
     end
   end
 end

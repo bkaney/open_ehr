@@ -1,10 +1,8 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
 class RemoteADLTest < Test::Unit::TestCase
-  #http://www.openehr.org/wsvn/knowledge/archetypes/dev/adl/openehr/
   def setup
     @adls = []
-    doc = Hpricot( open("http://www.openehr.org/svn/knowledge/archetypes/dev/adl/test/").read )
     dirs = ["cluster/", "composition/", "element/", "entry/", "section/", "structure/"]
     dirs.each do |dir|
       doc = Hpricot( open("http://www.openehr.org/svn/knowledge/archetypes/dev/adl/openehr/ehr/#{dir}").read )

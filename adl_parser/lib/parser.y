@@ -35,7 +35,7 @@ input: archetype EOF
 archetype: arch_identification arch_specialisation arch_concept arch_language arch_description arch_definition arch_invariant arch_ontology
   { 
     assert_at(__FILE__,__LINE__) do
-      val[4].instance_of?(OpenEhr::AM::Archetype::Archetype_Description::ARCHETYPE_DESCRIPTION) and val[5].instance_of?(OpenEhr::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT) and val[7].instance_of?(OpenEhr::AM::Archetype::Ontology::ARCHETYPE_ONTOLOGY) 
+      val[4].instance_of?(OpenEhr::AM::Archetype::Archetype_Description::ARCHETYPE_DESCRIPTION) and val[5].instance_of?(OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT) and val[7].instance_of?(OpenEhr::AM::Archetype::Ontology::ARCHETYPE_ONTOLOGY) 
     end
     
     archetype_id = val[0][:archetype_id]
@@ -153,7 +153,7 @@ arch_definition: SYM_DEFINITION cadl_section
 ### cADL section
 cadl_section: c_complex_object
   {
-    assert_at(__FILE__,__LINE__){val[0].instance_of?(OpenEhr::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT)}
+    assert_at(__FILE__,__LINE__){val[0].instance_of?(OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT)}
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_complex_object = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
@@ -166,7 +166,7 @@ cadl_section: c_complex_object
 #c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
 c_complex_object: c_complx_object_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
   { 
-    result = OpenEhr::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
+    result = OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
       c_complex_object.node_id = val[0][:c_complex_object_id][:local_term_code_ref]
       c_complex_object.rm_type_name = val[0][:c_complex_object_id][:type_identifier]
       c_complex_object.occurrences = val[0][:c_occurrences]
@@ -174,7 +174,7 @@ c_complex_object: c_complx_object_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BOD
   }
     | c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
   { 
-    result = OpenEhr::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
+    result = OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
       c_complex_object.node_id = val[0][:c_complex_object_id][:local_term_code_ref]
       c_complex_object.rm_type_name = val[0][:c_complex_object_id][:type_identifier]
       c_complex_object.occurrences = val[0][:c_occurrences]
@@ -200,7 +200,7 @@ c_complex_object_id: type_identifier
 c_complex_object_body: c_any #-- used to indicate that any value of a type is ok
   | c_attributes
   { 
-    result = OpenEhr::AM::Archetype::Constraint_Model::C_COMPLEX_OBJECT.new(:attributes => val[0])
+    result = OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT.new(:attributes => val[0])
   }
 
 
@@ -223,7 +223,7 @@ c_object: c_complex_object
   }
   | archetype_internal_ref
   {
-    result = OpenEhr::AM::Archetype::Constraint_Model::ARCHETYPE_INTERNAL_REF.create do |archetype_internal_ref|
+    result = OpenEhr::AM::Archetype::ConstraintModel::ARCHETYPE_INTERNAL_REF.create do |archetype_internal_ref|
       archetype_internal_ref.target_path = val[0][:absolute_path]
       archetype_internal_ref.rm_type_name = val[0][:type_identifier]
       archetype_internal_ref.occurrences = val[0][:c_occurrences]
@@ -235,7 +235,7 @@ c_object: c_complex_object
   }
   | constraint_ref
   {
-    result = OpenEhr::AM::Archetype::Constraint_Model::CONSTRAINT_REF.create do |constraint_ref|
+    result = OpenEhr::AM::Archetype::ConstraintModel::CONSTRAINT_REF.create do |constraint_ref|
       constraint_ref.reference = val[0]
     end
   }
@@ -299,7 +299,7 @@ archetype_internal_ref: SYM_USE_NODE type_identifier c_occurrences absolute_path
 # 'archetype_slot' is a node whose statements define a constraint that determines which other archetypes may appear at that point in the current archetype.
 archetype_slot: c_archetype_slot_head SYM_MATCHES SYM_START_CBLOCK c_includes c_excludes SYM_END_CBLOCK
   {
-    result = OpenEhr::AM::Archetype::Constraint_Model::ARCHETYPE_SLOT.create do |archetype_slot|
+    result = OpenEhr::AM::Archetype::ConstraintModel::ARCHETYPE_SLOT.create do |archetype_slot|
       archetype_slot.includes = val[3]
       archetype_slot.excludes = val[4]
       archetype_slot.rm_type_name = val[0][:c_archetype_slot_id]
@@ -321,8 +321,8 @@ c_archetype_slot_id: SYM_ALLOW_ARCHETYPE type_identifier
 # 'c_primitive_object' is an node representing a constraint on a primitive object type.
 c_primitive_object: c_primitive
   {
-    assert_at(__FILE__,__LINE__){val[0].kind_of?(OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_PRIMITIVE)}
-    result = OpenEhr::AM::Archetype::Constraint_Model::C_PRIMITIVE_OBJECT.create do |c_primitive_object|
+    assert_at(__FILE__,__LINE__){val[0].kind_of?(OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_PRIMITIVE)}
+    result = OpenEhr::AM::Archetype::ConstraintModel::C_PRIMITIVE_OBJECT.create do |c_primitive_object|
       c_primitive_object.item = val[0]
     end
   }
@@ -330,7 +330,7 @@ c_primitive_object: c_primitive
 c_primitive: c_integer
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_integer = #{val[0]} at #{@filename}:#{@lineno}")
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_INTEGER.create do |c_integer|
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_INTEGER.create do |c_integer|
       c_integer.list
       c_integer.range
       c_integer.assumed_value
@@ -339,36 +339,36 @@ c_primitive: c_integer
   | c_real
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_real = #{val[0]} at #{@filename}:#{@lineno}")
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_REAL.new
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_REAL.new
   }
   | c_date
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_date = #{val[0]} at #{@filename}:#{@lineno}")
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_DATE.new
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_DATE.new
   }
   | c_time
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_time = #{val[0]} at #{@filename}:#{@lineno}")
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_TIME.new
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_TIME.new
   }
   | c_date_time
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_date_time = #{val[0]} at #{@filename}:#{@lineno}")
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_DATE_TIME.new
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_DATE_TIME.new
   }
   | c_duration
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_duration = #{val[0]} at #{@filename}:#{@lineno}")
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_DURATION.new
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_DURATION.new
   }
   | c_string
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_string = #{val[0]} at #{@filename}:#{@lineno}")
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_STRING.new
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_STRING.new
   }
   | c_boolean
   {
-    assert_at(__FILE__,__LINE__){val[0].instance_of?(OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN)}
+    assert_at(__FILE__,__LINE__){val[0].instance_of?(OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_BOOLEAN)}
     @@logger.debug("#{__FILE__}:#{__LINE__}: c_boolean = #{val[0]} at #{@filename}:#{@lineno}")
     result = val[0]
   }
@@ -390,19 +390,19 @@ c_attributes: c_attribute
 # 'c_attribute' is a node representing a constraint on an attribute in an object model.
 c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK
   { 
-    assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::Constraint_Model::C_ATTRIBUTE)}
+    assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::ConstraintModel::C_ATTRIBUTE)}
     c_attribute = val[0]
     c_attribute.children = val[3]
     result = c_attribute
   }
   | c_attr_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
   { 
-    assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::Constraint_Model::C_ATTRIBUTE)}
+    assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::ConstraintModel::C_ATTRIBUTE)}
     result = val[0]
   }
   | c_attr_head SYM_MATCHES SYM_START_CBLOCK error SYM_END_CBLOCK
   { 
-    assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::Constraint_Model::C_ATTRIBUTE)}
+    assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::ConstraintModel::C_ATTRIBUTE)}
     result = val[0]
   }
 
@@ -410,7 +410,7 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
 c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER = #{val[0]}, c_existence = #{val[1]} at #{@filename}")
-    result = OpenEhr::AM::Archetype::Constraint_Model::C_SINGLE_ATTRIBUTE.new(
+    result = OpenEhr::AM::Archetype::ConstraintModel::C_SINGLE_ATTRIBUTE.new(
                                                                               :rm_attribute_name => val[0],
                                                                               :existence => val[1]
                                                                               )
@@ -418,9 +418,9 @@ c_attr_head: V_ATTRIBUTE_IDENTIFIER c_existence
   }
   | V_ATTRIBUTE_IDENTIFIER c_existence c_cardinality
   {
-    assert_at(__FILE__,__LINE__){ val[2].instance_of?(OpenEhr::AM::Archetype::Constraint_Model::CARDINALITY) }
+    assert_at(__FILE__,__LINE__){ val[2].instance_of?(OpenEhr::AM::Archetype::ConstraintModel::CARDINALITY) }
     @@logger.debug("#{__FILE__}:#{__LINE__}: V_ATTRIBUTE_IDENTIFIER: #{val[0]}, c_existence = #{val[1]}, c_cardinality = #{val[2]} at #{@filename}") 
-    result = OpenEhr::AM::Archetype::Constraint_Model::C_MULTIPLE_ATTRIBUTE.new(
+    result = OpenEhr::AM::Archetype::ConstraintModel::C_MULTIPLE_ATTRIBUTE.new(
                                                                                 :rm_attribute_name => val[0],
                                                                                 :existence => val[1],
                                                                                 :cardinality => val[2]
@@ -480,7 +480,8 @@ arch_ontology: SYM_ONTOLOGY dadl_section
 
 
 ### dADL section
-dadl_section: attr_vals
+dadl_section: # no dadl section
+    |  attr_vals
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}:dadl_section attr_vals = \n#{val[0].to_yaml}")
     result = val[0]
@@ -1060,7 +1061,7 @@ existence_spec:  V_INTEGER #-- can only be 0 or 1
 
 c_cardinality: SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_spec SYM_END_CBLOCK
   { 
-    result = OpenEhr::AM::Archetype::Constraint_Model::CARDINALITY.new
+    result = OpenEhr::AM::Archetype::ConstraintModel::CARDINALITY.new
   }
 
 cardinality_spec: occurrence_spec
@@ -1166,19 +1167,19 @@ c_string: c_string_spec
 
 c_boolean_spec: SYM_TRUE
   { 
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => true)
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_BOOLEAN.new(:true_valid => true)
   }
   | SYM_FALSE
   { 
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => false)
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_BOOLEAN.new(:true_valid => false)
   }
   | SYM_TRUE Comma_code SYM_FALSE
   { 
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => true,:false_valid => false)
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_BOOLEAN.new(:true_valid => true,:false_valid => false)
   }
   | SYM_FALSE Comma_code SYM_TRUE
   { 
-    result = OpenEhr::AM::Archetype::Constraint_Model::Primitive::C_BOOLEAN.new(:true_valid => false,:false_valid => true)
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_BOOLEAN.new(:true_valid => false,:false_valid => true)
   }
 
 c_boolean: c_boolean_spec
@@ -1255,8 +1256,8 @@ any_identifier: type_identifier
 #---------------------- BASIC DATA VALUES -----------------------
 
 duration_pattern: V_ISO8601_DURATION_CONSTRAINT_PATTERN
-  { 
-    result = val[0]
+  {
+    result = OpenEhr::AM::Archetype::ConstraintModel::Primitive::C_DURATION.new #val[0]
   }
 
 
