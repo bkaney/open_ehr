@@ -85,6 +85,11 @@ class CADLScannerTest < Test::Unit::TestCase
       assert_equal :V_ISO8601_DURATION,sym
       assert_equal "PT1M",val
     end
+
+    @scanner.scan("P1D") do |sym, val|
+      assert_equal :V_ISO8601_DURATION,sym
+      assert_equal "PT1M",val
+    end
   end
 
   must "assert CADLScanner scanner scan V_STRING" do
