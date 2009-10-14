@@ -164,7 +164,8 @@ cadl_section: c_complex_object
 #  | error
 
 #c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
-c_complex_object: c_complx_object_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
+#c_complex_object: c_complx_object_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
+c_complex_object: c_complx_object_head SYM_MATCHES Slash_code REGEXP_BODY Slash_code # added by akimichi
   { 
     result = OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
       c_complex_object.node_id = val[0][:c_complex_object_id][:local_term_code_ref]
@@ -395,7 +396,8 @@ c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLO
     c_attribute.children = val[3]
     result = c_attribute
   }
-  | c_attr_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
+#  | c_attr_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
+  | c_attr_head SYM_MATCHES Slash_code REGEXP_BODY Slash_code # added by akimichi
   { 
     assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::ConstraintModel::C_ATTRIBUTE)}
     result = val[0]
@@ -900,6 +902,10 @@ time_interval_value: SYM_INTERVAL_DELIM time_value SYM_ELLIPSIS time_value SYM_I
   | SYM_INTERVAL_DELIM time_value SYM_INTERVAL_DELIM
 
 date_time_value: V_ISO8601_EXTENDED_DATE_TIME
+  {
+    @@logger.debug("V_ISO8601_EXTENDED_DATE_TIME: #{val[0]} at #{@filename}:#{@lineno}")
+    result = val[0]
+  }
 
 date_time_list_value: date_time_value Comma_code date_time_value
   | date_time_list_value Comma_code date_time_value
@@ -970,7 +976,8 @@ boolean_node: SYM_EXISTS absolute_path
 #  | absolute_path
   | SYM_EXISTS error
   | relative_path SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
-  | relative_path SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
+#  | relative_path SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
+  | relative_path SYM_MATCHES Slash_code REGEXP_BODY Slash_code # added by akimichi
   | SYM_NOT boolean_leaf
   | arithmetic_expression '=' arithmetic_expression
   | arithmetic_expression SYM_NE arithmetic_expression
@@ -1297,59 +1304,59 @@ end
 
 
 ###----------/* keywords */ --------------------------------------------- 
-@@adl_reserved = {
-    'archetype' => :SYM_ARCHETYPE,
-    'adl_version' => :SYM_ADL_VERSION,
-    'controlled' => :SYM_IS_CONTROLLED,
-    'specialize' => :SYM_SPECIALIZE,
-    'concept' => :SYM_CONCEPT,
-    'language' => :SYM_LANGUAGE,
-    'description' => :SYM_DESCRIPTION,
-    'definition' => :SYM_DEFINITION,
-    'invariant' => :SYM_INVARIANT,
-    'ontology' => :SYM_ONTOLOGY,
-    'matches' => :SYM_MATCHES,
-    'is_in' => :SYM_MATCHES,
-    'occurrences' => :SYM_OCCURRENCES,
-    'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
-    'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
-    'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
-}
+### @@adl_reserved = {
+###     'archetype' => :SYM_ARCHETYPE,
+###     'adl_version' => :SYM_ADL_VERSION,
+###     'controlled' => :SYM_IS_CONTROLLED,
+###     'specialize' => :SYM_SPECIALIZE,
+###     'concept' => :SYM_CONCEPT,
+###     'language' => :SYM_LANGUAGE,
+###     'description' => :SYM_DESCRIPTION,
+###     'definition' => :SYM_DEFINITION,
+###     'invariant' => :SYM_INVARIANT,
+###     'ontology' => :SYM_ONTOLOGY,
+###     'matches' => :SYM_MATCHES,
+###     'is_in' => :SYM_MATCHES,
+###     'occurrences' => :SYM_OCCURRENCES,
+###     'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
+###     'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
+###     'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
+### }
 
-@@dadl_reserved = {
-  'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
-  'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
-  'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
-}
+### @@dadl_reserved = {
+###   'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
+###   'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
+###   'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
+### }
 
-@@cadl_reserved = {
-  'then' => :SYM_THEN, # [Tt][Hh][Ee][Nn]
-  'else' => :SYM_ELSE, # [Ee][Ll][Ss][Ee]
-  'and' => :SYM_AND, # [Aa][Nn][Dd]
-  'or' => :SYM_OR, # [Oo][Rr]
-  'xor' => :SYM_XOR, # [Xx][Oo][Rr]
-  'not' => :SYM_NOT, # [Nn][Oo][Tt]
-  'implies' => :SYM_IMPLIES, # [Ii][Mm][Pp][Ll][Ii][Ee][Ss]
-  'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
-  'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
-  'forall' => :SYM_FORALL, # [Ff][Oo][Rr][_][Aa][Ll][Ll]
-  'exists' => :SYM_EXISTS, # [Ee][Xx][Ii][Ss][Tt][Ss]
-  'existence' => :SYM_EXISTENCE, # [Ee][Xx][Iu][Ss][Tt][Ee][Nn][Cc][Ee]
-  'occurrences' => :SYM_OCCURRENCES, # [Oo][Cc][Cc][Uu][Rr][Rr][Ee][Nn][Cc][Ee][Ss]
-  'cardinality' => :SYM_CARDINALITY, # [Cc][Aa][Rr][Dd][Ii][Nn][Aa][Ll][Ii][Tt][Yy]
-  'ordered' => :SYM_ORDERED, # [Oo][Rr][Dd][Ee][Rr][Ee][Dd]
-  'unordered' => :SYM_UNORDERED, # [Uu][Nn][Oo][Rr][Dd][Ee][Rr][Ee][Dd]
-  'unique' => :SYM_UNIQUE, # [Uu][Nn][Ii][Qq][Uu][Ee]
-  'matches' => :SYM_MATCHES, # [Mm][Aa][Tt][Cc][Hh][Ee][Ss]
-  'is_in' => :SYM_MATCHES, # [Ii][Ss][_][Ii][Nn]
-  'invariant' => :SYM_INVARIANT, # [Ii][Nn][Vv][Aa][Rr][Ii][Aa][Nn][Tt]
-  'infinity' => :SYM_INFINITY, # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
-  'use_node' => :SYM_USE_NODE, # [Uu][Ss][Ee][_][Nn][Oo][Dd][Ee]
-  'use_archetype' => :SYM_ALLOW_ARCHETYPE, # [Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee]
-  'allow_archetype' => :SYM_ALLOW_ARCHETYPE, # [Aa][Ll][Ll][Oo][Ww][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee]
-  'include' => :SYM_INCLUDE, # [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
-  'exclude' => :SYM_EXCLUDE # [Ee][Xx][Cc][Ll][Uu][Dd][Ee]
-}
+### @@cadl_reserved = {
+###   'then' => :SYM_THEN, # [Tt][Hh][Ee][Nn]
+###   'else' => :SYM_ELSE, # [Ee][Ll][Ss][Ee]
+###   'and' => :SYM_AND, # [Aa][Nn][Dd]
+###   'or' => :SYM_OR, # [Oo][Rr]
+###   'xor' => :SYM_XOR, # [Xx][Oo][Rr]
+###   'not' => :SYM_NOT, # [Nn][Oo][Tt]
+###   'implies' => :SYM_IMPLIES, # [Ii][Mm][Pp][Ll][Ii][Ee][Ss]
+###   'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
+###   'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
+###   'forall' => :SYM_FORALL, # [Ff][Oo][Rr][_][Aa][Ll][Ll]
+###   'exists' => :SYM_EXISTS, # [Ee][Xx][Ii][Ss][Tt][Ss]
+###   'existence' => :SYM_EXISTENCE, # [Ee][Xx][Iu][Ss][Tt][Ee][Nn][Cc][Ee]
+###   'occurrences' => :SYM_OCCURRENCES, # [Oo][Cc][Cc][Uu][Rr][Rr][Ee][Nn][Cc][Ee][Ss]
+###   'cardinality' => :SYM_CARDINALITY, # [Cc][Aa][Rr][Dd][Ii][Nn][Aa][Ll][Ii][Tt][Yy]
+###   'ordered' => :SYM_ORDERED, # [Oo][Rr][Dd][Ee][Rr][Ee][Dd]
+###   'unordered' => :SYM_UNORDERED, # [Uu][Nn][Oo][Rr][Dd][Ee][Rr][Ee][Dd]
+###   'unique' => :SYM_UNIQUE, # [Uu][Nn][Ii][Qq][Uu][Ee]
+###   'matches' => :SYM_MATCHES, # [Mm][Aa][Tt][Cc][Hh][Ee][Ss]
+###   'is_in' => :SYM_MATCHES, # [Ii][Ss][_][Ii][Nn]
+###   'invariant' => :SYM_INVARIANT, # [Ii][Nn][Vv][Aa][Rr][Ii][Aa][Nn][Tt]
+###   'infinity' => :SYM_INFINITY, # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
+###   'use_node' => :SYM_USE_NODE, # [Uu][Ss][Ee][_][Nn][Oo][Dd][Ee]
+###   'use_archetype' => :SYM_ALLOW_ARCHETYPE, # [Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee]
+###   'allow_archetype' => :SYM_ALLOW_ARCHETYPE, # [Aa][Ll][Ll][Oo][Ww][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee]
+###   'include' => :SYM_INCLUDE, # [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
+###   'exclude' => :SYM_EXCLUDE # [Ee][Xx][Cc][Ll][Uu][Dd][Ee]
+### }
 
 
 ###----------/* Scanner */ ----------------------------------------------- 

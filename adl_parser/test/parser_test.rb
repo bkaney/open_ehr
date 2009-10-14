@@ -5,9 +5,9 @@ class ADLParserTest < Test::Unit::TestCase
     @parser = ::OpenEhr::ADL::Parser.new
   end
 
-  must "assert parser instance" do
-    assert_instance_of ::OpenEhr::ADL::Parser,@parser
-  end
+#   must "assert parser instance" do
+#     assert_instance_of ::OpenEhr::ADL::Parser,@parser
+#   end
 
 #   must "openEHR-EHR-CLUSTER.exam-uterus.v1.adl be properly parsed" do
 #     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-uterus.v1.adl")
@@ -263,5 +263,13 @@ class ADLParserTest < Test::Unit::TestCase
       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
     end
   end
+
+#   must "adl-test-ENTRY.basic_types.v1.adl be properly parsed" do
+#     file =  File.read("#{TEST_ROOT_DIR}/adl/adl-test-ENTRY.basic_types.v1.adl")
+#     assert_nothing_raised do
+#       ast = @parser.parse(file, 'adl-test-ENTRY.basic_types.v1')
+#       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+#     end
+#   end
 
 end

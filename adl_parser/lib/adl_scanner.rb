@@ -52,6 +52,9 @@ module OpenEhr
           'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
           'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
         }
+        REGEX_PATTERN = {
+          :V_ISO8601_DURATION => /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
+        }
 
         def initialize(adl_type, filename, lineno = 1)
           super(adl_type, filename, lineno)
@@ -202,7 +205,9 @@ module OpenEhr
                 #    when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
               when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
                 yield :V_URI, $&
-              when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
+              when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
+                yield :V_ISO8601_DURATION, $&
+              when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
                 yield :V_ISO8601_DURATION, $&
               when /\A\S/ #UTF8CHAR
                 yield :UTF8CHAR, $&
@@ -363,7 +368,6 @@ module OpenEhr
                 if @in_interval
                   @in_interval = false
                 else
-                  #          @in_interval = false
                   @in_interval = true
                 end
                 @@logger.debug("DADLScanner#scan: SYM_INTERVAL_DELIM at #{@filename}:#{@lineno}")
@@ -516,8 +520,6 @@ module OpenEhr
                 yield :Plus_code, :Plus_code
               when /\A\*/   # *
                 yield :Star_code, :Star_code
-              when /\A\//   # /
-                yield :Slash_code, :Slash_code
               when /\A\^/   # ^
                 yield :Caret_code, :Caret_code
               when /\A\.\.\./   # ...
@@ -538,14 +540,23 @@ module OpenEhr
                 yield :Left_parenthesis_code, :Left_parenthesis_code
               when /\A\)/   # )
                 yield :Right_parenthesis_code, :Right_parenthesis_code
-              when /\A\{\// #V_REGEXP
-                if @adl_type.last != :regexp
-                  @in_regexp = true
-                  @adl_type.push(:regexp)
-                  yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
-                else
-                  raise
-                end
+              when /\A\//   # /
+#                yield :Slash_code, :Slash_code
+#              when /\A\// #V_REGEXP /
+                assert_at(__FILE__,__LINE__){@adl_type.last != :regexp}
+                #@in_regexp = true
+                @adl_type.push(:regexp)
+#                yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
+                yield :Slash_code, :Slash_code
+
+#               when /\A\{\// #V_REGEXP {/
+#                 if @adl_type.last != :regexp
+#                   @in_regexp = true
+#                   @adl_type.push(:regexp)
+#                   yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
+#                 else
+#                   assert_at(__FILE__,__LINE__){false}
+#                 end
               when /\A\{/   # {
                 @adl_type.push(:cadl)
                 @@logger.debug("CADLScanner#scan: entering cADL at #{@filename}:#{@lineno}")
@@ -562,13 +573,12 @@ module OpenEhr
               when /\A\?/   # ?
                 yield :Question_mark_code, :Question_mark_code
               when /\A\|/   # |
-                @@logger.debug("CADLScanner#scan: @in_interval = #{@in_interval} at #{@filename}:#{@lineno}")
                 if @in_interval
                   @in_interval = false
                 else
-                  #          @in_interval = false
                   @in_interval = true
                 end
+                @@logger.debug("CADLScanner#scan: @in_interval = #{@in_interval} at #{@filename}:#{@lineno}")
                 @@logger.debug("CADLScanner#scan: SYM_INTERVAL_DELIM at #{@filename}:#{@lineno}")
                 yield :SYM_INTERVAL_DELIM, :SYM_INTERVAL_DELIM
 
@@ -587,21 +597,40 @@ module OpenEhr
                 yield :Right_bracket_code, :Right_bracket_code
               when /\A[A-Z][a-zA-Z0-9_]*<[a-zA-Z0-9,_<>]+>/   #V_GENERIC_TYPE_IDENTIFIER
                 yield :V_GENERIC_TYPE_IDENTIFIER, $&
-              when /\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X][T\t][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]/
+              when /\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X][Tt][hH?X][hH?X]:[mM?X][mM?X]:[sS?X][sS?X]/
                 yield :V_ISO8601_DATE_TIME_CONSTRAINT_PATTERN, $&
               when /\A[yY][yY][yY][yY]-[mM?X][mM?X]-[dD?X][dD?X]/
                 yield :V_ISO8601_DATE_CONSTRAINT_PATTERN, $&
               when /\A[hH][hH]:[mM?X][mM?X]:[sS?X][sS?X]/
                 yield :V_ISO8601_TIME_CONSTRAINT_PATTERN, $&
-#              when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|P([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION such as PnYnMnWnDTnnHnnMnnS
-#                yield :V_ISO8601_DURATION, $&
-              when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?/   #V_ISO8601_DURATION such as PnYnMnWnDTnnHnnMnnS
-                yield :V_ISO8601_DURATION, $&
-              when /\AP[yY]?[mM]?[wW]?[dD]?(T[hH]?[mM]?[sS]?)?/   #V_ISO8601_DURATION_CONSTRAINT_PATTERN
+              when /\AP[yY]?[mM]?[wW]?[dD]?T[hH]?[mM]?[sS]?/   #V_ISO8601_DURATION_CONSTRAINT_PATTERN
+                if $&.length == 2
+                  case data
+                  when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9.]+[sS])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
+                    yield :V_ISO8601_DURATION, $&
+                  else
+                    yield :V_ISO8601_DURATION_CONSTRAINT_PATTERN, $&
+                  end
+                else
+                  yield :V_ISO8601_DURATION_CONSTRAINT_PATTERN, $&
+                end
+              when /\AP[yY]?[mM]?[wW]?[dD]?/   #V_ISO8601_DURATION_CONSTRAINT_PATTERN
+                if $&.length == 1
+                  case data
+                  when /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
+                    yield :V_ISO8601_DURATION, $&
+                  else
+                    yield :V_ISO8601_DURATION_CONSTRAINT_PATTERN, $&
+                  end
+                else
+                  yield :V_ISO8601_DURATION_CONSTRAINT_PATTERN, $&
+                end
+              when /\AP[yY]?[mM]?[wW]?[dD]?/   #V_ISO8601_DURATION_CONSTRAINT_PATTERN
                 yield :V_ISO8601_DURATION_CONSTRAINT_PATTERN, $&
-              when /\A[a-z][a-zA-Z0-9_]*/
+              when /\A[a-zA-Z][a-zA-Z0-9_]*/
                 word = $&.dup
                 if RESERVED[word.downcase]
+                  @@logger.debug("CADLScanner#scan: RESERVED = #{word} at #{@filename}:#{@lineno}")
                   yield RESERVED[word.downcase], RESERVED[word.downcase]
                 else
                   @@logger.debug("CADLScanner#scan: V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}:#{@lineno}")
@@ -620,11 +649,17 @@ module OpenEhr
                 end
               when /\Aa[ct][0-9.]+/   #V_LOCAL_CODE
                 yield :V_LOCAL_CODE, $&
-              when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?|[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/- -n-n-n-n-]-
+              when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?/    #V_ISO8601_EXTENDED_DATE_TIME YYYY-MM-DDThh:mm:ss[,sss][Z|+/- -n-n-n-n-]-
+                yield :V_ISO8601_EXTENDED_DATE_TIME, $&
+              when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?/
+                yield :V_ISO8601_EXTENDED_DATE_TIME, $&
+              when /\A[[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/
                 yield :V_ISO8601_EXTENDED_DATE_TIME, $&
               when /\A[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? /   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
                 yield :V_ISO8601_EXTENDED_TIME, $&
-              when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]|[0-9]{4}-[0-1][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
+              when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
+                yield :V_ISO8601_EXTENDED_DATE, $&
+              when /\A[0-9]{4}-[0-1][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
                 yield :V_ISO8601_EXTENDED_DATE, $&
               when /\A"((?:[^"\\]+|\\.)*)"/ #V_STRING
                 yield :V_STRING, $1
@@ -685,30 +720,29 @@ module OpenEhr
         end
 
         def scan(data)
-          @@logger.debug("#{__FILE__}:#{__LINE__}: Entering scan_regexp at #{@filename}:#{@lineno}: data = #{data.inspect}")
+          @@logger.debug("#{__FILE__}:#{__LINE__}: Entering RegexScanner::scan at #{@filename}:#{@lineno}: data = #{data.inspect}")
           until data.nil?  do
             case @adl_type.last
             when :regexp
               case data
-              when /\A\/\}/ #V_REGEXP
-                if @adl_type.last == :regexp
-                  @in_regexp = false
-                  @adl_type.pop
-                  yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
-                else
-                  raise
-                end
-              when /\A(.*)(\/\})/ #V_REGEXP
+              when /\A\// #V_REGEXP /
+                assert_at(__FILE__,__LINE__){@adl_type.last == :regexp}
+                #@in_regexp = false
+                @adl_type.pop
+                yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
+#               when /\A\/\}/ #V_REGEXP /
+#                 if @adl_type.last == :regexp
+#                   @in_regexp = false
+#                   @adl_type.pop
+#                   yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
+#                 else
+#                   raise
+#                 end
+#              when /\A(.*)(\/\})/ #V_REGEXP /}
+              when /\A([^\/]+)/ #V_REGEXP 
                 yield :REGEXP_BODY, $1
-                if @adl_type.last == :regexp
-                  @in_regexp = false
-                  @adl_type.pop
-                  yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
-                else
-                  raise
-                end
-              else
-                raise data
+#              else
+#                raise "should not happen at #{data}"
               end
               data = $' # variable $' receives the string after the match
             when :adl
@@ -733,7 +767,7 @@ module OpenEhr
                 yield sym, val
               end
             else
-              raise
+              raise 
             end
           end
         end

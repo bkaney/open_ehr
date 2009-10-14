@@ -73,25 +73,6 @@ class CADLScannerTest < Test::Unit::TestCase
     end
   end
 
-  must "assert CADLScanner scanner scan V_QUALIFIED_TERM_CODE_REF" do
-    @scanner.scan("[ICD10AM(1998)::F23]") do |sym, val|
-      assert_equal :V_QUALIFIED_TERM_CODE_REF,sym
-      assert_equal "ICD10AM(1998)::F23",val
-    end
-  end
-
-  must "assert CADLScanner scanner scan V_ISO8601_DURATION" do
-    @scanner.scan("PT1M") do |sym, val|
-      assert_equal :V_ISO8601_DURATION,sym
-      assert_equal "PT1M",val
-    end
-
-    @scanner.scan("P1D") do |sym, val|
-      assert_equal :V_ISO8601_DURATION,sym
-      assert_equal "PT1M",val
-    end
-  end
-
   must "assert CADLScanner scanner scan V_STRING" do
     @scanner.scan("\"string\"") do |sym, val|
       assert_equal :V_STRING,sym
@@ -103,12 +84,49 @@ class CADLScannerTest < Test::Unit::TestCase
     end
   end
 
+  must "assert CADLScanner scanner scan V_QUALIFIED_TERM_CODE_REF" do
+    @scanner.scan("[ICD10AM(1998)::F23]") do |sym, val|
+      assert_equal :V_QUALIFIED_TERM_CODE_REF,sym
+      assert_equal "ICD10AM(1998)::F23",val
+    end
+  end
+
+
   must "assert CADLScanner scanner scan V_ISO8601_DURATION_CONSTRAINT_PATTERN" do
     @scanner.scan("PW") do |sym, val|
       assert_equal :V_ISO8601_DURATION_CONSTRAINT_PATTERN,sym
       assert_equal "PW",val
     end
+    @scanner.scan("PTs") do |sym, val|
+      assert_equal :V_ISO8601_DURATION_CONSTRAINT_PATTERN,sym
+      assert_equal "PTs",val
+    end
   end
+
+  must "assert CADLScanner scanner scan V_ISO8601_DURATION" do
+    @scanner.scan("PT1M") do |sym, val|
+      assert_equal :V_ISO8601_DURATION,sym
+      assert_equal "PT1M",val
+    end
+
+    @scanner.scan("P1D") do |sym, val|
+      assert_equal :V_ISO8601_DURATION,sym
+      assert_equal "P1D",val
+    end
+
+    @scanner.scan("PT1H30M") do |sym, val|
+      assert_equal :V_ISO8601_DURATION,sym
+      assert_equal "PT1H30M",val
+    end
+  end
+
+  must "assert CADLScanner scanner scan V_ISO8601_EXTENDED_DATE_TIME" do
+    @scanner.scan("2000-01-01T01:00:00") do |sym, val|
+      assert_equal :V_ISO8601_EXTENDED_DATE_TIME,sym
+      assert_equal "2000-01-01T01:00:00",val
+    end
+  end
+
 end
 
 class DADLScannerTest < Test::Unit::TestCase
@@ -151,6 +169,19 @@ class DADLScannerTest < Test::Unit::TestCase
     @scanner.scan("http://openEHR.org/Services") do |sym, val|
       assert_equal :V_URI,sym
       assert_equal "http://openEHR.org/Services",val
+    end
+  end
+end
+
+class RegexScannerTest < Test::Unit::TestCase
+  def setup
+    @scanner = OpenEhr::ADL::Scanner::RegexScanner.new([:regexp], "filename")
+  end
+
+  must "assert RegexScanner scanner scan " do
+    @scanner.scan("this|that|something else") do |sym, val|
+      assert_equal :REGEXP_BODY,sym
+      assert_equal "this|that|something else",val
     end
   end
 end
