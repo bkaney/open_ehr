@@ -163,9 +163,19 @@ cadl_section: c_complex_object
   }
 #  | error
 
+### c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
+#  | c_complx_object_head SYM_MATCHES Slash_code REGEXP_BODY Slash_code # added by akimichi
+c_complex_object:  c_complx_object_head SYM_MATCHES REGEXP_HEAD REGEXP_BODY # added by akimichi
+  {
+    @@logger.debug("#{__FILE__}:#{__LINE__}:c_complx_object = \n c_complx_object_head = #{val[0].to_yaml}")
+    result = OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
+      c_complex_object.node_id = val[0][:c_complex_object_id][:local_term_code_ref]
+      c_complex_object.rm_type_name = val[0][:c_complex_object_id][:type_identifier]
+      c_complex_object.occurrences = val[0][:c_occurrences]
+    end
+  }
 #c_complex_object: c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
-#c_complex_object: c_complx_object_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
-c_complex_object: c_complx_object_head SYM_MATCHES Slash_code REGEXP_BODY Slash_code # added by akimichi
+  | c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
   { 
     result = OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
       c_complex_object.node_id = val[0][:c_complex_object_id][:local_term_code_ref]
@@ -173,19 +183,13 @@ c_complex_object: c_complx_object_head SYM_MATCHES Slash_code REGEXP_BODY Slash_
       c_complex_object.occurrences = val[0][:c_occurrences]
     end
   }
-    | c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body SYM_END_CBLOCK
-  { 
-    result = OpenEhr::AM::Archetype::ConstraintModel::C_COMPLEX_OBJECT.create(:attributes => val[3]) do |c_complex_object|
-      c_complex_object.node_id = val[0][:c_complex_object_id][:local_term_code_ref]
-      c_complex_object.rm_type_name = val[0][:c_complex_object_id][:type_identifier]
-      c_complex_object.occurrences = val[0][:c_occurrences]
-    end
-  }
+
 #    | c_complex_object_head error SYM_END_CBLOCK
 #    | c_complex_object_head SYM_MATCHES SYM_START_CBLOCK c_complex_object_body c_invariants SYM_END_CBLOCK
 
 c_complex_object_head: c_complex_object_id c_occurrences
   {
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_complex_object_head: c_complex_object_id => #{val[0]}, c_occurrences => #{val[1]}")
     result = {:c_complex_object_id => val[0], :c_occurrences => val[1]}
   }
 
@@ -391,14 +395,22 @@ c_attributes: c_attribute
 # 'c_attribute' is a node representing a constraint on an attribute in an object model.
 c_attribute: c_attr_head SYM_MATCHES SYM_START_CBLOCK c_attr_values SYM_END_CBLOCK
   { 
+    @@logger.debug("#{__FILE__}:#{__LINE__}:c_attribute: #{val[0]} matches #{val[3]}")
     assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::ConstraintModel::C_ATTRIBUTE)}
     c_attribute = val[0]
     c_attribute.children = val[3]
     result = c_attribute
   }
-#  | c_attr_head SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
-  | c_attr_head SYM_MATCHES Slash_code REGEXP_BODY Slash_code # added by akimichi
-  { 
+  | c_attr_head SYM_MATCHES REGEXP_HEAD REGEXP_BODY SYM_END_CBLOCK # added by akimichi
+  {
+    @@logger.debug("c_attribute: #{val[0]} matches #{val[3]}}")
+    assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::ConstraintModel::C_ATTRIBUTE)}
+    result = val[0]
+  }
+  | c_attr_head SYM_MATCHES REGEXP_HEAD REGEXP_BODY Semicolon_code string_value SYM_END_CBLOCK # added by akimichi
+
+  {
+    @@logger.debug("c_attribute: #{val[0]} matches #{val[5]}}")
     assert_at(__FILE__,__LINE__){ val[0].kind_of?(OpenEhr::AM::Archetype::ConstraintModel::C_ATTRIBUTE)}
     result = val[0]
   }
@@ -442,28 +454,30 @@ c_attr_values: c_object
     result = Array[val[0]]
   }
 
-### c_includes: #-- Empty
-###     | SYM_INCLUDE assertions
 c_includes: #-- Empty
-    | SYM_INCLUDE invariants
+    | SYM_INCLUDE assertions
 {
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_includes: assertions = #{val[1]}") 
     result = val[1]
 }
+### c_includes: #-- Empty
+###     | SYM_INCLUDE invariants
 
-### c_excludes: #-- Empty
-###     | SYM_EXCLUDE assertions
 c_excludes: #-- Empty
-    | SYM_EXCLUDE invariants
-{
+    | SYM_EXCLUDE assertions
+  {
+    @@logger.debug("#{__FILE__}:#{__LINE__}: c_excludes: assertions = #{val[1]}") 
     result = val[1]
-}
+  }
+### c_excludes: #-- Empty
+###     | SYM_EXCLUDE invariants
 
 invariants: invariant
   | invariants invariant
 
-invariant: any_identifier ':' boolean_expression
+invariant: any_identifier Colon_code boolean_expression
   | boolean_expression
-  | any_identifier ':' error
+  | any_identifier Colon_code error
 
 arch_invariant: #-- no invariant ok
     | SYM_INVARIANT V_ASSERTION_TEXT
@@ -963,9 +977,9 @@ uri_value: V_URI
 assertions: assertion
   | assertions assertion
 
-assertion: any_identifier ':' boolean_expression
+assertion: any_identifier Colon_code boolean_expression
   | boolean_expression
-  | any_identifier ':' error
+  | any_identifier Colon_code error
 
 #---------------------- expressions ---------------------
 
@@ -973,13 +987,16 @@ boolean_expression: boolean_leaf
   | boolean_node
 
 boolean_node: SYM_EXISTS absolute_path
-#  | absolute_path
-  | SYM_EXISTS error
+#  | SYM_EXISTS error
+  | relative_path SYM_MATCHES REGEXP_HEAD REGEXP_BODY SYM_END_CBLOCK# added by akimichi
+  {
+    @@logger.debug("#{__FILE__}:#{__LINE__}, boolean_node:  relative_path = #{val[0]}, regexp_body => #{val[3]} at #{@filename}") 
+    result = {:relative_path => val[0], :regexp_body => val[3]}
+  }
   | relative_path SYM_MATCHES SYM_START_CBLOCK c_primitive SYM_END_CBLOCK
-#  | relative_path SYM_MATCHES START_REGEXP_BLOCK REGEXP_BODY END_REGEXP_BLOCK # added by akimichi
-  | relative_path SYM_MATCHES Slash_code REGEXP_BODY Slash_code # added by akimichi
+#  | relative_path SYM_MATCHES SYM_START_CBLOCK Slash_code REGEXP_BODY Slash_code SYM_END_CBLOCK# added by akimichi
   | SYM_NOT boolean_leaf
-  | arithmetic_expression '=' arithmetic_expression
+  | arithmetic_expression Equal_code arithmetic_expression
   | arithmetic_expression SYM_NE arithmetic_expression
   | arithmetic_expression SYM_LT arithmetic_expression
   | arithmetic_expression SYM_GT arithmetic_expression
@@ -994,20 +1011,19 @@ boolean_leaf: Left_parenthesis_code boolean_expression Right_parenthesis_code
   | SYM_TRUE
   | SYM_FALSE
 
-arithmetic_expression: arithmetic_leaf
-  | arithmetic_node
-
 arithmetic_node: arithmetic_expression '+' arithmetic_leaf
-  | arithmetic_expression '-' arithmetic_leaf
+  | arithmetic_expression Minus_code arithmetic_leaf
   | arithmetic_expression Star_code arithmetic_leaf
   | arithmetic_expression Slash_code arithmetic_leaf
-  | arithmetic_expression '^' arithmetic_leaf
+  | arithmetic_expression Caret_code arithmetic_leaf
 
 arithmetic_leaf:  Left_parenthesis_code arithmetic_expression Right_parenthesis_code
   | integer_value
   | real_value
   | absolute_path
 
+arithmetic_expression: arithmetic_leaf
+  | arithmetic_node
 
 #--------------- THE FOLLOWING SOURCE TAKEN FROM OG_PATH_VALIDATOR.Y -------------
 #--------------- except to remove movable_path ----------------------------------------------------
@@ -1020,15 +1036,25 @@ absolute_path: Slash_code
 
 
 relative_path: path_segment
+  {
+    @@logger.debug("#{__FILE__}:#{__LINE__}, relative_path = #{val[0]}") 
+    result = val[0]
+  }
   | relative_path Slash_code path_segment
+  {
+    @@logger.debug("#{__FILE__}:#{__LINE__}, relative_path = #{val[0]}/#{val[2]}") 
+    result = [val[0],val[2]]
+  }
 
 path_segment: V_ATTRIBUTE_IDENTIFIER V_LOCAL_TERM_CODE_REF
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
+    result = [val[0],val[1]]
   }
   | V_ATTRIBUTE_IDENTIFIER
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}, V_ATTRIBUTE_IDENTIFIER = #{val[0]} at #{@filename}") 
+    result = val[0]
   }
 
 
@@ -1195,7 +1221,8 @@ c_boolean: c_boolean_spec
   }
   | c_boolean_spec Semicolon_code boolean_value
   {
-    raise 'Not implemented yet'
+    result = val[0]
+    #raise 'Not implemented yet'
   }
   | c_boolean_spec Semicolon_code error
   {

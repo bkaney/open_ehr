@@ -127,6 +127,18 @@ class CADLScannerTest < Test::Unit::TestCase
     end
   end
 
+  must "assert CADLScanner scanner scan V_ISO8601_EXTENDED_TIME" do
+    @scanner.scan("01:00:00") do |sym, val|
+      assert_equal :V_ISO8601_EXTENDED_TIME,sym
+      assert_equal "01:00:00",val
+    end
+    @scanner.scan("12:01") do |sym, val|
+      assert_equal :V_ISO8601_EXTENDED_TIME,sym
+      assert_equal "12:01",val
+    end
+
+  end
+
 end
 
 class DADLScannerTest < Test::Unit::TestCase

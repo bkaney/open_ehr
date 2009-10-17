@@ -518,6 +518,8 @@ module OpenEhr
                 yield :Minus_code, :Minus_code
               when /\A\+/   # +
                 yield :Plus_code, :Plus_code
+              when /\A\=/   # =
+                yield :Equal_code, :Equal_code
               when /\A\*/   # *
                 yield :Star_code, :Star_code
               when /\A\^/   # ^
@@ -541,25 +543,26 @@ module OpenEhr
               when /\A\)/   # )
                 yield :Right_parenthesis_code, :Right_parenthesis_code
               when /\A\//   # /
-#                yield :Slash_code, :Slash_code
-#              when /\A\// #V_REGEXP /
-                assert_at(__FILE__,__LINE__){@adl_type.last != :regexp}
-                #@in_regexp = true
-                @adl_type.push(:regexp)
-#                yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
+                @@logger.debug("CADLScanner#scan: Slash_code #{@filename}:#{@lineno}")
                 yield :Slash_code, :Slash_code
+# #                yield :Slash_code, :Slash_code
+# #              when /\A\// #V_REGEXP /
+#                 assert_at(__FILE__,__LINE__){@adl_type.last != :regexp}
+#                 #@in_regexp = true
+#                 @adl_type.push(:regexp)
+# #                yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
 
-#               when /\A\{\// #V_REGEXP {/
-#                 if @adl_type.last != :regexp
-#                   @in_regexp = true
-#                   @adl_type.push(:regexp)
-#                   yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
-#                 else
-#                   assert_at(__FILE__,__LINE__){false}
-#                 end
+              when /\A\{\// # REGEXP_HEAD {/
+                assert_at(__FILE__,__LINE__){ @adl_type.last != :regexp}
+                #                   @in_regexp = true
+                @@logger.debug("CADLScanner#scan: REGEXP_HEAD:")
+                @adl_type.push(:cadl)
+                @adl_type.push(:regexp)
+                #                   yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
+                yield :REGEXP_HEAD, :REGEXP_HEAD
               when /\A\{/   # {
                 @adl_type.push(:cadl)
-                @@logger.debug("CADLScanner#scan: entering cADL at #{@filename}:#{@lineno}")
+                #@@logger.debug("CADLScanner#scan: entering cADL at #{@filename}:#{@lineno}")
                 yield :SYM_START_CBLOCK, :SYM_START_CBLOCK
               when /\A\}/   # }
                 adl_type = @adl_type.pop
@@ -627,10 +630,10 @@ module OpenEhr
                 end
               when /\AP[yY]?[mM]?[wW]?[dD]?/   #V_ISO8601_DURATION_CONSTRAINT_PATTERN
                 yield :V_ISO8601_DURATION_CONSTRAINT_PATTERN, $&
-              when /\A[a-zA-Z][a-zA-Z0-9_]*/
+              when /\A[a-z][a-zA-Z0-9_]*/
                 word = $&.dup
                 if RESERVED[word.downcase]
-                  @@logger.debug("CADLScanner#scan: RESERVED = #{word} at #{@filename}:#{@lineno}")
+                  @@logger.debug("ADLScanner#scan: RESERVED = #{RESERVED[word]} at #{@filename}:#{@lineno}")
                   yield RESERVED[word.downcase], RESERVED[word.downcase]
                 else
                   @@logger.debug("CADLScanner#scan: V_ATTRIBUTE_IDENTIFIER = #{word} at #{@filename}:#{@lineno}")
@@ -653,9 +656,11 @@ module OpenEhr
                 yield :V_ISO8601_EXTENDED_DATE_TIME, $&
               when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?/
                 yield :V_ISO8601_EXTENDED_DATE_TIME, $&
-              when /\A[[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/
+              when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](Z|[+-][0-9]{4})?/
                 yield :V_ISO8601_EXTENDED_DATE_TIME, $&
-              when /\A[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?|[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})? /   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
+              when /\A[0-2][0-9]:[0-6][0-9]:[0-6][0-9](,[0-9]+)?(Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
+                yield :V_ISO8601_EXTENDED_TIME, $&
+              when /\A[0-2][0-9]:[0-6][0-9](Z|[+-][0-9]{4})?/   #V_ISO8601_EXTENDED_TIME hh:mm:ss[,sss][Z|+/-nnnn]
                 yield :V_ISO8601_EXTENDED_TIME, $&
               when /\A[0-9]{4}-[0-1][0-9]-[0-3][0-9]/   #V_ISO8601_EXTENDED_DATE YYYY-MM-DD
                 yield :V_ISO8601_EXTENDED_DATE, $&
@@ -695,7 +700,6 @@ module OpenEhr
                 yield sym, val
               end
             when :term_constraint
-              @@logger.debug("Entering scan_term_constraint at #{@filename}:#{@lineno}: data = #{data.inspect}")
               term_constraint_scanner = OpenEhr::ADL::Scanner::TermConstraintScanner.new(@adl_type, @filename, @lineno)
               data = term_constraint_scanner.scan(data) do |sym, val|
                 yield sym, val
@@ -725,11 +729,14 @@ module OpenEhr
             case @adl_type.last
             when :regexp
               case data
-              when /\A\// #V_REGEXP /
-                assert_at(__FILE__,__LINE__){@adl_type.last == :regexp}
-                #@in_regexp = false
-                @adl_type.pop
-                yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
+# #              when /\A\// #V_REGEXP /
+#               when /\A([^\/]+)\// #V_REGEXP 
+#                 assert_at(__FILE__,__LINE__){@adl_type.last == :regexp}
+#                 #@in_regexp = false
+#                 @adl_type.pop
+#                 @@logger.debug("#{__FILE__}:#{__LINE__}: RegexScanner::scan  $1 = #{$1.inspect}")
+# #                yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
+#                 yield :V_REGEXP,  $1
 #               when /\A\/\}/ #V_REGEXP /
 #                 if @adl_type.last == :regexp
 #                   @in_regexp = false
@@ -739,10 +746,11 @@ module OpenEhr
 #                   raise
 #                 end
 #              when /\A(.*)(\/\})/ #V_REGEXP /}
-              when /\A([^\/]+)/ #V_REGEXP 
+#              when /\A(.*)\/\}/ # REGEXP_BODY
+              when /\A(.*)\// # REGEXP_BODY
+                @adl_type.pop
+                @@logger.debug("#{__FILE__}:#{__LINE__}: RegexScanner::scan REGEXP_BODY = #{$1}")
                 yield :REGEXP_BODY, $1
-#              else
-#                raise "should not happen at #{data}"
               end
               data = $' # variable $' receives the string after the match
             when :adl
