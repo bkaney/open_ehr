@@ -27,27 +27,37 @@ class RemoteADLTest < Test::Unit::TestCase
   end
 
 
-  must "test_adls should properly parsed" do
-    assert_nothing_raised do
-      @test_adls.each do |adl|
-        puts "Processing #{adl}"
-        open(adl) do |file|
-          @parser.parse(file.read, adl)
-        end
-      end
-    end
-  end
-
-#   must "ehr_adls should properly parsed" do
+#   must "test_adls should properly parsed" do
 #     assert_nothing_raised do
-#       @ehr_adls.each do |adl|
+#       @test_adls.each do |adl|
 #         puts "Processing #{adl}"
 #         open(adl) do |file|
-#           @parser.parse(file.read, adl)
+#           p "Processing #{file.gets}"
+#           case file.gets
+#           when "http://www.openehr.org/svn/knowledge/archetypes/dev/adl/test/basics/adl-test-ENTRY.basic_types_fail.v1.adl"
+#             assert_raise Racc::ParserError do 
+#               @parser.parse(file.read, adl)
+#             end
+#           else
+#             assert_nothing_raised { @parser.parse(file.read, adl) }
+#           end
 #         end
 #       end
 #     end
 #   end
+
+  must "ehr_adls should properly parsed" do
+    assert_nothing_raised do
+      @ehr_adls.each do |adl|
+        puts "Processing #{adl}"
+        open(adl) do |file|
+          assert_nothing_raised do
+            @parser.parse(file.read, adl)
+          end
+        end
+      end
+    end
+  end
 
 
 end

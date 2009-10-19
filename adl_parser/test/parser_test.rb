@@ -257,6 +257,14 @@ class ADLParserTest < Test::Unit::TestCase
     end
   end
 
+  must "adl-test-ENTRY.assumed_types.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/adl-test-ENTRY.assumed_types.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'adl-test-ENTRY.assumed_types.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
+
   must "adl-test-ENTRY.basic_types.v1.adl be properly parsed" do
     file =  File.read("#{TEST_ROOT_DIR}/adl/adl-test-ENTRY.basic_types.v1.adl")
     assert_nothing_raised do
@@ -266,10 +274,26 @@ class ADLParserTest < Test::Unit::TestCase
   end
 
 
-  must "adl-test-ENTRY.assumed_types.v1.adl be properly parsed" do
-    file =  File.read("#{TEST_ROOT_DIR}/adl/adl-test-ENTRY.assumed_types.v1.adl")
+  must "adl-test-ENTRY.basic_types_fail.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/adl-test-ENTRY.basic_types_fail.v1.adl")
+    assert_raise Racc::ParseError do
+      ast = @parser.parse(file, 'adl-test-ENTRY.basic_types_fail.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
+
+  must "adl-test-ENTRY.most_minimal.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/adl-test-ENTRY.most_minimal.v1.adl")
     assert_nothing_raised do
-      ast = @parser.parse(file, 'adl-test-ENTRY.assumed_types.v1')
+      ast = @parser.parse(file, 'adl-test-ENTRY.most_minimal.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+    end
+  end
+
+  must "adl-test-ENTRY.structure_test1.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/adl-test-ENTRY.structure_test1.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'adl-test-ENTRY.structure_test1.v1')
       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
     end
   end

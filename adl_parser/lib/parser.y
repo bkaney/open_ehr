@@ -801,8 +801,6 @@ integer_value: V_INTEGER
     end
     result = - integer
   }
-###   | '+' V_INTEGER
-###   | '-' V_INTEGER
 
 integer_list_value: integer_value Comma_code integer_value
   | integer_list_value Comma_code integer_value
@@ -1011,7 +1009,7 @@ boolean_leaf: Left_parenthesis_code boolean_expression Right_parenthesis_code
   | SYM_TRUE
   | SYM_FALSE
 
-arithmetic_node: arithmetic_expression '+' arithmetic_leaf
+arithmetic_node: arithmetic_expression Plus_code arithmetic_leaf
   | arithmetic_expression Minus_code arithmetic_leaf
   | arithmetic_expression Star_code arithmetic_leaf
   | arithmetic_expression Slash_code arithmetic_leaf
@@ -1098,6 +1096,9 @@ c_cardinality: SYM_CARDINALITY SYM_MATCHES SYM_START_CBLOCK cardinality_spec SYM
   }
 
 cardinality_spec: occurrence_spec
+  {
+    result = val[0]
+  }
   | occurrence_spec Semicolon_code SYM_ORDERED
   | occurrence_spec Semicolon_code SYM_UNORDERED
   | occurrence_spec Semicolon_code SYM_UNIQUE
@@ -1329,61 +1330,6 @@ else
   @@logger.level = Logger::WARN
 end
 
-
-###----------/* keywords */ --------------------------------------------- 
-### @@adl_reserved = {
-###     'archetype' => :SYM_ARCHETYPE,
-###     'adl_version' => :SYM_ADL_VERSION,
-###     'controlled' => :SYM_IS_CONTROLLED,
-###     'specialize' => :SYM_SPECIALIZE,
-###     'concept' => :SYM_CONCEPT,
-###     'language' => :SYM_LANGUAGE,
-###     'description' => :SYM_DESCRIPTION,
-###     'definition' => :SYM_DEFINITION,
-###     'invariant' => :SYM_INVARIANT,
-###     'ontology' => :SYM_ONTOLOGY,
-###     'matches' => :SYM_MATCHES,
-###     'is_in' => :SYM_MATCHES,
-###     'occurrences' => :SYM_OCCURRENCES,
-###     'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
-###     'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
-###     'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
-### }
-
-### @@dadl_reserved = {
-###   'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
-###   'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
-###   'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
-### }
-
-### @@cadl_reserved = {
-###   'then' => :SYM_THEN, # [Tt][Hh][Ee][Nn]
-###   'else' => :SYM_ELSE, # [Ee][Ll][Ss][Ee]
-###   'and' => :SYM_AND, # [Aa][Nn][Dd]
-###   'or' => :SYM_OR, # [Oo][Rr]
-###   'xor' => :SYM_XOR, # [Xx][Oo][Rr]
-###   'not' => :SYM_NOT, # [Nn][Oo][Tt]
-###   'implies' => :SYM_IMPLIES, # [Ii][Mm][Pp][Ll][Ii][Ee][Ss]
-###   'true' => :SYM_TRUE, #[Tt][Rr][Uu][Ee] -- -> SYM_TRUE 
-###   'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
-###   'forall' => :SYM_FORALL, # [Ff][Oo][Rr][_][Aa][Ll][Ll]
-###   'exists' => :SYM_EXISTS, # [Ee][Xx][Ii][Ss][Tt][Ss]
-###   'existence' => :SYM_EXISTENCE, # [Ee][Xx][Iu][Ss][Tt][Ee][Nn][Cc][Ee]
-###   'occurrences' => :SYM_OCCURRENCES, # [Oo][Cc][Cc][Uu][Rr][Rr][Ee][Nn][Cc][Ee][Ss]
-###   'cardinality' => :SYM_CARDINALITY, # [Cc][Aa][Rr][Dd][Ii][Nn][Aa][Ll][Ii][Tt][Yy]
-###   'ordered' => :SYM_ORDERED, # [Oo][Rr][Dd][Ee][Rr][Ee][Dd]
-###   'unordered' => :SYM_UNORDERED, # [Uu][Nn][Oo][Rr][Dd][Ee][Rr][Ee][Dd]
-###   'unique' => :SYM_UNIQUE, # [Uu][Nn][Ii][Qq][Uu][Ee]
-###   'matches' => :SYM_MATCHES, # [Mm][Aa][Tt][Cc][Hh][Ee][Ss]
-###   'is_in' => :SYM_MATCHES, # [Ii][Ss][_][Ii][Nn]
-###   'invariant' => :SYM_INVARIANT, # [Ii][Nn][Vv][Aa][Rr][Ii][Aa][Nn][Tt]
-###   'infinity' => :SYM_INFINITY, # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
-###   'use_node' => :SYM_USE_NODE, # [Uu][Ss][Ee][_][Nn][Oo][Dd][Ee]
-###   'use_archetype' => :SYM_ALLOW_ARCHETYPE, # [Uu][Ss][Ee][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee]
-###   'allow_archetype' => :SYM_ALLOW_ARCHETYPE, # [Aa][Ll][Ll][Oo][Ww][_][Aa][Rr][Cc][Hh][Ee][Tt][Yy][Pp][Ee]
-###   'include' => :SYM_INCLUDE, # [Ii][Nn][Cc][Ll][Uu][Dd][Ee]
-###   'exclude' => :SYM_EXCLUDE # [Ee][Xx][Cc][Ll][Uu][Dd][Ee]
-### }
 
 
 ###----------/* Scanner */ ----------------------------------------------- 
