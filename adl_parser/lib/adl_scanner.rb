@@ -2,8 +2,6 @@ require 'rubygems'
 require 'logger'
 require 'adl_parser.rb'
 require 'open_ehr'
-#require 'am.rb'
-#require 'rm.rb'
 require 'util.rb'
 
 
@@ -52,10 +50,12 @@ module OpenEhr
           'false' => :SYM_FALSE, # [Ff][Aa][Ll][Ss][Ee] -- -> SYM_FALSE 
           'infinity' => :SYM_INFINITY # [Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] -- -> SYM_INFINITY 
         }
-        REGEX_PATTERN = {
-          :V_ISO8601_DURATION => /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
-        }
-
+        REGEX_PATTERN = Hash[:CarriageReturn => /\A\n/,
+                             :WhiteSpace => /\A[ \t\r\f]+/,
+                             :SingleCommentLine => /\A--.*/,
+                             :V_ISO8601_DURATION => /\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?T([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?|\AP([0-9]+[yY])?([0-9]+[mM])?([0-9]+[wW])?([0-9]+[dD])?/   #V_ISO8601_DURATION PnYnMnWnDTnnHnnMnnS
+                            ]
+        
         def initialize(adl_type, filename, lineno = 1)
           super(adl_type, filename, lineno)
           @in_interval  = false
@@ -70,12 +70,15 @@ module OpenEhr
             case @adl_type.last
             when :adl
               case data
-              when /\A\n/ # carriage return
+#              when /\A\n/ # carriage return
+              when REGEX_PATTERN[:CarriageReturn] # carriage return
                 @lineno += 1
                 ;
-              when /\A[ \t\r\f]+/ #just drop it
+#              when /\A[ \t\r\f]+/ #just drop it
+              when REGEX_PATTERN[:WhiteSpace] # carriage return
                 ;
-              when /\A--.*/ # single line comment
+#              when /\A--.*/ # single line comment
+              when REGEX_PATTERN[:SingleCommentLine] # carriage return
                 @lineno += 1
                 @@logger.debug("ADLScanner#scan: COMMENT = #{$&} at #{@filename}:#{@lineno}")
                 ;
@@ -242,7 +245,7 @@ module OpenEhr
       #
       # DADLScanner
       # 
-      class DADLScanner < Base
+      class DADLScanner < ADLScanner
         attr_accessor :in_interval, :in_c_domain_type, :dblock_depth
         @@logger = OpenEhr::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')
         RESERVED = {
@@ -269,14 +272,16 @@ module OpenEhr
             case @adl_type.last
             when :dadl
               case data
-              when /\A\n/ # carriage return
-                #@@logger.debug("DADLScanner#scan:  carriage return, data = #{data.inspect}")
+#              when /\A\n/ # carriage return
+              when REGEX_PATTERN[:CarriageReturn] # carriage return
                 @lineno += 1
                 ;
-              when /\A[ \t\r\f]+/ #just drop it
+#              when /\A[ \t\r\f]+/ #just drop it
+              when REGEX_PATTERN[:WhiteSpace]
                 ##@@logger.debug("DADLScanner#scan:  white space, data = #{data.inspect}")
                 ;
-              when /\A--.*/ # single line comment
+#              when /\A--.*/ # single line comment
+              when REGEX_PATTERN[:SingleCommentLine]
                 @@logger.debug("DADLScanner#scan: COMMENT = #{$&} at #{@filename}:#{@lineno}")
                 ;
               when /\A[a-z]+:\/\/[^<>|\\{}^~"\[\] ]*/ #V_URI
@@ -433,9 +438,7 @@ module OpenEhr
         end
       end # of DADLScanner
 
-
-
-      class CADLScanner < Base
+      class CADLScanner < ADLScanner
 
         @@logger = OpenEhr::ADL::Scanner::LOGGER #Logger.new('log/scanner.log')        #Logger.new('log/scanner.log')
         RESERVED = {
@@ -482,13 +485,16 @@ module OpenEhr
             case @adl_type.last
             when :cadl
               case data
-              when /\A\n/ # carriage return
+#              when /\A\n/ # carriage return
+              when REGEX_PATTERN[:CarriageReturn] # carriage return
                 @lineno += 1
                 ;
                 #yield :CR, :CR
-              when /\A[ \t\r\f]+/ #just drop it
+#              when /\A[ \t\r\f]+/ #just drop it
+              when REGEX_PATTERN[:WhiteSpace]
                 ;
-              when /\A--.*\n/ # single line comment
+#              when /\A--.*\n/ # single line comment
+              when REGEX_PATTERN[:SingleCommentLine]
                 @lineno += 1
                 ;
               ###----------/* symbols */ ------------------------------------------------- 
@@ -544,13 +550,6 @@ module OpenEhr
               when /\A\//   # /
                 @@logger.debug("CADLScanner#scan: Slash_code #{@filename}:#{@lineno}")
                 yield :Slash_code, :Slash_code
-# #                yield :Slash_code, :Slash_code
-# #              when /\A\// #V_REGEXP /
-#                 assert_at(__FILE__,__LINE__){@adl_type.last != :regexp}
-#                 #@in_regexp = true
-#                 @adl_type.push(:regexp)
-# #                yield :START_REGEXP_BLOCK, :START_REGEXP_BLOCK
-
               when /\A\{\// # REGEXP_HEAD {/
                 assert_at(__FILE__,__LINE__){ @adl_type.last != :regexp}
                 #                   @in_regexp = true
@@ -728,24 +727,6 @@ module OpenEhr
             case @adl_type.last
             when :regexp
               case data
-# #              when /\A\// #V_REGEXP /
-#               when /\A([^\/]+)\// #V_REGEXP 
-#                 assert_at(__FILE__,__LINE__){@adl_type.last == :regexp}
-#                 #@in_regexp = false
-#                 @adl_type.pop
-#                 @@logger.debug("#{__FILE__}:#{__LINE__}: RegexScanner::scan  $1 = #{$1.inspect}")
-# #                yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
-#                 yield :V_REGEXP,  $1
-#               when /\A\/\}/ #V_REGEXP /
-#                 if @adl_type.last == :regexp
-#                   @in_regexp = false
-#                   @adl_type.pop
-#                   yield :END_REGEXP_BLOCK, :END_REGEXP_BLOCK
-#                 else
-#                   raise
-#                 end
-#              when /\A(.*)(\/\})/ #V_REGEXP /}
-#              when /\A(.*)\/\}/ # REGEXP_BODY
               when /\A(.*)\// # REGEXP_BODY
                 @adl_type.pop
                 @@logger.debug("#{__FILE__}:#{__LINE__}: RegexScanner::scan REGEXP_BODY = #{$1}")
@@ -812,8 +793,8 @@ module OpenEhr
                 adl_type = @adl_type.pop
                 assert_at(__FILE__,__LINE__){adl_type == :term_constraint}
                 yield :END_TERM_CODE_CONSTRAINT, $1
-              else
-                raise "data = #{data}"
+#               else
+#                 raise "data = #{data}"
               end
               data = $' # variable $' receives the string after the match
             when :adl
