@@ -9,6 +9,16 @@ class ADLParserTest < Test::Unit::TestCase
     assert_instance_of ::OpenEhr::ADL::Parser,@parser
   end
 
+
+  must "openEHR-EHR-SECTION.reason_for_encounter.v1.adl be properly parsed" do
+    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-SECTION.reason_for_encounter.v1.adl")
+    assert_nothing_raised do
+      ast = @parser.parse(file, 'openEHR-EHR-SECTION.reason_for_encounter.v1')
+      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
+      assert_instance_of OpenEhr::AM::Archetype::Ontology::ARCHETYPE_ONTOLOGY, ast.ontology
+    end
+  end
+
   must "openEHR-EHR-CLUSTER.exam-uterus.v1.adl be properly parsed" do
     file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-CLUSTER.exam-uterus.v1.adl")
     assert_nothing_raised do
@@ -157,15 +167,6 @@ class ADLParserTest < Test::Unit::TestCase
     end
   end
 
-  must "openEHR-EHR-SECTION.reason_for_encounter.v1.adl be properly parsed" do
-    file =  File.read("#{TEST_ROOT_DIR}/adl/openEHR-EHR-SECTION.reason_for_encounter.v1.adl")
-    assert_nothing_raised do
-      ast = @parser.parse(file, 'openEHR-EHR-SECTION.reason_for_encounter.v1')
-      assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
-    end
-  end
-
-
 
 
 # C_DV_QUANTITY parse error
@@ -297,5 +298,4 @@ class ADLParserTest < Test::Unit::TestCase
       assert_instance_of OpenEhr::RM::Support::Identification::ArchetypeID, ast.archetype_id
     end
   end
-
 end

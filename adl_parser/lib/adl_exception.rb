@@ -12,6 +12,9 @@ module OpenEhr
       module Parser
         class Base < RuntimeError
         end
+
+        class Error < Base
+        end
       end
 
 
