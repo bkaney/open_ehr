@@ -126,10 +126,17 @@ arch_language: #-- empty is ok for ADL 1.4 tools
   }
     | SYM_LANGUAGE dadl_section
   {
-    if val[1][0][:attr_id] == "original_language"
-      result = {:arch_language => val[1][0][:object_block][:untyped_primitive_object_block]}
+    dadl_section = val[1]
+    @@logger.debug("#{__FILE__}:#{__LINE__}: arch_language::dadl_section = \n#{dadl_section.to_yaml}")
+    case dadl_section[:attr_id]
+    when "translations"
+      result = {:arch_language => dadl_section[:object_block][:untyped_primitive_object_block]}
+    when "original_language"
+      result = {:arch_language => dadl_section[:object_block][:untyped_primitive_object_block]}
+###     if val[1][:attr_id] == "original_language"
+###       result = {:arch_language => val[0][:object_block][:untyped_primitive_object_block]}
     else
-      raise OpenEhr::ADL::Exception::Parser::Error, "It should be 'original_language' at #{@filename}:#{@lineno} "
+      raise OpenEhr::ADL::Exception::Parser::Error, "It should be 'original_language, but was #{dadl_section[:attr_id]}' at #{@filename}:#{@lineno} "
     end
   }
   | SYM_LANGUAGE error
@@ -143,40 +150,41 @@ arch_description: #-- no meta-data ok
   { 
     args = Hash.new
     val[1].each do |item|
-      @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: item[:object_block] = #{item[:object_block].to_yaml} at #{@filename}:#{@lineno}")
-      case item[:attr_id]
+      @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: item = #{item.to_yaml} at #{@filename}:#{@lineno}")
+      case item
       when "original_author"
         unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:original_author => item[:object_block][:untyped_multiple_attr_object_block]])
+          args.merge!(Hash[:original_author => item[:untyped_multiple_attr_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       when "details"
-        unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:details => item[:object_block][:untyped_multiple_attr_object_block]])
+        unless item[:type_identifier]
+          args.merge!(Hash[:details => item[:untyped_multiple_attr_object_block]])
+          #args.merge!(Hash[:details => item[:object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       when "lifecycle_state"
-        unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:lifecycle_state => item[:object_block][:untyped_primitive_object_block]])
+        unless item[:type_identifier]
+          args.merge!(Hash[:lifecycle_state => item[:untyped_primitive_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       when "other_contributors"
-        unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:other_contributors => item[:object_block][:untyped_multiple_attr_object_block]])
+        unless item[:type_identifier]
+          args.merge!(Hash[:other_contributors => item[:untyped_multiple_attr_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       when "other_details"
-        unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:other_contributors => item[:object_block][:untyped_multiple_attr_object_block]])
+        unless item[:type_identifier]
+          args.merge!(Hash[:other_contributors => item[:untyped_multiple_attr_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       else
-        raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{item[:attr_id]} at #{@filename}:#{@lineno} "
+        raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{item} at #{@filename}:#{@lineno} "
       end
     end
     @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: args  = \n#{args.to_yaml} at #{@filename}:#{@lineno}")
@@ -533,7 +541,38 @@ arch_invariant: #-- no invariant ok
 arch_ontology: SYM_ONTOLOGY dadl_section
   { 
     dadl_section = val[1]
-    result = OpenEhr::AM::Archetype::Ontology::ARCHETYPE_ONTOLOGY.new
+    @@logger.debug("#{__FILE__}:#{__LINE__}: arch_ontology: dadl_section = #{val[1].to_yaml}") 
+    args = Hash.new
+    dadl_section.each do |item|
+      @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: item[:object_block] = #{item[:object_block].to_yaml} at #{@filename}:#{@lineno}")
+      case item[:attr_id]
+      when "terminologies_available"
+        unless item[:object_block][:type_identifier]
+          args.merge!(Hash[:terminologies_available => item[:object_block][:untyped_primitive_object_block]])
+          #args.merge!(Hash[:terminologies_available => item[:object_block]])
+        else
+          raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
+        end
+      when "term_definitions"
+        unless item[:object_block][:type_identifier]
+          args.merge!(Hash[:term_definitions => item[:object_block][:untyped_multiple_attr_object_block]])
+          #args.merge!(Hash[:term_definitions => item[:object_block]])
+        else
+          raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
+        end
+      when "term_binding"
+        unless item[:object_block][:type_identifier]
+          args.merge!(Hash[:term_binding => item[:object_block][:untyped_multiple_attr_object_block]])
+          #args.merge!(Hash[:term_binding => item[:object_block]])
+        else
+          raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
+        end
+      else
+        raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{item[:attr_id]} at #{@filename}:#{@lineno} "
+      end
+    end
+
+    result = OpenEhr::AM::Archetype::Ontology::ARCHETYPE_ONTOLOGY.new(args)
   }
   | SYM_ONTOLOGY error
 
@@ -542,32 +581,45 @@ arch_ontology: SYM_ONTOLOGY dadl_section
 dadl_section: # no dadl section
     |  attr_vals
   {
-    #@@logger.debug("#{__FILE__}:#{__LINE__}:dadl_section attr_vals = \n#{val[0].to_yaml}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}:dadl_section::attr_vals = \n#{val[0].to_yaml}")
     result = val[0]
   }
   | complex_object_block
   {
-    #@@logger.debug("#{__FILE__}:#{__LINE__}:dadl_section complex_object_block = \n#{val[0].to_yaml}")
+    #@@logger.debug("#{__FILE__}:#{__LINE__}:dadl_section::complex_object_block = \n#{val[0].to_yaml}")
     result = val[0]
   }
 #  | error
 
 attr_vals: attr_val
   {
-    result = Array[val[0]]
+    attr_val = val[0]
+    result = Hash[attr_val[:attr_id] => attr_val[:object_block]]
   }
   | attr_vals attr_val
   {
-    result = (val[0] << val[1])
+    result = val[0].merge!(val[1])
   }
   | attr_vals Semicolon_code attr_val
   {
-    result = (val[0] << val[2])
+    result = val[0].merge!(val[2])
   }
+### attr_vals: attr_val
+###   {
+###     result = Array[val[0]]
+###   }
+###   | attr_vals attr_val
+###   {
+###     result = (val[0] << val[1])
+###   }
+###   | attr_vals Semicolon_code attr_val
+###   {
+###     result = (val[0] << val[2])
+###   }
 
 attr_val: attr_id SYM_EQ object_block
   {
-    @@logger.debug("#{__FILE__}:#{__LINE__}:attr_val\n attr_id = #{val[0]}, object_block = #{val[1]}")
+    @@logger.debug("#{__FILE__}:#{__LINE__}:attr_val\n attr_id = #{val[0].to_yaml},\n object_block = #{val[2].to_yaml}")
     result = {:attr_id => val[0], :object_block => val[2]}
   }
 
@@ -598,6 +650,7 @@ complex_object_block: single_attr_object_block
 
 multiple_attr_object_block: untyped_multiple_attr_object_block
   { 
+    @@logger.debug("#{__FILE__}:#{__LINE__}:multiple_attr_object_block::attr_val\n untyped_multiple_attr_object_block = #{val[0].to_yaml}")
     result = {:untyped_multiple_attr_object_block => val[0]}
   }
   | type_identifier untyped_multiple_attr_object_block
@@ -607,6 +660,7 @@ multiple_attr_object_block: untyped_multiple_attr_object_block
 
 untyped_multiple_attr_object_block: multiple_attr_object_block_head keyed_objects SYM_END_DBLOCK
   { 
+    @@logger.debug("#{__FILE__}:#{__LINE__}:untyped_multiple_attr_object_block::keyed_objects\n keyed_objects = #{val[1].to_yaml}")
     result = val[1]
   }
 
@@ -628,8 +682,9 @@ keyed_object: object_key SYM_EQ object_block
   {
     #@@logger.debug("#{__FILE__}:#{__LINE__}: keyed_object = #{val[0]} at #{@filename}:#{@lineno}")
     #result = {:object_key => val[0], :object_block => val[2]}
-    unless val[2][:type_identifier]
-      result = Hash[val[0] => val[2][:untyped_primitive_object_block]]
+    object_key,object_block = val[0],val[2]
+    unless object_block[:type_identifier]
+      result = Hash[val[0] => object_block[:untyped_primitive_object_block]]
     else
       raise OpenEhr::ADL::Exception::Parser::Error, "Missing type_identifier at #{@filename}:#{@lineno} "
     end
@@ -653,16 +708,15 @@ single_attr_object_block: untyped_single_attr_object_block
 untyped_single_attr_object_block: single_attr_object_complex_head SYM_END_DBLOCK # >
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: single_attr_object_complex_head = #{val[0]} at #{@filename}:#{@lineno}")
-    #result = {:single_attr_object_complex_head => val[0]}
     result = []
   }
   | single_attr_object_complex_head attr_vals SYM_END_DBLOCK
   {
-    @@logger.debug("#{__FILE__}:#{__LINE__}: attr_vals = #{val[1]} at #{@filename}:#{@lineno}")
-    #result = {:single_attr_object_complex_head => val[0], :attr_vals => val[1]}
+    @@logger.debug("#{__FILE__}:#{__LINE__}: untyped_single_attr_object_block::attr_vals = \n#{val[1].to_yaml} at #{@filename}:#{@lineno}")
     result = val[1]
   }
 single_attr_object_complex_head: SYM_START_DBLOCK
+
 primitive_object_block: untyped_primitive_object_block
   {
     @@logger.debug("#{__FILE__}:#{__LINE__}: untyped_primitive_object_block = #{val[0]} at #{@filename}:#{@lineno}")
@@ -1355,11 +1409,6 @@ require 'logger'
 require 'yaml'
 require 'rubygems'
 require 'open_ehr'
-#require 'adl_parser.rb'
-#require 'am.rb'
-#require 'rm.rb'
-#require 'rm/support/assumed_types.rb'
-#require 'assumed_library_types.rb'
 $DEBUG = true
 
 
@@ -1400,7 +1449,7 @@ def scan
 end # of scan
 
 
-def parse(data, filename, lineno = 1, debug = false)
+def parse(data, filename = "", lineno = 1, debug = false)
   @yydebug = true
   @parsestring = data
   @data = data
