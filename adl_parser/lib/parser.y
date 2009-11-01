@@ -148,45 +148,59 @@ arch_language: #-- empty is ok for ADL 1.4 tools
 arch_description: #-- no meta-data ok
     | SYM_DESCRIPTION dadl_section
   { 
+    dadl_section = val[1]
     args = Hash.new
-    val[1].each do |item|
-      @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: item = #{item.to_yaml} at #{@filename}:#{@lineno}")
-      case item
+    @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: val[1].class = \n#{val[1].class} at #{@filename}:#{@lineno}")
+#    val[1].each do |item|
+#      @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: item = \n#{item.to_yaml} at #{@filename}:#{@lineno}")
+#      case item[:attr_id]
+      case dadl_section[:attr_id]
       when "original_author"
-        unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:original_author => item[:untyped_multiple_attr_object_block]])
+#        unless item[:object_block][:type_identifier]
+        unless dadl_section[:object_block][:type_identifier]
+#          args.merge!(Hash[:original_author => item[:untyped_multiple_attr_object_block]])
+          args.merge!(Hash[:original_author => dadl_section[:untyped_multiple_attr_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       when "details"
-        unless item[:type_identifier]
-          args.merge!(Hash[:details => item[:untyped_multiple_attr_object_block]])
+#        unless item[:type_identifier]
+        unless dadl_section[:type_identifier]
+#          args.merge!(Hash[:details => item[:untyped_multiple_attr_object_block]])
           #args.merge!(Hash[:details => item[:object_block]])
+          args.merge!(Hash[:details => dadl_section[:untyped_multiple_attr_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       when "lifecycle_state"
-        unless item[:type_identifier]
-          args.merge!(Hash[:lifecycle_state => item[:untyped_primitive_object_block]])
+#        unless item[:type_identifier]
+        unless dadl_section[:type_identifier]
+#          args.merge!(Hash[:lifecycle_state => item[:untyped_primitive_object_block]])
+          args.merge!(Hash[:lifecycle_state => dadl_section[:untyped_primitive_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       when "other_contributors"
-        unless item[:type_identifier]
-          args.merge!(Hash[:other_contributors => item[:untyped_multiple_attr_object_block]])
+#        unless item[:type_identifier]
+        unless dadl_section[:type_identifier]
+#          args.merge!(Hash[:other_contributors => item[:untyped_multiple_attr_object_block]])
+          args.merge!(Hash[:other_contributors => dadl_section[:untyped_multiple_attr_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       when "other_details"
-        unless item[:type_identifier]
-          args.merge!(Hash[:other_contributors => item[:untyped_multiple_attr_object_block]])
+#        unless item[:type_identifier]
+        unless dadl_section[:type_identifier]
+#          args.merge!(Hash[:other_contributors => item[:untyped_multiple_attr_object_block]])
+          args.merge!(Hash[:other_contributors => dadl_section[:untyped_multiple_attr_object_block]])
         else
           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
         end
       else
-        raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{item} at #{@filename}:#{@lineno} "
+#        raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{item} at #{@filename}:#{@lineno} "
+        raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{dadl_section} at #{@filename}:#{@lineno} "
       end
-    end
+#    end
     @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: args  = \n#{args.to_yaml} at #{@filename}:#{@lineno}")
     result = OpenEhr::AM::Archetype::Archetype_Description::ARCHETYPE_DESCRIPTION.new(args)
   }
@@ -541,36 +555,55 @@ arch_invariant: #-- no invariant ok
 arch_ontology: SYM_ONTOLOGY dadl_section
   { 
     dadl_section = val[1]
-    @@logger.debug("#{__FILE__}:#{__LINE__}: arch_ontology: dadl_section = #{val[1].to_yaml}") 
+    @@logger.debug("#{__FILE__}:#{__LINE__}: arch_ontology: dadl_section = \n#{dadl_section.to_yaml}") 
     args = Hash.new
-    dadl_section.each do |item|
-      @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: item[:object_block] = #{item[:object_block].to_yaml} at #{@filename}:#{@lineno}")
-      case item[:attr_id]
-      when "terminologies_available"
-        unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:terminologies_available => item[:object_block][:untyped_primitive_object_block]])
-          #args.merge!(Hash[:terminologies_available => item[:object_block]])
-        else
-          raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
-        end
-      when "term_definitions"
-        unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:term_definitions => item[:object_block][:untyped_multiple_attr_object_block]])
-          #args.merge!(Hash[:term_definitions => item[:object_block]])
-        else
-          raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
-        end
-      when "term_binding"
-        unless item[:object_block][:type_identifier]
-          args.merge!(Hash[:term_binding => item[:object_block][:untyped_multiple_attr_object_block]])
-          #args.merge!(Hash[:term_binding => item[:object_block]])
-        else
-          raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
-        end
+    case dadl_section[:attr_id]
+    when "terminologies_available"
+      unless dadl_section[:object_block][:type_identifier]
+        args.merge!(Hash[:terminologies_available => dadl_section[:object_block][:untyped_primitive_object_block]])
       else
-        raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{item[:attr_id]} at #{@filename}:#{@lineno} "
+        raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
       end
+    when "term_definitions"
+      unless dadl_section[:object_block][:type_identifier]
+        args.merge!(Hash[:term_definitions => dadl_section[:object_block][:untyped_multiple_attr_object_block]])
+      else
+        raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
+      end
+    when "term_binding"
+      unless dadl_section[:object_block][:type_identifier]
+        args.merge!(Hash[:term_binding => dadl_section[:object_block][:untyped_multiple_attr_object_block]])
+      else
+        raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
+      end
+    else
+      raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{dadl_section[:attr_id]} at #{@filename}:#{@lineno} "
     end
+###     dadl_section.each do |item|
+###       @@logger.debug("#{__FILE__}:#{__LINE__}: arch_description: item[:object_block] = #{item[:object_block].to_yaml} at #{@filename}:#{@lineno}")
+###       case item[:attr_id]
+###       when "terminologies_available"
+###         unless item[:object_block][:type_identifier]
+###           args.merge!(Hash[:terminologies_available => item[:object_block][:untyped_primitive_object_block]])
+###         else
+###           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
+###         end
+###       when "term_definitions"
+###         unless item[:object_block][:type_identifier]
+###           args.merge!(Hash[:term_definitions => item[:object_block][:untyped_multiple_attr_object_block]])
+###         else
+###           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
+###         end
+###       when "term_binding"
+###         unless item[:object_block][:type_identifier]
+###           args.merge!(Hash[:term_binding => item[:object_block][:untyped_multiple_attr_object_block]])
+###         else
+###           raise OpenEhr::ADL::Exception::Parser::Error, "Needless type_identifier at #{@filename}:#{@lineno} "
+###         end
+###       else
+###         raise OpenEhr::ADL::Exception::Parser::Error, "Unknown case #{item[:attr_id]} at #{@filename}:#{@lineno} "
+###       end
+###     end
 
     result = OpenEhr::AM::Archetype::Ontology::ARCHETYPE_ONTOLOGY.new(args)
   }
