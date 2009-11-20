@@ -1,9 +1,9 @@
 # This module is a implementation of the bellow UML
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_5_1_76d0249_1140169202660_257304_813Report.html
 # Related to the ticket #62
-include OpenEhr::RM::Support::Identification
-include OpenEhr::RM::DataTypes::Basic
-module OpenEhr
+include OpenEHR::RM::Support::Identification
+include OpenEHR::RM::DataTypes::Basic
+module OpenEHR
   module RM
     module Common
       module Generic
@@ -33,11 +33,11 @@ module OpenEhr
 
           def time_committed=(time_committed)
             if time_committed.nil?
-              raise ArgumentError, 'time_commited is mandatory'
+              raise ArgumentError, 'time_committed is mandatory'
             end
             @time_committed = time_committed
           end
-
+             
           def change_type=(change_type)
             raise ArgumentError, 'change_type is mandatory' if change_type.nil?
             @change_type = change_type
@@ -47,8 +47,8 @@ module OpenEhr
         class RevisionHistory
           attr_reader :items
 
-          def initialize(items)
-            self.items = items
+          def initialize(args = { })
+            self.items = args[:items]
           end
 
           def items=(items)
@@ -102,14 +102,15 @@ module OpenEhr
 
         class PartyIdentified < PartyProxy
           attr_reader :name, :identifier
+
           def initialize(args = { })
             if args[:external_ref].nil? && args[:name].nil? &&
                 args[:identifier].nil?
               raise ArgumentError, 'cannot identified'
             end
-            super(:external_ref => args[:external_ref])
             self.name = args[:name]
             self.identifier = args[:identifier]
+            super(args)
           end
 
           def name=(name)
@@ -124,10 +125,17 @@ module OpenEhr
             if @name.nil? && @external_ref.nil? && identifier.nil?
               raise ArgumentError, 'cannot identified'
             end
-            unless identifier.nil? || !identifier.empty?
+            if !identifier.nil? && identifier.empty?
               raise ArgumentError, 'invaild identifier'
             end
             @identifier = identifier
+          end
+
+          def external_ref=(external_ref)
+            if @name.nil? && @identifier.nil? && external_ref.nil?
+              raise ArgumentError, 'invalid external_ref'
+            end
+            @external_ref = external_ref
           end
         end
 
@@ -175,18 +183,31 @@ module OpenEhr
 
         class Attestation < AuditDetails
           attr_reader :reason
-          attr_accessor :proof, :items
+          attr_accessor :proof, :attested_view, :is_pending, :items
 
           def initialize(args = { })
             super(args)
             self.reason = args[:reason]
             self.proof = args[:proof]
             self.items = args[:items]
+            self.attested_view = args[:attested_view]
+            self.is_pending = args[:is_pending]
           end
 
           def reason=(reason)
             raise ArgumentError, 'reason is mandatory' if reason.nil?
             @reason = reason
+          end
+
+          def items=(items)
+            if !items.nil? && items.empty?
+              raise ArgumentError, 'items should not be empty'
+            end
+            @items = items
+          end
+          
+          def is_pending?
+            return is_pending
           end
         end
       end # of Generic

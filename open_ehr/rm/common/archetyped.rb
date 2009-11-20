@@ -64,35 +64,26 @@ module OpenEHR
           end
 
           def name=(name)
-            raise ArgumentError, 'name should not be empty' if name.nil? or name.value.empty?
+            if name.nil? or name.value.empty?
+              raise ArgumentError, 'name should not be empty'
+            end
             @name = name
           end
+
           def links=(links)
-            raise ArgumentError, "links shoud not be empty" if !links.nil? and links.empty?
+            if !links.nil? and links.empty?
+              raise ArgumentError, "links shoud not be empty"
+            end
             @links = links
           end
 
-          def item_at_path(path)
-            if !@path.nil?
-              if @path == ""
-                raise ArgumentError, "path is not valid"
-              end
-            end
-          end
-
-          def items_at_path(path)
-            raise NotImplementError, "items_at_path must be implemented"
-          end
-
-          def path_exists?
-            raise NotImplementError, "path_exists? must be implemented"
-          end
-
-          def path_unique
-            raise NotImplementError, "path_unique must be implemented"
-          end
-
           def concept
+            if self.is_archetype_root?
+              return DvText.new(:value => 
+                                @archetype_details.archetype_id.concept_name)
+            else
+              raise ArgumentError, 'this is not root'
+            end
           end
 
           def is_archetype_root?
@@ -103,27 +94,32 @@ module OpenEHR
         class Archetyped
           attr_reader :archetype_id, :rm_version
           attr_accessor :template_id
-          def initialize(archetype_id, rm_version, template_id = nil)            
-            self.archetype_id = archetype_id
-            self.rm_version = rm_version
-            self.template_id = template_id
+
+          def initialize(args = { })
+            self.archetype_id = args[:archetype_id]
+            self.rm_version = args[:rm_version]
+            self.template_id = args[:template_id]
           end
+
           def archetype_id=(archetype_id)
             raise ArgumentError, "invalid archetype_id" if archetype_id.nil?
             @archetype_id = archetype_id
           end
+
           def rm_version=(rm_version)
-            raise ArgumentError, "invalid rm_version" if rm_version.nil? or rm_version.empty?
+            if rm_version.nil? or rm_version.empty?
+              raise ArgumentError, "invalid rm_version"
+            end
             @rm_version = rm_version
           end
         end
 
         class Link
           attr_reader :meaning, :target, :type
-          def initialize(meaning, target, type)
-            self.meaning = meaning
-            self.target = target
-            self.type = type
+          def initialize(args = { })
+            self.meaning = args[:meaning]
+            self.target = args[:target]
+            self.type = args[:type]
           end
           def meaning=(meaning)
             raise ArgumentError, "meaning should not be nil" if meaning.nil?
@@ -164,7 +160,7 @@ module OpenEHR
           attr_reader :system_id
           attr_accessor :provider, :location, :time, :subject, :version_id
 
-          def initialize(args ={ })
+          def initialize(args = { })
             self.system_id = args[:system_id]
             self.provider = args[:provider]
             self.location = args[:location]
@@ -174,7 +170,9 @@ module OpenEHR
           end
 
           def system_id=(system_id)
-            raise ArgumentError, 'system_id invalid' if system_id.nil? or system_id.empty?
+            if system_id.nil? or system_id.empty?
+              raise ArgumentError, 'system_id invalid'
+            end
             @system_id = system_id
           end
         end # of FeederAudit_Details

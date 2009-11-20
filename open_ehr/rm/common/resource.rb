@@ -1,5 +1,5 @@
 require 'set'
-module OpenEhr
+module OpenEHR
   module RM
     module Common
       module Resource
@@ -28,12 +28,12 @@ module OpenEhr
             @translations = translations
           end
 
-          def current_version
-            @revision_history.most_recent_revision
+          def current_revision
+            @revision_history.most_recent_version
           end
 
           def languages_available
-            return Set.new(@translations.keys)
+            return Set.new(@translations.keys) << original_language.code_string
           end
 
           def is_controlled?

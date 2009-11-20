@@ -1,8 +1,8 @@
 # This module is based on the UML,
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109326589721_134411_997Report.html
 # Ticket refs #64
-
-module OpenEhr
+include OpenEHR::RM::Common::Generic
+module OpenEHR
   module RM
     module Common
       module ChangeControl
@@ -87,12 +87,18 @@ module OpenEhr
           end
 
           def contribution=(contribution)
-            raise ArgumentError, "contribution should not be nil" if contribution.nil? or contribution.type.empty?
-            @contribution = contribution
+            if contribution.nil? or contribution.type.empty?
+              raise ArgumentError, "contribution is invalid"
+            end
+            if contribution.type == 'CONTRIBUTION'
+              @contribution = contribution
+            else
+              raise ArgumentError, 'contribution is invalid'
+            end
           end
 
           def owner_id
-            return HierObjectId.new(@uid.object_id.value)
+            return HierObjectID.new(:value => @uid.value)
           end
 
           def is_branch?
@@ -100,7 +106,7 @@ module OpenEhr
           end
 
           def canonical_form
-            raise NotImplementedError, 'canonical form not implemented'
+            raise NotImplementedError, 'canonical form is not determined'
           end
         end
 
@@ -115,8 +121,7 @@ module OpenEhr
                   :commit_audit => args[:commit_audit],
                   :contribution => args[:contribution],
                   :lifecycle_state => @item.lifecycle_state,
-                  :signature => args[:signature])
-                  
+                  :signature => args[:signature])                  
           end
 
           def item=(item)
@@ -149,8 +154,7 @@ module OpenEhr
           end
 
           def is_merged?
-# Java implementation has is_merged attribute, Eiffel implementation does
-# nothing
+            return !other_input_version_uids.nil?
           end
         end
 
@@ -274,20 +278,24 @@ module OpenEhr
                                           :audits => audits,
                                           :version_id => ver.uid)
             end
-            return RevisionHistory.new(revision_history_items)
+            return RevisionHistory.new(:items => revision_history_items)
           end
 
           def commit_original_version(args={ })
-            @all_versions << OriginalVersion.new(:uid => args[:uid],
-                                                  :preceding_version_uid => args[:preceding_version_uid],
-                                                  :contribution => args[:contribution],
-                                                  :commit_audit => args[:commit_audit],
-                                                  :lifecycle_state => args[:lifecycle_state],
-                                                  :data => args[:data],
-                                                  :attestations => args[:attestations],
-                                                  :signature => args[:signature])
+            if has_version_id?(args[:preceding_version_uid]) or self.version_count == 0
+              @all_versions << OriginalVersion.new(:uid => args[:uid],
+                                                   :preceding_version_uid => args[:preceding_version_uid],
+                                                   :contribution => args[:contribution],
+                                                   :commit_audit => args[:commit_audit],
+                                                   :lifecycle_state => args[:lifecycle_state],
+                                                   :data => args[:data],
+                                                   :attestations => args[:attestations],
+                                                   :signature => args[:signature])
+            else
+              raise ArgumentError, 'invalid preceding uid'
+            end
           end
-
+            
           def commit_original_merged_version(args = { })
             @all_versions << OriginalVersion.new(:uid => args[:uid],
                                                   :contribution => args[:contribution],
@@ -302,8 +310,8 @@ module OpenEhr
 
           def commit_imported_version(args = { })
             @all_versions << ImportedVersion.new(:item => args[:item],
-                                                  :contribution => args[:contribution],
-                                                  :commit_audit => args[:commit_audit])
+                                                 :contribution => args[:contribution],
+                                                 :commit_audit => args[:commit_audit])
           end
 
           def commit_attestation(args = { })
