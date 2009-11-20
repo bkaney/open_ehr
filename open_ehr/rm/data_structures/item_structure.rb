@@ -53,7 +53,7 @@ module OpenEHR
             @items.each do |item|
               return item if item.name.value == a_name
             end
-            retrun nil
+            return nil
           end
 
           def ith_item(i)
@@ -110,11 +110,7 @@ module OpenEHR
 
           def ith_row(i)
             raise ArgumentError, 'invalid index' if i<=0 or i>@rows.size
-            if @rows.nil?
-              return []
-            else
-              return @rows[i - 1]
-            end
+            return @rows[i - 1]
           end
 
           def has_row_with_name?(key)
@@ -138,7 +134,6 @@ module OpenEHR
             @rows.each do |row|
               return row if row.items[0].name.value == key
             end
-            return []
           end
 
           def has_row_with_key?(keys)
@@ -189,6 +184,27 @@ module OpenEHR
           def initialize(args ={ })
             super(args)
             self.items = args[:items]
+          end
+
+          def has_element_path?(path)
+            paths = [ ]
+            @items.each do |item|
+              paths << item.archetype_node_id
+            end
+            return paths.include? path
+          end
+
+          def element_at_path(path)
+            @items.each do |item|
+              return item if item.archetype_node_id == path
+            end
+            return nil
+          end
+
+          def as_hierarchy
+            return Cluster.new(:name => @name,
+                               :archetype_node_id => @archetype_node_id,
+                               :items => @items)
           end
         end
       end # of ItemStructure

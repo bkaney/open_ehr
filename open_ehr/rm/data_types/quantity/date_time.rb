@@ -3,25 +3,22 @@
 # Ticket refs #49
 require 'assumed_library_types'
 require 'date'
+include OpenEHR::RM::DataTypes::Quantity
+include OpenEHR::AssumedLibraryTypes
 
-module OpenEhr
+module OpenEHR
   module RM
     module DataTypes
       module Quantity
         module DateTime
-          class DvTemporal < OpenEhr::RM::DataTypes::Quantity::DvAbsoluteQuantity
-            include Comparable
-            attr_reader :value
-
-            def initialize(value, magnitude_status=nil, accuracy=nil,
-                         normal_range=nil, normal_status=nil,
-                         other_reference_ranges=nil)
-              self.value = value
-              self.magnitude_status = magnitude_status
-              self.accuracy = accuracy
-              self.normal_range = normal_range
-              self.normal_status = normal_status
-              self.other_reference_ranges = other_reference_ranges
+          class DvTemporal < DvAbsoluteQuantity
+            def initialize(args = {})
+              self.value = args[:value]
+              self.magnitude_status = args[:magnitude_status]
+              self.accuracy = args[:accuracy]
+              self.normal_range = args[:normal_range]
+              self.normal_status = args[:normal_status]
+              self.other_reference_ranges = args[:other_reference_ranges]
             end
 
             def value=(value)
@@ -31,32 +28,21 @@ module OpenEhr
               @value = value
             end
 
-            def <=>(other)
-              self.magnitude <=> other.magnitude
-            end
+            undef magnitude=
           end
 
           class DvDate < DvTemporal
-            include OpenEhr::AssumedLibraryTypes::ISO8601_DATE_MODULE
+            include ISO8601DateModule
 
             DAYS_IN_MONTH = [0,31,28,31,30,31,30,31,31,30,31,30,31]
 
-            def initialize(value, magnitude_status=nil, accuracy=nil,
-                           normal_range=nil, normal_status=nil,
-                           other_reference_range=nil)
-              super(value, magnitude_status, accuracy, normal_range,
-                    normal_status, other_reference_range)
-            end
-
             def value=(value)
               super(value)
-              iso8601_date = AssumedLibraryTypes::ISO8601_DATE.new(value)
+              iso8601_date = ISO8601Date.new(value)
               @year = iso8601_date.year
               @month = iso8601_date.month
               @day = iso8601_date.day
             end
-
-            undef magnitude=
 
             def magnitude
               return Date.new(@year, @month, @day)-Date.new(0000,1,1)
@@ -72,9 +58,9 @@ module OpenEhr
               if (future.day >= past.day)
                 day = future.day - past.day
               else
-                month -= 1
+                month = -1
                 previous_month = future.month - 1
-                if previous_month <= 0
+                if previous_month == 0
                   previous_month = 12
                 end
                 day = DAYS_IN_MONTH[previous_month] + future.day - past.day
@@ -89,25 +75,23 @@ module OpenEhr
                 year -= 1
                 month += future.month + 12 - past.month
               end
+              if month < 0
+                year -= 1
+                month += 12
+              end
               year += future.year - past.year
-              return DvDuration.new(
+              return DvDuration.new(:value =>
                    'P' + year.to_s + 'Y' + month.to_s + 'M' + 
                          week.to_s + 'W' + day.to_s + 'D')
             end
           end
           
           class DvTime < DvTemporal
-            include OpenEhr::AssumedLibraryTypes::ISO8601_TIME_MODULE
-            def initialize(value, magnitude_status=nil, accuracy=nil,
-                           normal_range=nil, normal_status=nil,
-                           other_reference_range=nil)
-              super(value, magnitude_status, accuracy, normal_range,
-                    normal_status, other_reference_range)
-            end
+            include ISO8601TimeModule
 
             def value=(value)
               super(value)
-              iso8601_time = AssumedLibraryTypes::ISO8601_TIME.new(value)
+              iso8601_time = ISO8601Time.new(value)
               @hour = iso8601_time.hour
               @minute = iso8601_time.minute
               @second = iso8601_time.second
@@ -115,7 +99,11 @@ module OpenEhr
             end
 
             def magnitude
-              return @hour * 60 * 60 + @minute * 60 + @second + @fractional_second
+              if @fractional_second.nil?
+                return @hour * 60 * 60 + @minute * 60 + @second
+              else
+                return @hour * 60 * 60 + @minute * 60 + @second + @fractional_second
+              end
             end
 
             def diff(other)
@@ -124,26 +112,23 @@ module OpenEhr
               minute = ((diff - hour*60*60)/60).to_i
               second = (diff - hour * 60 *60 - minute * 60).to_i
               fractional_second = ((diff - diff.to_i)*1000000.0).to_i/1000000.0
-              return DvDuration.new('P0Y0M0W0DT' + hour.to_s + 'H' +
-                        minute.to_s + 'M' +
-                        second.to_s + fractional_second.to_s[1..-1] + 'S')
+              str = 'P0Y0M0W0DT' + hour.to_s + 'H' +
+                minute.to_s + 'M' + second.to_s
+              if @fractional_second.nil?
+                str += 'S'
+              else
+                str += fractional_second.to_s[1..-1] + 'S'
+              end
+              return DvDuration.new(:value => str)
             end
           end
 
           class DvDateTime < DvTemporal
-            include OpenEhr::AssumedLibraryTypes::ISO8601_DATE_TIME_MODULE
-            attr_reader :value
-
-            def initialize(value, magnitude_status=nil, accuracy=nil,
-                           normal_range=nil, normal_status=nil,
-                           other_reference_range=nil)
-              super(value, magnitude_status, accuracy, normal_range,
-                    normal_status, other_reference_range)
-            end
+            include OpenEHR::AssumedLibraryTypes::ISO8601DateTimeModule
 
             def value=(value)              
               super(value)
-              iso8601date_time = AssumedLibraryTypes::ISO8601_DATE_TIME.new(value)
+              iso8601date_time = AssumedLibraryTypes::ISO8601DateTime.new(value)
               self.year = iso8601date_time.year
               self.month = iso8601date_time.month
               self.day = iso8601date_time.day
@@ -155,16 +140,16 @@ module OpenEhr
             end
 
             def magnitude
-              seconds = DateTime.new(@year,@month,@day,@hour,@minute,@second) - 
-                DateTime.new(0000,1,1,0,0,0)
+              seconds = (((@year * 365.24 +
+                           @month * 30.42 +
+                           @day) * 24 + @hour) * 60 +
+                         @minute) * 60 + @second
               if @fractional_second.nil?
                 return seconds
               else
                 return seconds + @fractional_second
               end
             end
-
-            undef magnitude=
 
             def diff(other)
               if self.magnitude >= other.magnitude
@@ -183,37 +168,42 @@ module OpenEhr
               hour = (time_diff / 60 / 60).to_i
               minute = ((time_diff - hour*60*60)/60).to_i
               second = (time_diff - hour * 60 *60 - minute * 60).to_i
-              fractional_second = ((time_diff - time_diff.to_i)*1000000.0).to_i/1000000.0
-
-              return DvDuration.new(date_duration.value + 'T' +
-                        hour.to_s + 'H' +
-                        minute.to_s + 'M' +
-                        second.to_s + fractional_second.to_s[1..-1] + 'S')
-                                   
+              str = date_duration.value + 'T' + hour.to_s + 'H' +
+                minute.to_s + 'M' + second.to_s
+              if @fractional_second.nil?
+                return DvDuration.new(:value => str +'S')
+              else
+                fractional_second =
+                  ((time_diff - time_diff.to_i)*1000000.0).to_i/1000000.0
+                return DvDuration.new(:value => str +
+                                      fractional_second.to_s[1..-1] + 'S')
+              end
             end
 
             private
 
             def split_date_time(date_time)
               /^(.*)T(.*)$/ =~ date_time.as_string
-              return DvDate.new($1), DvTime.new($2)
+              return DvDate.new(:value => $1), DvTime.new(:value => $2)
             end
           end
 
           class DvDuration < DvAmount
-            include AssumedLibraryTypes::ISO8601_DURATION_MODULE
+            include AssumedLibraryTypes::ISO8601DurationModule
             attr_reader :value
             
-            def initialize(value, magnitude_status=nil, accuracy=nil,
-                         accuracy_percent=nil, normal_range=nil,
-                         normal_status = nil, other_reference_ranges=nil)
-              self.value = value
+            def initialize(args = { })
+              self.value = args[:value]
+              self.magnitude_status = args[:magnitude_status]
+              self.normal_range = args[:normal_range]
+              self.normal_status = args[:normal_status]
+              self.other_reference_ranges = args[:other_reference_ranges]
             end
 
             def value=(value)
               raise ArgumentError, 'value must be not nil' if value.nil?
               @value = value
-              iso8601_duration = AssumedLibraryTypes::ISO8601_DURATION.new(value)
+              iso8601_duration = AssumedLibraryTypes::ISO8601Duration.new(value)
               self.years = iso8601_duration.years
               self.months = iso8601_duration.months
               self.weeks = iso8601_duration.weeks

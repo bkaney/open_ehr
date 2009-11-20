@@ -582,7 +582,9 @@ module OpenEHR
         self.hours = $11.to_i
         self.minutes = $13.to_i
         self.seconds = $15.to_i
-        self.fractional_second = $16.to_f
+        unless $16.nil?
+          self.fractional_second = $16.to_f
+        end
       end
     end # end of ISO8601Duration
   end # end of Assumed_Types

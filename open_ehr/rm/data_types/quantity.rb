@@ -65,7 +65,7 @@ module OpenEHR
           end
 
           def <=>(others)
-            @magnitude <=> others.magnitude
+            self.magnitude <=> others.magnitude
           end
 
           def magnitude=(magnitude)
@@ -150,19 +150,19 @@ module OpenEHR
 
           def add(a_diff)
             type_check(a_diff)
-            return result_builder(DvAbsoluteQuantity,
+            return result_builder(self.class,
                                   @magnitude+a_diff.magnitude)
           end
 
           def diff(other)
             type_check(other)
-            return result_builder(DvAmount,
+            return result_builder(self.class,
                                   (@magnitude-other.magnitude).abs)
           end
 
           def subtract(a_diff)
             type_check(a_diff)
-            return result_builder(DvAbsoluteQuantity,
+            return result_builder(self.class,
                                   @magnitude-a_diff.magnitude)
           end
           private

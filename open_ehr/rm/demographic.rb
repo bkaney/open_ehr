@@ -1,173 +1,171 @@
 # This module is based on the UML,
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_5_76d0249_1118674798473_6021_0Report.html
 # Ticket refs #45
+include OpenEHR::RM::Common::Archetyped
+
 module OpenEHR
   module RM
-    module Demogrphic
-      class Address < OpenEHR::RM::Common::Archetyped::Locatable
-        attr_reader :details
+    module Demographic
+      class Party < Locatable
+        attr_reader :uid, :identities, :contacts, :relationships,
+                    :reverse_relationships
+        attr_accessor :details
+        alias :type :name
 
-        def as_string
-
+        def initialize(args = { })
+          super(args)
+          self.uid = args[:uid]
+          self.identities = args[:identities]
+          self.contacts = args[:contacts]
+          self.relationships = args[:relationships]
+          self.reverse_relationships =
+            args[:reverse_relationships]
+          self.details = args[:details]
         end
 
-        def type
-
-        end
-      end
-
-      class Capability < OpenEHR::RM::Common::Archetyped::Locatable
-        attr_reader :credentials, :time_validity
-
-      end
-
-      class Party < OpenEHR::RM::Common::Archetyped::Locatable
-        attr_reader :details, :reverse_relationships, :uid
-        attr_reader :idetities, :contacts, :relationships
-        def initialize(uid, archetype_node_id, name, archetype_details,
-                       feeder_audit, links, identities, contacts,
-                       relationships, reverse_relationships, details)
-          super(uid, archetype_node_id, name, archetype_details,
-                feeder_audit, links, nil)
-          uid_valid(uid)
-          @uid = uid
-          identities_vaild(identities)
-          @identities = identities
-          contacts_valid(contacts)
-          @contacts = contacts
-          relationships_valid(relationships)
-        end
-        def type
-          return name
-        end
         def uid=(uid)
-          uid_valid(uid)
+          raise ArgumentError, 'uid is mandatory' if uid.nil?
           @uid = uid
         end
+
         def identities=(identities)
-          identities_vaild(identities)
+          if identities.nil? || identities.empty?
+            raise ArgumentError, 'identities are mandatory'
+          end
           @identities = identities
+        end
+
         def contacts=(contacts)
-          contacts_valid(contacts)
+          if !contacts.nil? && contacts.empty?
+            raise ArgumentError, 'contacts should not be empty'
+          end
           @contacts = contacts
         end
+
         def parent=(parent)
           @parent = nil
         end
-        private
-        def uid_valid(uid)
-          raise ArgumentError, "uid is not valid" if uid.nil?
-        end
-        def identities_vaild(identities)
-          if identities.nil?
-            raise ArgumentError, "identities must not be nil"
-          elsif identities.empty?
-            raise ArgumentError, "identities must not be empty"
+
+        def relationships=(relationships)
+          unless relationships.nil?
+            if relationships.empty?
+              raise ArgumentError, 'relationships should not be empty?'
+            else
+              relationships.each do |rel|
+                if rel.source.id.value != @uid.value
+                  raise ArgumentError, 'invalid source of relationships'
+                end
+              end
+            end
           end
+          @relationships = relationships
         end
-        def contacts_valid(contacts)
-          if contacs.nil?
-            raise ArgumentError, "contacts must not be nil"
-          elsif contacts.empty?
-            raise ArgumentError, "contacts must not be empty"
-          end          
+
+        def reverse_relationships=(reverse_relationships)
+          if !reverse_relationships.nil? && reverse_relationships.empty?
+            raise ArgumentError, 'reverse_relationships should not be empty'
+          end
+          @reverse_relationships = reverse_relationships
         end
       end
 
-      class PartyIdentity < OpenEHR::RM::Common::Archetyped::Locatable
+      class PartyIdentity < Locatable
         attr_reader :details
 
+        def initialize(args = { })
+          super(args)
+          self.details = args[:details]
+        end
+
+        def details=(details)
+          if details.nil?
+            raise ArgumentError, 'details are mandatory'
+          end
+          @details = details
+        end
+
+        def purpose
+          return @name
+        end
       end
 
-      class PartyRelationship < OpenEHR::RM::Common::Archetyped::Locatable
+      class Contact < Locatable
+        attr_accessor :time_validity
+        attr_reader :addresses
 
+        def initialize(args = { })
+          super(args)
+          self.addresses = args[:addresses]
+          self.time_validity = args[:time_validity]
+        end
+
+        def purpose
+          return @name
+        end
+
+        def addresses=(addresses)
+          if addresses.nil? || addresses.empty?
+            raise ArgumentError, 'address is mandatory'
+          end
+          @addresses = addresses
+        end
       end
 
-      class Versioned_Party < OpenEHR::RM::Common::Archetyped::Locatable
+      class Address < Locatable
+        attr_reader :details
 
-      end
+        def initialize(args = { })
+          super(args)
+          self.details = args[:details]
+        end
 
-      class Role < Party
+        def details=(details)
+          if details.nil?
+            raise ArgumentError, 'details are mandatory'
+          end
+          @details = details
+        end
 
+        def type
+          return @name
+        end
       end
 
       class Actor < Party
-        LEAGAL_IDENTITY = 'leagal identity'
-        attr_reader :languages, :rules
-        def initialize(uid, archetype_node_id, name, archetype_details,
-                       feeder_audit, links, identities, contacts,
-                       relationships, reverse_relationships, details,
-                       languages, rules)
-          super(uid, archetype_node_id, name, archetype_details,
-                feeder_audit, links, relationships, reverse_relationships,
-                details)
-          has_legal_identity?
-          set_languages(languages)
-          set_rules(rules)
+        LEAGAL_IDENTITY = 'legal identity'
+        attr_reader :languages, :roles
+
+        def initialize(args = { })
+          super(args)
+          self.roles = args[:roles]
+          self.languages = args[:languages]
         end
+
+        def roles=(roles)
+          if !roles.nil? && roles.empty?
+            raise ArgumentError, 'roles should not be empty'
+          end
+          @roles = roles
+        end
+
         def has_legal_identity?
-          @identities.each {|identity|
-            if (identity.purpose.value == LEAGAL_IDENTITY)
+          @identities.each do |identity|
+            if identity.purpose.value == LEAGAL_IDENTITY
               return true
             end
-          }
-          false
+          end
+          return false
         end
+
         def languages=(languages)
-          set_languages(languages)
-        end
-        def values=(values)
-          set_values(values)
-        end
-        private
-        def set_languages(languages)
-          if languages.nil?
-            raise ArgumentError, "languages should not be nil."
-          elsif languages.empty?
-            raise ArgumentError, "languages shouldnot be empty."
+          if !languages.nil? && languages.empty?
+            raise ArgumentError, 'languages should not be empty.'
           end
           @languages = languages
         end
-        def set_values(values)
-          if values.nil?
-            raise ArgumentError, "values should not be nil."
-          elsif values.empty?
-            raise ArgumentError, "values should not be nil."
-          end
-          @values = values
-      end
-      class Contact < OpenEHR::RM::Common::Archetyped::Locatable
-        attr_accessor :time_validity
-        attr_reader :addresses
-        def initialize(uid, archetype_node_id, name, archetype_details,
-                       feeder_audit, links, parent, time_validity, addresses)
-          super(uid, archetype_node_id, name, archetype_details,
-                feeder_audit, links, parent)
-          address_exists?(addresses)
-          @addresses = addresses
-          @time_validity = time_validity
-        end
-        def purpose
-          @name
-        end
-        def purpose=(purpose)
-          @name = purpose
-        end
-        def addresses=(addresses)
-          address_exists?(addresses)
-          @addresses = addresses
-        end
-        private
-        def address_exists?(addresses)
-          if addresses.nil?
-            raise ArgumentError, "address must not be nil"
-          elsif addresses.empty?
-            raise ArgumentError, "address must not be empty"
-          end
-        end
       end
 
-      class Agent < Actor
+      class Person < Actor
 
       end
 
@@ -175,11 +173,95 @@ module OpenEHR
 
       end
 
-      class Person < Actor
+      class Group < Actor
 
       end
 
-      class Group < Actor
+      class Agent < Actor
+
+      end
+
+      class Role < Party
+        attr_reader :performer, :capabilities
+        attr_accessor :time_validity
+
+        def initialize(args = { })
+          super(args)
+          self.performer = args[:performer]
+          self.capabilities = args[:capabilities]
+          self.time_validity = args[:time_validity]
+        end
+
+        def performer=(performer)
+          if performer.nil?
+            raise ArgumentError, 'performer is mandatory'
+          end
+          @performer = performer
+        end
+
+        def capabilities=(capabilities)
+          if !capabilities.nil? && capabilities.empty?
+            raise ArgumentError, 'capability should not be empty'
+          end
+          @capabilities = capabilities
+        end
+      end
+
+      class Capability < Locatable
+        attr_reader :credentials
+        attr_accessor :time_validity
+
+        def initialize(args = { })
+          super(args)
+          self.credentials = args[:credentials]
+          self.time_validity = args[:time_validity]
+        end
+
+        def credentials=(credentials)
+          if credentials.nil?
+            raise ArgumentError, 'credentials are mandatory'
+          end
+          @credentials = credentials
+        end
+      end
+
+      class PartyRelationship < Locatable
+        attr_accessor :details, :time_validity
+        attr_reader :source, :target
+        alias :type :name
+
+        def initialize(args = { })
+          super(args)
+          self.uid = args[:uid]
+          self.details = args[:details]
+          self.time_validity = args[:time_validity]
+          self.source = args[:source]
+          self.target = args[:target]
+        end
+
+        def uid=(uid)
+          if uid.nil?
+            raise ArgumentError, 'uid is mandatory'
+          end
+          @uid = uid
+        end
+
+        def source=(source)
+          if source.nil? or source.id.value != @uid.value
+            raise ArgumentError, 'source is invalid'
+          end
+          @source = source
+        end
+
+        def target=(target)
+          if target.nil?
+            raise ArgumentError, 'taraget is invalid'
+          end
+          @target = target
+        end
+      end
+
+      class VersionedParty < Locatable
 
       end
     end # of Demographic

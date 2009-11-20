@@ -85,7 +85,6 @@ end
 
 class RM_Common_Archetyped_Test < Test::Unit::TestCase
   def setup
-
     @dv_text = OpenEhr::RM::DataTypes::Text::DvText.new('Test')
     @uid_based_id = OpenEhr::RM::Support::Identification::UidBasedId.new('rrip::0.0.5')
     @archetype_id = OpenEhr::RM::Support::Identification::ArchetypeId.new("0.0.5", "biochemistry result_cholesterol", "entry", "ehr_rm", "openehr","cholesterol","0.0.3")
