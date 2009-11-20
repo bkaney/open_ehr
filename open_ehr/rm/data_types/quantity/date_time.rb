@@ -1,7 +1,7 @@
 # This module is implementation of the UML:
 # http://www.openehr.org/uml/release-1.0.1/Browsable/_9_0_76d0249_1109696321450_28117_5362Report.html
 # Ticket refs #49
-require 'assumed_library_types'
+#require 'assumed_library_types'
 require 'date'
 include OpenEHR::RM::DataTypes::Quantity
 include OpenEHR::AssumedLibraryTypes
