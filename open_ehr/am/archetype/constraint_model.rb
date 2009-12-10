@@ -1,13 +1,13 @@
 
-module OpenEhr
+module OpenEHR
   module AM
     module Archetype
-      module Constraint_Model
-        class ARCHETYPE_CONSTRAINT
-          
+      module ConstraintModel
+        class ArchetypeConstraint
+
         end
 
-        class CARDINALITY
+        class Cardinality
           attr_accessor :interval, :is_ordered, :is_unique
 
           def initialize(args = { })
@@ -17,7 +17,7 @@ module OpenEhr
           end
         end
 
-        class C_OBJECT < ARCHETYPE_CONSTRAINT
+        class CObject < ArchetypeConstraint
           attr_accessor :node_id, :occurrences, :rm_type_name
 
           def initialize(args = { })
@@ -35,7 +35,7 @@ module OpenEhr
           end
         end
 
-        class C_ATTRIBUTE < ARCHETYPE_CONSTRAINT
+        class CAttribute < ArchetypeConstraint
           attr_accessor :rm_attribute_name, :existence, :children
 
           def initialize(args = { })
@@ -46,7 +46,7 @@ module OpenEhr
           end
         end
 
-        class C_DEFINED_OBJECT < C_OBJECT
+        class CDefinedObject < CObject
           attr_accessor :assumed_value
           
           def initialize(args = { })
@@ -55,7 +55,7 @@ module OpenEhr
           end
         end
 
-        class C_PRIMITIVE_OBJECT < C_DEFINED_OBJECT
+        class CPrimitiveObject < CDefinedObject
           attr_accessor :item
 
           def initialize(args = { })
@@ -64,7 +64,7 @@ module OpenEhr
           end
         end
 
-        class C_COMPLEX_OBJECT < C_DEFINED_OBJECT
+        class CComplexObject < CDefinedObject
           attr_accessor :attributes, :attributes_valid
 
           def initialize(args = { })
@@ -81,18 +81,18 @@ module OpenEhr
           end
         end
 
-        class C_DOMAIN_TYPE < C_DEFINED_OBJECT
+        class CDomainType < CDefinedObject
           
         end
 
-        class C_REFERENCE_OBJECT < C_OBJECT
+        class CReferenceObject < CObject
         end
 
-        class ARCHETYPE_INTERNAL_REF < C_REFERENCE_OBJECT
+        class ArchetypeInternalRef < CReferenceObject
           attr_accessor :target_path
         end
 
-        class ARCHETYPE_SLOT < C_REFERENCE_OBJECT
+        class ArchetypeSlot < CReferenceObject
           attr_accessor :includes, :excludes
 
           def self.create(args = { }, &block)
@@ -106,7 +106,7 @@ module OpenEhr
           end
         end
 
-        class CONSTRAINT_REF < C_REFERENCE_OBJECT
+        class ConstantRef < CReferenceObject
           attr_accessor :reference
 
           def self.create(args = { }, &block)
@@ -119,7 +119,7 @@ module OpenEhr
           end
         end
 
-        class C_SINGLE_ATTRIBUTE < C_ATTRIBUTE
+        class CSingleAttribute < CAttribute
           attr_accessor :alternatives
 
           def initialize(args = { })
@@ -128,7 +128,7 @@ module OpenEhr
           end
         end
 
-        class C_MULTIPLE_ATTRIBUTE < C_ATTRIBUTE
+        class CMultipleAttribute < CAttribute
           attr_accessor :members, :cardinality
           
           def initialize(args = { })

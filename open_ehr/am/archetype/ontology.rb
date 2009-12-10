@@ -1,8 +1,8 @@
-module OpenEhr
+module OpenEHR
   module AM
     module Archetype
       module Ontology
-        class ARCHETYPE_ONTOLOGY
+        class ArchetypeOntology
           attr_accessor :constraint_codes, :specialisation_depth
           attr_accessor :term_attribute_names, :term_codes
           attr_accessor :terminologies_available
