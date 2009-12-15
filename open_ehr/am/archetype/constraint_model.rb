@@ -1,4 +1,3 @@
-
 module OpenEHR
   module AM
     module Archetype
