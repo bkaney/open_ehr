@@ -62,15 +62,8 @@ module OpenEHR
           return @archetype_id.concept_name
         end
 
-        def self.create(args ={}, &block)
-          archetype = new(args)
-          if block_given?
-            yield archetype
-          end
-          return archetype
-        end
-
         def concept_name(a_lang)
+          
         end
 
         def constraint_references_valid?
@@ -100,11 +93,20 @@ module OpenEHR
         def specialisation_depth
         end
         
+        def self.create(args ={}, &block)
+          archetype = new(args)
+          if block_given?
+            yield archetype
+          end
+          return archetype
+        end
+
       end # end of Archetype
       # original file:
       # ref_imple_eiffel/components/adl_parser/src/interface/adl_definition.e
 
       class VALIDITY_KIND
+
       end
     end
   end # of AM

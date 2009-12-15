@@ -4,7 +4,42 @@ module OpenEHR
     module Archetype
       module ConstraintModel
         class ArchetypeConstraint
+          attr_reader :path
+          attr_accessor :parent
 
+          def initialize(args = { })
+            self.path = args[:path]
+            self.parent = args[:parent]
+          end
+
+          def path=(path)
+            if path.nil?
+              raise ArgumentError, 'path is mandatory'
+            end
+            @path = path
+          end
+
+          def has_path?(path)
+            return @path.include?(path)
+          end
+
+          def congruent?
+            if @path.index(@parent.path) == 0
+              return true
+            else
+              return false
+            end
+          end
+
+          alias is_congruent? congruent?
+
+          def node_conforms_to?(other)
+            if @path.index(other.path) == 0
+              return true
+            else
+              return false
+            end
+          end
         end
 
         class Cardinality
