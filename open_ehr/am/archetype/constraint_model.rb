@@ -243,7 +243,7 @@ module OpenEHR
           
           def initialize(args = { })
             super
-            @members = args[:members] ? args[:members] : []
+            self.members = args[:members]
             self.cardinality = args[:cardinality]
           end
 
