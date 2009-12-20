@@ -49,15 +49,68 @@ module OpenEHR
             @is_ordered = args[:is_ordered]
             @is_unique = args[:is_unique]
           end
+
+          def is_ordered?
+            return @is_ordered
+          end
+          
+          alias ordered? is_ordered?
+
+          def is_unique?
+            return @is_unique
+          end
+
+          alias unique? is_unique?
+
+          def is_set?
+            return !@is_ordered && @is_unique
+          end
+
+          alias set? is_set?
+
+          def is_list?
+            return @is_ordered && !@is_unique
+          end
+
+          alias list? is_list?
+
+          def is_bag?
+            return !@is_ordered && !@is_unique
+          end
+
+          alias bag? is_bag?
         end
 
         class CObject < ArchetypeConstraint
-          attr_accessor :node_id, :occurrences, :rm_type_name
+          attr_reader :rm_type_name, :node_id, :occurrences
 
           def initialize(args = { })
-            @node_id = args[:node_id] if args[:node_id]
-            @occurrences = args[:occurrences] if args[:occurrences]
-            @rm_type_name = args[:rm_type_name] if args[:rm_type_name]
+            super(args)
+            self.rm_type_name = args[:rm_type_name]
+            self.node_id = args[:node_id]
+            self.occurrences = args[:occurrences]
+
+          end
+
+          def rm_type_name=(rm_type_name)
+            if rm_type_name.nil? || rm_type_name.empty?
+              raise ArgumentError, 'invalid rm_type_name'
+            end
+            @rm_type_name = rm_type_name
+          end
+
+          def node_id=(node_id)
+            if node_id.nil? || node_id.empty?
+              raise ArgumentError, 'invalid node_id'
+            end
+            @node_id = node_id
+          end
+
+          def occurrences=(occurrences)
+            if occurrences.nil?
+              raise ArgumentError, 'invaild occurrences'
+            end
+            @occurrences = occurrences
           end
 
           def self.create(args = { }, &block)
@@ -70,13 +123,28 @@ module OpenEHR
         end
 
         class CAttribute < ArchetypeConstraint
-          attr_accessor :rm_attribute_name, :existence, :children
+          attr_reader :rm_attribute_name, :existence
+          attr_accessor :children
 
           def initialize(args = { })
-            @rm_attribute_name = args[:rm_attribute_name] if args[:rm_attribute_name]
-            @existence = args[:existence] if args[:existence]
-            @children = args[:children] ? args[:children] : []
-            
+            super(args)
+            self.rm_attribute_name = args[:rm_attribute_name]
+            self.existence = args[:existence]
+            self.children = args[:children]
+          end
+
+          def rm_attribute_name=(rm_attribute_name)
+            if rm_attribute_name.nil? or rm_attribute_name.empty?
+              raise ArgumentError, 'invalid rm_attribute_name'
+            end
+            @rm_attribute_name = rm_attribute_name
+          end
+
+          def existence=(existence)
+            if existence.nil? || existence.lower < 0 || existence.upper > 1
+              raise ArgumentError, 'invalid existence'
+            end
+            @existence = existence
           end
         end
 
