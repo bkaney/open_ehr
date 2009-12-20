@@ -149,11 +149,23 @@ module OpenEHR
         end
 
         class CDefinedObject < CObject
-          attr_accessor :assumed_value
+          attr_accessor :assumed_value, :any_allowed
           
           def initialize(args = { })
-            @assumed_value = args[:assumed_value] if args[:assumed_value]
             super
+            self.assumed_value = args[:assumed_value]
+          end
+
+          def has_assumed_value?
+            return !@assumed_value.nil?
+          end
+
+          def default_value
+            raise NotImplementedError, 'subclass should implement this method'
+          end
+
+          def valid_value?(value)
+            raise NotImplementedError, 'subclass should implement this method'
           end
         end
 
