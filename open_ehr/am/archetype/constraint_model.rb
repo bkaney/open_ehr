@@ -238,12 +238,20 @@ module OpenEHR
         end
 
         class CMultipleAttribute < CAttribute
-          attr_accessor :members, :cardinality
+          attr_accessor :members
+          attr_reader :cardinality
           
           def initialize(args = { })
-            @members = args[:members] ? args[:members] : []
-            @cardinality = args[:cardinality] if args[:cardinality]
             super
+            @members = args[:members] ? args[:members] : []
+            self.cardinality = args[:cardinality]
+          end
+
+          def cardinality=(cardinality)
+            if cardinality.nil?
+              raise ArgumentError, 'cardinality is mandatory'
+            end
+            @cardinality = cardinality
           end
         end
       end
