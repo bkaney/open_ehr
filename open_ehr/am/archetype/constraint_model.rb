@@ -222,11 +222,18 @@ module OpenEHR
         end
 
         class CSingleAttribute < CAttribute
-          attr_accessor :alternatives
+          attr_reader :alternatives
 
           def initialize(args = { })
-            @alternatives = args[:alternatives] ? args[:alternatives] : []
             super
+            self.alternatives = args[:alternatives]
+          end
+
+          def alternatives=(alternatives)
+            if alternatives.nil?
+              raise ArgumentError, 'alternatives are mandatory'
+            end
+            @alternatives = alternatives
           end
         end
 
