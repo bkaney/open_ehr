@@ -149,7 +149,7 @@ module OpenEHR
         end
 
         class CDefinedObject < CObject
-          attr_accessor :assumed_value, :any_allowed
+          attr_accessor :assumed_value
           
           def initialize(args = { })
             super
@@ -167,14 +167,22 @@ module OpenEHR
           def valid_value?(value)
             raise NotImplementedError, 'subclass should implement this method'
           end
+
+          def any_allowed?
+            raise NotImplementedError, 'subclass should implement this method'
+          end
         end
 
         class CPrimitiveObject < CDefinedObject
           attr_accessor :item
 
           def initialize(args = { })
-            @attributes = args[:item] if args[:item]
             super
+            self.item = args[:item]
+          end
+
+          def any_allowed?
+            return !item.nil?
           end
         end
 
