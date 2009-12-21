@@ -214,14 +214,51 @@ module OpenEHR
         end
 
         class CReferenceObject < CObject
+
         end
 
         class ArchetypeInternalRef < CReferenceObject
-          attr_accessor :target_path
+          attr_reader :target_path
+
+          def initialize(args = { })
+            super
+            self.target_path = args[:target_path]
+          end
+
+          def target_path=(target_path)
+            if target_path.nil? or target_path.empty?
+              raise ArgumentError, 'target_path is mandatory'
+            end
+            @target_path = target_path
+          end
         end
 
         class ArchetypeSlot < CReferenceObject
-          attr_accessor :includes, :excludes
+          attr_reader :includes, :excludes
+
+          def initialize(args = { })
+            super
+            self.includes = args[:includes]
+            self.excludes = args[:excludes]
+          end
+
+          def includes=(includes)
+            if !includes.nil? && includes.empty?
+              raise ArgumentError, 'includes should not be empty'
+            end
+            @includes = includes
+          end
+          
+          def excludes=(excludes)
+            if !excludes.nil? && excludes.empty?
+              raise ArgumentError, 'excludes should not be empty'
+            end
+            @excludes = excludes
+          end
+
+          def any_allowed?
+            return includes.nil? && excludes.nil?
+          end
 
           def self.create(args = { }, &block)
             archetype_slot = new(args)
@@ -234,8 +271,20 @@ module OpenEHR
           end
         end
 
-        class ConstantRef < CReferenceObject
-          attr_accessor :reference
+        class ConstraintRef < CReferenceObject
+          attr_reader :reference
+
+          def initialize(args = { })
+            super
+            self.reference = args[:reference]
+          end
+
+          def reference=(reference)
+            if reference.nil?
+              raise ArgumentError, 'reference is mandatory'
+            end
+            @reference = reference
+          end
 
           def self.create(args = { }, &block)
             constraint_ref = new(args)
