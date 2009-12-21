@@ -182,16 +182,20 @@ module OpenEHR
           end
 
           def any_allowed?
-            return !item.nil?
+            return item.nil?
           end
         end
 
         class CComplexObject < CDefinedObject
-          attr_accessor :attributes, :attributes_valid
+          attr_accessor :attributes
 
           def initialize(args = { })
-            @attributes = args[:attributes] ? args[:attributes] : []
             super
+            self.attributes = args[:attributes]
+          end
+
+          def any_allowed?
+            return (@attributes.nil? or @attributes.empty?)
           end
 
           def self.create(args = { }, &block)
@@ -204,7 +208,9 @@ module OpenEHR
         end
 
         class CDomainType < CDefinedObject
-          
+          def standard_equivalent
+            raise NotImplementedError, 'subclass should be defined'
+          end
         end
 
         class CReferenceObject < CObject
