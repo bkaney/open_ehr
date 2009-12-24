@@ -29,6 +29,18 @@ module OpenEHR
         end
 
         class ExprItem
+          attr_reader :type
+
+          def initialize(args = { })
+            self.type = args[:type]
+          end
+
+          def type=(type)
+            if type.nil? or type.empty?
+              raise ArgumentError, 'type is mandatory'
+            end
+            @type = type
+          end
         end
       end # of Assetion
     end # of Archtype
