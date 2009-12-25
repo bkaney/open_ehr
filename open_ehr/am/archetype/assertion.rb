@@ -42,6 +42,30 @@ module OpenEHR
             @type = type
           end
         end
+
+        class ExprLeaf < ExprItem
+          attr_reader :item, :reference_type
+
+          def initialize(args = { })
+            super
+            self.item = args[:item]
+            self.reference_type = args[:reference_type]
+          end
+
+          def item=(item)
+            if item.nil?
+              raise ArgumentError, 'item is mandatory'
+            end
+            @item = item
+          end
+
+          def reference_type=(reference_type)
+            if reference_type.nil?
+              raise ArgumentError, 'reference_type is mandatory'
+            end
+            @reference_type = reference_type
+          end
+        end
       end # of Assetion
     end # of Archtype
   end #of AM
