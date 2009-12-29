@@ -67,6 +67,16 @@ module OpenEHR
           end
         end
 
+        class ExprOperator < ExprItem
+          attr_accessor :operator, :precedence_overridden
+
+          def initialize(args = { })
+            super
+            self.operator = args[:operator]
+            self.precedence_overridden = args[:precedence_overridden]
+          end
+        end
+
         class OperatorKind
           OP_EQ = 2001
           OP_NE = 2002
