@@ -90,6 +90,19 @@ module OpenEHR
           OP_DIVIDE = 2023
           OP_EXP = 2024
 
+          attr_reader :value
+
+          def initialize(args = { })
+            self.value = args[:value]
+          end
+
+          def value=(value)
+            unless OperatorKind.valid_operator? value
+              raise ArgumentError, 'invalid value'
+            end
+            @value = value
+          end
+
           def self.valid_operator?(value)
             if value >= OP_EQ && value <= OP_EXP
               return true
