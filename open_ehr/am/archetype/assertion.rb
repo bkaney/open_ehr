@@ -77,6 +77,22 @@ module OpenEHR
           end
         end
 
+        class ExprUnaryOperator < ExprOperator
+          attr_reader :operand
+
+          def initialize(args = { })
+            super
+            self.operand = args[:operand]
+          end
+
+          def operand=(operand)
+            if operand.nil?
+              raise ArgumentError, 'operand is mandatory'
+            end
+            @operand = operand
+          end
+        end
+
         class OperatorKind
           OP_EQ = 2001
           OP_NE = 2002
