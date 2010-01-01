@@ -93,6 +93,53 @@ module OpenEHR
           end
         end
 
+        class ExprBinaryOperator < ExprOperator
+          attr_reader :right_operand, :left_operand
+
+          def initialize(args = { })
+            super
+            self.right_operand = args[:right_operand]
+            self.left_operand = args[:left_operand]
+          end
+
+          def right_operand=(right_operand)
+            if right_operand.nil?
+              raise ArgumentError, 'right_operand is mandatory'
+            end
+            @right_operand = right_operand
+          end
+
+          def left_operand=(left_operand)
+            if left_operand.nil?
+              raise ArgumentError, 'left_operand is mandatory'
+            end
+            @left_operand = left_operand
+          end
+        end
+
+        class AssertionVariable
+          attr_reader :name, :definition
+
+          def initialize(args = { })
+            self.name = args[:name]
+            self.definition = args[:definition]
+          end
+
+          def name=(name)
+            if name.nil?
+              raise ArgumentError, 'name is mandatory'
+            end
+            @name = name
+          end
+
+          def definition=(definition)
+            if definition.nil?
+              raise ArgumentError, 'definition is mandatory'
+            end
+            @definition = definition
+          end
+        end
+
         class OperatorKind
           OP_EQ = 2001
           OP_NE = 2002
