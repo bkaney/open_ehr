@@ -71,6 +71,34 @@ module OpenEHR
               end
             end
           end
+
+          class CString < CPrimitive
+            attr_reader :pattern, :list
+
+            def initialize(args = { })
+              super
+              consistency(args[:pattern], args[:list])
+              @pattern = args[:pattern]
+              @list = args[:list]
+            end
+
+            def pattern=(pattern)
+              consistency(pattern, @list)
+              @pattern = pattern
+            end
+
+            def list=(list)
+              consistency(@pattern, list)
+              @list = list
+            end
+
+            private
+            def consistency(pattern, list)
+              if pattern.nil? == list.nil?
+                raise ArgumentError, 'consistency invaild'
+              end
+            end
+          end
         end # of Primitive
       end # of CostraintModel
     end # of Archetype
