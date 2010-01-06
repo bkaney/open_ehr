@@ -99,6 +99,34 @@ module OpenEHR
               end
             end
           end
+
+          class CInteger < CPrimitive
+            attr_reader :list, :range
+
+            def initialize(args = { })
+              super
+              consistency(args[:list], args[:range])
+              @list = args[:list]
+              @range = args[:range]
+            end
+
+            def list=(list)
+              consistency(list, @range)
+              @list = list
+            end
+
+            def range=(range)
+              consistency(@list, range)
+              @range = range
+            end
+
+            private
+            def consistency(list, range)
+              if list.nil? == range.nil?
+                raise ArgumentError, 'consistency invalid'
+              end
+            end
+          end
         end # of Primitive
       end # of CostraintModel
     end # of Archetype
