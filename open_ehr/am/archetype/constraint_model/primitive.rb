@@ -127,6 +127,12 @@ module OpenEHR
               end
             end
           end
+
+          class CReal < CInteger
+
+          end
+
+          
         end # of Primitive
       end # of CostraintModel
     end # of Archetype

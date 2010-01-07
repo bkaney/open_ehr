@@ -105,7 +105,23 @@ module OpenEHR
       # original file:
       # ref_imple_eiffel/components/adl_parser/src/interface/adl_definition.e
 
-      class VALIDITY_KIND
+      class ValidityKind
+        attr_reader :value
+
+        MANDATORY = 1001
+        OPTIONAL = 1002
+        DISALLOWED = 1003
+
+        def initialize(args = { })
+          self.value = args[:value]
+        end
+
+        def value=(value)
+          unless [MANDATORY, OPTIONAL, DISALLOWED].include? value
+            raise ArgumentError, 'invalid value'
+          end
+          @value = value
+        end
 
       end
     end
