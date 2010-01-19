@@ -180,6 +180,10 @@ module OpenEHR
               end
             end
 
+            def <=>(other)
+              self.magnitude <=> other.magnitude
+            end
+
             private
 
             def split_date_time(date_time)

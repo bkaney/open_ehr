@@ -132,7 +132,46 @@ module OpenEHR
 
           end
 
-          
+          class CDate < CPrimitive
+            attr_accessor :range, :timezone_validity
+            attr_reader :month_validity, :day_validity
+
+            def initialize(args = { })
+              super(args)
+              self.range = args[:range]
+              consistency_validity(args[:month_validity], args[:day_validity])
+              @month_validity = args[:month_validity]
+              @day_validity = args[:day_validity]
+              self.timezone_validity = args[:timezone_validity]
+            end
+
+            def month_validity=(month_validity)
+              consistency_validity(month_validity, @day_validity)
+              @month_validity = month_validity
+            end
+
+            def day_validity=(day_validity)
+              consistency_validity(@month_validity, day_validity)
+              @day_validity = day_validity
+            end
+
+            def validity_is_range?
+              return !@range.nil?
+            end
+
+            private
+            def consistency_validity(month_validity, day_validity)
+              if (month_validity == ValidityKind::OPTIONAL) &&
+                  !((day_validity == ValidityKind::OPTIONAL) ||
+                    (day_validity == ValidityKind::DISALLOWED))
+                raise ArgumentError, 'month_validity inconsistent'
+              end
+              if (month_validity == ValidityKind::DISALLOWED) &&
+                  !(day_validity == ValidityKind::DISALLOWED)
+                raise ArgumentError, 'month validity disallowed'
+              end
+            end
+          end
         end # of Primitive
       end # of CostraintModel
     end # of Archetype

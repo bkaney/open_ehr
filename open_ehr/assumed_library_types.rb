@@ -134,6 +134,7 @@ module OpenEHR
     end # end of TimeDefinitions
 
     module ISO8601DateModule
+      include Comparable
       attr_reader :year, :month, :day
 
       def year=(year)
@@ -179,7 +180,13 @@ module OpenEHR
       def is_partial?
         month_unknown? or day_unknown?
       end
-
+      
+      def <=>(other)
+        (@year*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
+         @month*TimeDefinitions::NOMINAL_DAYS_IN_MONTH + @day) <=>
+          (other.year*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
+           other.month*TimeDefinitions::NOMINAL_DAYS_IN_MONTH + other.month)
+      end
       protected
       def leapyear?(year)
         case
