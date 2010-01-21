@@ -172,6 +172,10 @@ module OpenEHR
               end
             end
           end
+
+          class CTime < CPrimitive
+
+          end
         end # of Primitive
       end # of CostraintModel
     end # of Archetype

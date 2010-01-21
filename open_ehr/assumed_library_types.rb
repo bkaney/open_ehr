@@ -134,7 +134,6 @@ module OpenEHR
     end # end of TimeDefinitions
 
     module ISO8601DateModule
-      include Comparable
       attr_reader :year, :month, :day
 
       def year=(year)
@@ -181,12 +180,6 @@ module OpenEHR
         month_unknown? or day_unknown?
       end
       
-      def <=>(other)
-        (@year*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
-         @month*TimeDefinitions::NOMINAL_DAYS_IN_MONTH + @day) <=>
-          (other.year*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
-           other.month*TimeDefinitions::NOMINAL_DAYS_IN_MONTH + other.month)
-      end
       protected
       def leapyear?(year)
         case
@@ -197,8 +190,12 @@ module OpenEHR
       end
     end
 
+    def nilthenzero(value)
+      return value ? value : 0
+    end
+
     class ISO8601Date < TimeDefinitions
-      include ISO8601DateModule
+      include ISO8601DateModule, Comparable
       def initialize(string)
         /(\d{4})(?:-(\d{2})(?:-(\d{2})?)?)?/ =~ string
         if $1.nil?
@@ -216,6 +213,18 @@ module OpenEHR
         else
           self.day = $3.to_i
         end
+      end
+
+      def <=>(other)
+        magnitude =
+          nilthenzero(@year)*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
+          nilthenzero(@month)*TimeDefinitions::NOMINAL_DAYS_IN_MONTH +
+          nilthenzero(@day)
+        other_magnitude =
+          nilthenzero(other.year)*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
+          nilthenzero(other.month)*TimeDefinitions::NOMINAL_DAYS_IN_MONTH +
+          nilthenzero(other.day)
+        magnitude <=> other_magnitude
       end
 
       def self.valid_iso8601_date?(string)
@@ -311,10 +320,12 @@ module OpenEHR
         end
         return s
       end
+
+      
     end
 
     class ISO8601Time < TimeDefinitions
-      include ISO8601TimeModule
+      include ISO8601TimeModule, Comparable
       def initialize(string)
         /(\d{2}):?(\d{2})?(:?)(\d{2})?((\.|,)(\d+))?(Z|([+-](\d{2}):?(\d{2})))?/ =~ string
         if $2.nil?
@@ -342,6 +353,17 @@ module OpenEHR
         else
           self.timezone = $8
         end
+      end
+
+      def <=>(other)
+        magnitude = (nilthenzero(@hour)*60 + nilthenzero(@minute))*60 +
+          nilthenzero(@second) +
+          nilthenzero(@fractional_second)
+        other_magnitude = (nilthenzero(other.hour) * 60 +
+                           nilthenzero(other.minute)) * 60 +
+          nilthenzero(other.second) +
+          nilthenzero(other.fractional_second)
+        magnitude <=> other_magnitude
       end
 
       def self.valid_iso8601_time?(s)

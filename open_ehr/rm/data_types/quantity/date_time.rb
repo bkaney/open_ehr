@@ -180,12 +180,7 @@ module OpenEHR
               end
             end
 
-            def <=>(other)
-              self.magnitude <=> other.magnitude
-            end
-
             private
-
             def split_date_time(date_time)
               /^(.*)T(.*)$/ =~ date_time.as_string
               return DvDate.new(:value => $1), DvTime.new(:value => $2)
