@@ -174,7 +174,45 @@ module OpenEHR
           end
 
           class CTime < CPrimitive
+            attr_accessor :range
+            attr_reader :minute_validity, :second_validity,
+                        :millisecond_validity
 
+            def initialize(args = { })
+              super
+              self.range = args[:range]
+              self.millisecond_validity = args[:millisecond_validity]
+              self.second_validity = args[:second_validity]
+              self.minute_validity = args[:minute_validity]
+            end
+
+            def minute_validity=(minute_validity)
+              if (minute_validity == ValidityKind::OPTIONAL &&
+                  @second_validity == ValidityKind::MANDATORY) ||
+                  (minute_validity == ValidityKind::DISALLOWED &&
+                   @second_validity != ValidityKind::DISALLOWED)
+                raise ArgumentError, 'minute_validity is invalid'
+              end
+              @minute_validity = minute_validity
+            end
+
+            def second_validity=(second_validity)
+              if (second_validity == ValidityKind::OPTIONAL &&
+                  @millisecond_validity == ValidityKind::MANDATORY) ||
+                  (second_validity == ValidityKind::DISALLOWED &&
+                   @millisecond_validity != ValidityKind::DISALLOWED)
+                raise ArgumentError, 'second_validity is invalid'
+              end
+              @second_validity = second_validity
+            end
+
+            def millisecond_validity=(millisecond_validity)
+              @millisecond_validity = millisecond_validity
+            end
+
+            def validity_is_range?
+              return !@range.nil?
+            end
           end
         end # of Primitive
       end # of CostraintModel
