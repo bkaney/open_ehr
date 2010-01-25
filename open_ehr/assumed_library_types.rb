@@ -164,6 +164,13 @@ module OpenEHR
         end          
       end
 
+      def to_days
+        days = nilthenzero(@year)*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
+          nilthenzero(@month)*TimeDefinitions::NOMINAL_DAYS_IN_MONTH +
+          nilthenzero(@day)
+        return days
+      end
+
       def month_unknown?
         @month.nil?
       end
@@ -216,15 +223,7 @@ module OpenEHR
       end
 
       def <=>(other)
-        magnitude =
-          nilthenzero(@year)*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
-          nilthenzero(@month)*TimeDefinitions::NOMINAL_DAYS_IN_MONTH +
-          nilthenzero(@day)
-        other_magnitude =
-          nilthenzero(other.year)*TimeDefinitions::NOMINAL_DAYS_IN_YEAR +
-          nilthenzero(other.month)*TimeDefinitions::NOMINAL_DAYS_IN_MONTH +
-          nilthenzero(other.day)
-        magnitude <=> other_magnitude
+        self.to_days <=> other.to_days
       end
 
       def self.valid_iso8601_date?(string)
@@ -321,7 +320,12 @@ module OpenEHR
         return s
       end
 
-      
+      def to_second
+        second = (nilthenzero(@hour)*60 + nilthenzero(@minute))*60 +
+          nilthenzero(@second) +
+          nilthenzero(@fractional_second)
+        return second
+      end
     end
 
     class ISO8601Time < TimeDefinitions
@@ -356,14 +360,7 @@ module OpenEHR
       end
 
       def <=>(other)
-        magnitude = (nilthenzero(@hour)*60 + nilthenzero(@minute))*60 +
-          nilthenzero(@second) +
-          nilthenzero(@fractional_second)
-        other_magnitude = (nilthenzero(other.hour) * 60 +
-                           nilthenzero(other.minute)) * 60 +
-          nilthenzero(other.second) +
-          nilthenzero(other.fractional_second)
-        magnitude <=> other_magnitude
+        self.to_second <=> other.to_second
       end
 
       def self.valid_iso8601_time?(s)
@@ -478,6 +475,16 @@ module OpenEHR
         else
           self.timezone = $9+$10
         end
+      end
+
+      def <=>(other)
+        self.magnitude <=> other.magnitude
+      end
+
+      protected
+      def magnitude
+        return self.to_days*HOURS_IN_DAY*MINUTES_IN_HOUR*SECONDS_IN_MINUTE +
+          self.to_second
       end
     end
   

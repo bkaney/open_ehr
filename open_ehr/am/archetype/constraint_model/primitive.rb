@@ -255,6 +255,40 @@ module OpenEHR
               @day_validity = day_validity
             end
           end
+
+          class CDuration < CPrimitive
+            attr_reader :range
+            attr_accessor :years_allowed, :months_allowed, :weeks_allowed,
+                          :days_allowed, :hours_allowed, :minutes_allowed,
+                          :seconds_allowed, :fractional_seconds_allowed
+
+            def initialize(args = { })
+              super
+              self.fractional_seconds_allowed = args[:fractional_seconds_allowed]
+              self.seconds_allowed = args[:seconds_allowed]
+              self.minutes_allowed = args[:minutes_allowed]
+              self.hours_allowed = args[:hours_allowed]
+              self.days_allowed = args[:days_allowed]
+              self.months_allowed = args[:months_allowed]
+              self.weeks_allowed = args[:weeks_allowed]
+              self.years_allowed = args[:years_allowed]
+              self.range = args[:range]
+            end
+
+            def range=(range)
+              if range.nil? && !(@years_allowed ||
+                    @months_allowed ||
+                    @weeks_allowed ||
+                    @days_allowed ||
+                    @hours_allowed ||
+                    @minutes_allowed ||
+                    @seconds_allowed ||
+                    @fractional_seconds_allowed)
+                raise ArgumentError, 'invalid range'
+              end
+              @range = range
+            end
+          end
         end # of Primitive
       end # of CostraintModel
     end # of Archetype
