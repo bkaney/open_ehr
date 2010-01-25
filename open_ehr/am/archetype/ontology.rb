@@ -26,26 +26,37 @@ module OpenEHR
           end
         end
 
-        class ARCHETYPE_TERM
-          attr_accessor :code, :items
+        class ARCHETYPE_ONTOLOGY < ArchetypeOntology
+
+        end
+
+        class ArchetypeTerm
+          attr_accessor :items
+          attr_reader :code
 
           def initialize(args = { })
-                         
-            @code = if args[:code]
-                      args[:code]
-                    else
-                      raise ArgumentError, "Code is empty"
-                    end
-            @items = if args[:items]
-                       args[:items]
-                     else
-                       raise ArgumentError, "Items is empty"
-                     end
+            self.code = args[:code]
+            self.items =args[:items]
+          end            
+
+          def code=(code)
+            if code.nil? or code.empty?
+              raise ArgumentError, 'code is mandatory'
+            end
+            @code = code
           end
 
           def keys
-            @items.keys
+            if items.nil?
+              return Set.new
+            else
+              return Set.new(@items.keys)
+            end
           end
+        end
+
+        class ARCHETYPE_TERM < ArchetypeTerm
+
         end
       end # end of Ontology
     end # end of Archetype
