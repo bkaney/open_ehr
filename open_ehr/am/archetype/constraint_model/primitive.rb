@@ -132,26 +132,22 @@ module OpenEHR
 
           end
 
-          class CDate < CPrimitive
+          module CDateModule
             attr_accessor :range, :timezone_validity
             attr_reader :month_validity, :day_validity
 
-            def initialize(args = { })
-              super(args)
-              self.range = args[:range]
-              consistency_validity(args[:month_validity], args[:day_validity])
-              @month_validity = args[:month_validity]
-              @day_validity = args[:day_validity]
-              self.timezone_validity = args[:timezone_validity]
-            end
-
             def month_validity=(month_validity)
-              consistency_validity(month_validity, @day_validity)
+              if (month_validity == ValidityKind::OPTIONAL &&
+                  !(@day_validity == ValidityKind::OPTIONAL ||
+                    @day_validity == ValidityKind::DISALLOWED)) ||
+                  (month_validity == ValidityKind::DISALLOWED &&
+                  !(@day_validity == ValidityKind::DISALLOWED))
+                raise ArgumentError, 'month validity disallowed'
+              end
               @month_validity = month_validity
             end
 
             def day_validity=(day_validity)
-              consistency_validity(@month_validity, day_validity)
               @day_validity = day_validity
             end
 
@@ -161,30 +157,25 @@ module OpenEHR
 
             private
             def consistency_validity(month_validity, day_validity)
-              if (month_validity == ValidityKind::OPTIONAL) &&
-                  !((day_validity == ValidityKind::OPTIONAL) ||
-                    (day_validity == ValidityKind::DISALLOWED))
-                raise ArgumentError, 'month_validity inconsistent'
-              end
-              if (month_validity == ValidityKind::DISALLOWED) &&
-                  !(day_validity == ValidityKind::DISALLOWED)
-                raise ArgumentError, 'month validity disallowed'
-              end
             end
           end
 
-          class CTime < CPrimitive
+          class CDate < CPrimitive
+            include CDateModule
+
+            def initialize(args = { })
+              super(args)
+              self.range = args[:range]
+              self.timezone_validity = args[:timezone_validity]
+              self.day_validity = args[:day_validity]
+              self.month_validity = args[:month_validity]
+            end
+          end
+
+          module CTimeModule
             attr_accessor :range
             attr_reader :minute_validity, :second_validity,
                         :millisecond_validity
-
-            def initialize(args = { })
-              super
-              self.range = args[:range]
-              self.millisecond_validity = args[:millisecond_validity]
-              self.second_validity = args[:second_validity]
-              self.minute_validity = args[:minute_validity]
-            end
 
             def minute_validity=(minute_validity)
               if (minute_validity == ValidityKind::OPTIONAL &&
@@ -212,6 +203,56 @@ module OpenEHR
 
             def validity_is_range?
               return !@range.nil?
+            end
+          end
+
+          class CTime < CPrimitive
+            include CTimeModule
+
+            def initialize(args = { })
+              super
+              self.range = args[:range]
+              self.millisecond_validity = args[:millisecond_validity]
+              self.second_validity = args[:second_validity]
+              self.minute_validity = args[:minute_validity]
+            end
+          end
+
+          class CDateTime < CPrimitive
+            include CDateModule, CTimeModule
+            attr_reader :hour_validity
+
+            def initialize(args = { })
+              super
+              self.timezone_validity = args[:timezone_validity]
+              self.millisecond_validity = args[:millisecond_validity]
+              self.second_validity = args[:second_validity]
+              self.minute_validity = args[:minute_validity]
+              self.hour_validity = args[:hour_vaildity]
+              self.day_validity = args[:day_validity]
+              self.month_validity = args[:day_validity]
+            end
+
+            def hour_validity=(hour_validity)
+              if (hour_validity == ValidityKind::DISALLOWED &&
+                  @minute_validity != ValidityKind::DISALLOWED) ||
+                  (hour_validity == ValidityKind::OPTIONAL &&
+                   !(@minute_validity == ValidityKind::OPTIONAL ||
+                     @minute_validity == ValidityKind::DISALLOWED))
+                raise ArgumentError, 'hour_validity is invalid'
+              end
+              @hour_validity = hour_validity
+            end
+
+            def day_validity=(day_validity)
+              if (day_validity == ValidityKind::DISALLOWED &&
+                  @hour_validity != ValidityKind::DISALLOWED) ||
+                  (day_validity == ValidityKind::OPTIONAL &&
+                   !(@hour_validity == ValidityKind::OPTIONAL ||
+                     @hour_validity == ValidityKind::DISALLOWED))
+                raise ArgumentError, 'day_validity is invaild'
+              end
+              @day_validity = day_validity
             end
           end
         end # of Primitive
