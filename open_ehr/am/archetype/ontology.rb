@@ -5,7 +5,22 @@ module OpenEHR
         class ArchetypeOntology
           attr_accessor :constraint_codes, :specialisation_depth
           attr_accessor :term_attribute_names, :term_codes
-          attr_accessor :terminologies_available
+          attr_reader :terminologies_available
+
+          def initialize(args = { })
+            self.terminologies_available = args[:terminologies_available]
+            self.specialisation_depth = args[:specialisation_depth]
+            self.term_codes = args[:term_codes]
+            self.constraint_codes = args[:constraint_codes]
+            self.term_attribute_names = args[:term_attribute_names]
+          end
+
+          def terminologies_available=(terminologies_available)
+            if terminologies_available.nil?
+              raise ArgumentError, 'terminologies_available is mandatory'
+            end
+            @terminologies_available = terminologies_available
+          end
 
           def constraint_binding(a_terminology, a_code)
           end
