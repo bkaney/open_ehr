@@ -1,4 +1,5 @@
 require 'rexml/document'
+require 'builder'
 
 module OpenEHR
   module Serializer
@@ -13,11 +14,18 @@ module OpenEHR
     end
 
     class ADLSerializer < BaseSerializer
-      def description
+      def header
         return <<HERE
 archetype (adl_version = #{@archetype.adl_version})
-     #{@archetype.archetype_id.value}
+\t#{@archetype.archetype_id.value}
+
+concept
+\t[#{@archetype.concept}]
 HERE
+      end
+
+      def description
+
       end
 
       def definition
@@ -30,15 +38,28 @@ HERE
       end
 
       def merge
-        return description + definition + ontology
+        return header + description + definition + ontology
       end
     end
 
     class XMLSerializer < BaseSerializer
+
+      def header
+        header = ''
+        xml = Builder::XmlMarkup.new(:indent => 2, :target => header)
+        xml.archetype_id do 
+          xml.value @archetype.archetype_id.value
+        end
+        xml.concept @archetype.concept
+        return header
+      end
+
       def description
-        desc = REXML::Element.new('archetype_id').
-          add_text(@archetype.archetype_id.value)
-        return desc
+        
+      end
+
+      def merge
+
       end
     end
   end
@@ -55,4 +76,9 @@ class Publisher
 end
 
 class Writer
+  def initialize(target)
+    @target = target
+  end
+  def out
+  end
 end
