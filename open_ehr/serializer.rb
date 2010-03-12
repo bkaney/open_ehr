@@ -3,6 +3,9 @@ require 'builder'
 
 module OpenEHR
   module Serializer
+    NL = "\r\n"
+    INDENT = '    '
+
     class BaseSerializer
       def initialize(archetype)
         @archetype = archetype
@@ -15,13 +18,16 @@ module OpenEHR
 
     class ADLSerializer < BaseSerializer
       def header
-        return <<HERE
-archetype (adl_version = #{@archetype.adl_version})
-\t#{@archetype.archetype_id.value}
-
-concept
-\t[#{@archetype.concept}]
-HERE
+        hd = 'archetype'
+        unless @archetype.adl_version.nil?
+          hd << " (adl_version = #{@archetype.adl_version})"
+        end
+        hd << NL+INDENT + "#{@archetype.archetype_id.value}"+NL+NL
+        hd << 'concept'+NL+ INDENT+"[#{@archetype.concept}]"+NL
+        hd << NL+'language'+NL+INDENT+'original_language = <['+
+          @archetype.original_language.terminology_id.value+'::'+
+          @archetype.original_language.code_string+']>'+NL
+        return hd
       end
 
       def description
@@ -51,6 +57,12 @@ HERE
           xml.value @archetype.archetype_id.value
         end
         xml.concept @archetype.concept
+        xml.original_language do
+          xml.code_string @archetype.original_language.code_string
+          xml.terminology_id do
+            xml.value @archetype.original_language.terminology_id.value
+          end
+        end
         return header
       end
 
