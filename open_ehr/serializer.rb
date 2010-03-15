@@ -22,7 +22,7 @@ module OpenEHR
         unless @archetype.adl_version.nil?
           hd << " (adl_version = #{@archetype.adl_version})"
         end
-        hd << NL+INDENT + "#{@archetype.archetype_id.value}"+NL+NL
+        hd << NL+INDENT + "#{@archetype.archetype_id.value}"+NL*2
         hd << 'concept'+NL+ INDENT+"[#{@archetype.concept}]"+NL
         hd << NL+'language'+NL+INDENT+'original_language = <['+
           @archetype.original_language.terminology_id.value+'::'+
@@ -31,7 +31,52 @@ module OpenEHR
       end
 
       def description
-
+        desc = ''
+        if @archetype.description
+          ad = @archetype.description
+          desc << 'description' + NL
+          desc << INDENT + 'original_author = <' + NL
+          ad.original_author.each do |k,v|
+            desc << INDENT+INDENT+'["'+k+'"] = <"'+v+'">'+NL
+          end
+          desc << INDENT+'>'+NL
+          desc << INDENT+'lifecycle_state = <"'+ad.lifecycle_state+'">'+NL
+          desc << INDENT+'details = <'+NL
+          ad.details.each do |lang,item|
+            desc << INDENT*2+'["'+lang+'"] = <'+NL
+            desc << INDENT*3+'language = <['+
+              item.language.terminology_id.value+'::'+
+              item.language.code_string+']>'+NL
+            desc << INDENT*3+'purpose = <"'+item.purpose+'">'+NL
+            if item.keywords then
+              desc << INDENT*3+'keywords = <'
+              item.keywords.each do |word|
+                desc << '"'+word+'",'
+              end
+              desc.chop! << '>'+NL
+            end
+            desc << INDENT*3+'use = <"'+item.use+'">'+NL if item.use
+            desc << INDENT*3+'misuse = <"'+item.misuse+'">'+NL if item.misuse
+            desc << INDENT*3+'copyright = <"'+item.copyright+'">'+NL if item.copyright
+            if item.original_resource_uri
+              desc << INDENT*3 + 'original_resource_uri = <'
+              item.original_resource_uri.each do |k,v|
+                desc << INDENT*4+'["'+k+'"] = <"'+v+'">'+NL
+              end
+              desc << INDENT*3+'>'+NL
+            end
+            if item.other_details
+              desc << INDENT*3 + 'other_details = <'
+              item.original_resource_uri.each do |k,v|
+                desc << INDENT*4+'["'+k+'"] = <"'+v+'">'+NL
+              end
+              desc << INDENT*3+'>'+NL
+            end
+            desc << INDENT*2+'>'+NL
+          end
+          desc << INDENT+'>'+NL
+        end
+        return desc
       end
 
       def definition
@@ -58,16 +103,51 @@ module OpenEHR
         end
         xml.concept @archetype.concept
         xml.original_language do
-          xml.code_string @archetype.original_language.code_string
           xml.terminology_id do
             xml.value @archetype.original_language.terminology_id.value
           end
+          xml.code_string @archetype.original_language.code_string
         end
         return header
       end
 
       def description
-        
+        desc = ''
+        xml = Builder::XmlMarkup.new(:indent => 2, :target => desc)
+        ad = @archetype.description
+        if ad
+          xml.description do
+            ad.original_author.each do |key,value|
+              xml.original_author(value,"id"=>key)
+            end
+            if ad.other_contributors
+              ad.other_contributors.each do |co|
+                xml.other_contributors co
+              end
+            end
+            xml.lifecycle_state ad.lifecycle_state
+            xml.details do
+              ad.details.each do |lang, item|
+                xml.language do
+                  xml.terminology_id do
+                    xml.value item.language.terminology_id.value
+                  end
+                  xml.code_string lang
+                end
+                xml.purpose item.purpose
+                xml.use item.use if item.use
+                xml.misuse item.misuse if item.misuse
+                xml.copyright item.copyright if item.copyright
+                if ad.other_details
+                  ad.other_details.each do |key,value|
+                    xml.other_details(value, "id"=>key)
+                  end
+                end
+              end
+            end
+          end
+        end
+        return desc
       end
 
       def merge
