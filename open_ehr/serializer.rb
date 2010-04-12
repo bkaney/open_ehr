@@ -80,6 +80,24 @@ module OpenEHR
       end
 
       def definition
+        ad = @archetype.definition
+        definition = 'definition'+NL
+        definition << INDENT+ad.rm_type_name+"[#{ad.node_id}] matches {"
+        if ad.any_allowed?
+          definition << '*}'+NL
+        else
+          definition << NL
+          if ad.attributes
+            attributes = ad.attributes
+            indents = 2
+            while attributes
+              definition << INDENT*indents+attributes.rm_type_name
+              definition << "[#{attributes.node_id}] "
+              definition << existence(attributes.existence)
+              definition << " matches {"
+            end
+          end
+        end
       end
 
       def ontology
@@ -90,6 +108,14 @@ module OpenEHR
 
       def merge
         return header + description + definition + ontology
+      end
+
+      private
+      def c_object
+      end
+
+      def existence(existence)
+        "existence matches {#{existence.lower}..#{existence.upper}}"
       end
     end
 
@@ -135,6 +161,11 @@ module OpenEHR
                   xml.code_string lang
                 end
                 xml.purpose item.purpose
+                if item.keywords then
+                  item.keywords.each do |word|
+                    xml.keywords word
+                  end
+                end
                 xml.use item.use if item.use
                 xml.misuse item.misuse if item.misuse
                 xml.copyright item.copyright if item.copyright
