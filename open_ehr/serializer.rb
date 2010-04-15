@@ -181,6 +181,25 @@ module OpenEHR
         return desc
       end
 
+      def definition
+        definition = ''
+        ad = @archetype.definition
+        xml = Builder::XmlMarkup.new(:indent => 2, :target => definition)
+        xml.definition do
+          xml.rm_type_name ad.rm_type_name
+          xml.occurrence do
+            oc = ad.occurrences
+            xml.lower_included oc.lower_included? unless oc.lower_included?.nil?
+            xml.upper_included oc.upper_included? unless oc.upper_included?.nil?
+            xml.lower_unbounded oc.lower_unbounded?
+            xml.upper_unbounded oc.upper_unbounded?
+            xml.lower oc.lower
+            xml.upper oc.lower
+          end
+          xml.node_id ad.node_id
+        end
+      end
+
       def merge
 
       end
