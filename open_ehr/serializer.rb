@@ -101,6 +101,23 @@ module OpenEHR
       end
 
       def ontology
+        ao = @archetype.ontology
+        ontology = 'ontology'+NL
+        ontology << INDENT + 'term_definitions = <' + NL
+        ao.term_codes.each do |term, items|
+          ontology << INDENT*2 + "[\"#{term}\"] = <" + NL
+          ontology << INDENT*3 + 'items = <'  + NL
+          items.each do |code, attribute|
+            ontology << INDENT*4 + "[\"#{code}\] = <" + NL
+            terms.each do |name, description|
+              ontology << INDENT*5 + "#{name} = <\"#{description}\">" +NL
+            end
+            ontology << INDENT*4 + '>'+NL
+          end
+          ontogoly << INDENT*3 + '>' + NL
+          ontology << INDENT*2 + '>' + NL
+        end
+        ontology << INDENT + '>' + NL
       end
 
       def envelope

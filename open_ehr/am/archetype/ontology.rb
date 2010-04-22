@@ -3,23 +3,43 @@ module OpenEHR
     module Archetype
       module Ontology
         class ArchetypeOntology
-          attr_accessor :constraint_codes, :specialisation_depth
-          attr_accessor :term_attribute_names, :term_codes
-          attr_reader :terminologies_available
+          attr_accessor :constraint_definitions, :specialisation_depth
+          attr_accessor :term_attribute_names, :term_bindings
+          attr_reader :terminologies_available, :term_definitions
 
           def initialize(args = { })
-            self.terminologies_available = args[:terminologies_available]
             self.specialisation_depth = args[:specialisation_depth]
-            self.term_codes = args[:term_codes]
-            self.constraint_codes = args[:constraint_codes]
-            self.term_attribute_names = args[:term_attribute_names]
+            self.term_definitions = args[:term_definitions]
+            self.constraint_definitions = args[:constraint_definitions]
+            self.term_bindings = args[:term_bindings]
           end
 
-          def terminologies_available=(terminologies_available)
-            if terminologies_available.nil?
-              raise ArgumentError, 'terminologies_available is mandatory'
+          # def terminologies_available=(terminologies_available)
+          #   if terminologies_available.nil?
+          #     raise ArgumentError, 'terminologies_available is mandatory'
+          #   end
+          #   @terminologies_available = terminologies_available
+          # end
+
+          def term_definitions=(term_definitions)
+            if term_definitions.nil?
+              raise ArgumentError, 'term_definitions is mandatory'
             end
-            @terminologies_available = terminologies_available
+            @term_definitions = term_definitions
+          end
+
+          def term_codes
+            return @term_definitions.values.collect {|value|
+              value.collect {|term| term.code}}.flatten.uniq
+          end
+
+          def constraint_codes
+            if @constraint_definitions.nil?
+              return nil
+            else
+              return @constraint_definitions.values.collect {|value|
+                value.collect {|term| term.code}}.flatten.uniq
+            end
           end
 
           def constraint_binding(a_terminology, a_code)
