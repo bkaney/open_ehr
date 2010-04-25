@@ -14,13 +14,6 @@ module OpenEHR
             self.term_bindings = args[:term_bindings]
           end
 
-          # def terminologies_available=(terminologies_available)
-          #   if terminologies_available.nil?
-          #     raise ArgumentError, 'terminologies_available is mandatory'
-          #   end
-          #   @terminologies_available = terminologies_available
-          # end
-
           def term_definitions=(term_definitions)
             if term_definitions.nil?
               raise ArgumentError, 'term_definitions is mandatory'
@@ -40,6 +33,10 @@ module OpenEHR
               return @constraint_definitions.values.collect {|value|
                 value.collect {|term| term.code}}.flatten.uniq
             end
+          end
+
+          def terminologies_available
+            return @term_bindings.keys
           end
 
           def constraint_binding(a_terminology, a_code)

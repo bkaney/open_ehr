@@ -14,6 +14,6 @@ module OpenEHR
   end
 
   class XMLParser < Parser
-
+    
   end
 end
