@@ -120,11 +120,8 @@ module OpenEHR
         ontology << INDENT + '>' + NL
       end
 
-      def envelope
-      end
-
       def merge
-        return header + description + definition + ontology
+        return header + NL + description + NL + definition + NL + ontology
       end
 
       private
@@ -137,7 +134,6 @@ module OpenEHR
     end
 
     class XMLSerializer < BaseSerializer
-
       def header
         header = ''
         xml = Builder::XmlMarkup.new(:indent => 2, :target => header)
@@ -215,10 +211,42 @@ module OpenEHR
           end
           xml.node_id ad.node_id
         end
+        return definition
+      end
+
+      def ontology
+        ontology = ''
+        ao = @archetype.ontology
+        xml = Builder::XmlMarkup.new(:indent => 2, :target => ontology)
+        xml.ontology do
+          xml.specialisation_depth ao.specialisation_depth
+          xml.term_definitions do
+            ao.term_definitions.each do |lang, terms|
+              xml.language lang
+              xml.terms do
+                terms.each do |term|
+                  xml.code term.code
+                  xml.items do
+                    term.items.each do |key, value|
+                      xml.item do
+                        xml.key key
+                        xml.value value
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
       end
 
       def merge
-
+        archetype = "<?xml version='1.0' encoding='UTF-8'?>" + NL +
+          "<archetype xmlns=\"http://schemas.openehr.org/v1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" + NL +
+          header + description + definition +
+          ontology + '</archetype>'
+        return archetype
       end
     end
   end
