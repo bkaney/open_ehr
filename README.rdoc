@@ -1,6 +1,11 @@
 = open_ehr
 
-Description goes here.
+A Ruby Implementation of OpenEHR.  This is a fork of 
+the library portions of http://www.openehr.jp/projects/ref-impl-ruby
+
+== Description
+
+This is current WIP.  A full description of this library is coming soon.
 
 == Note on Patches/Pull Requests
  
@@ -8,10 +13,40 @@ Description goes here.
 * Make your feature addition or bug fix.
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
+* Commit, do not mess with rakefile, version, or history. (if you 
+  want to have your own version, that is fine but bump version in 
+  a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
+
+== Original Authors
+
+Akimichi Tatsukawa, Shinji Kobayashi 
+openEHR.jp, <http://openehr.jp>
+
+== Contributing Authors
+
+Brian Kaney <brian@vermonster.com>
+
 
 == Copyright
 
-Copyright (c) 2010 Brian Kaney. See LICENSE for details.
+The software, including all files in this directory 
+and subdirectories is copyrighted to the original 
+authors and contributors, 2008-2010
+All Rights Reserved.
+
+== License
+
+This product is under openEHR Open Source Software License
+
+The openEHR Foundation uses the Mozilla Tri-license 1.1 on
+all software copyrighted to the Foundation. This licence
+essentially provides the user a choice of licence conditions
+under which to operate with any given piece of software,
+being: the Mozilla Public licence (MPL), and the Free
+Software Foundation GNU General Public Licence (GPL) and
+Lesser GNU General Public Licence (LGPL). See the Mozilla
+relicensing FAQ for details of this license. This in no way
+constrains the way in which software created by other
+organisations is licenced.
+

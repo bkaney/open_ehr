@@ -5,11 +5,11 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "open_ehr"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = "Ruby implementation of the OpenEHR specifications"
+    gem.description = "Ruby implementation of the OpenEHR specifications"
     gem.email = "brian@vermonster.com"
     gem.homepage = "http://github.com/bkaney/open_ehr"
-    gem.authors = ["Brian Kaney"]
+    gem.authors = ["Akimichi Tatsukawa, Shinji Kobayashi, Brian Kaney"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
